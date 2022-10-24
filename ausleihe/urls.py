@@ -8,4 +8,5 @@ app_name = 'ausleihe'
 
 urlpatterns = [
     path('', views.Home.as_view(), name='home'),
+    path('bücher', views.BuchList.as_view(), name='buch-list'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

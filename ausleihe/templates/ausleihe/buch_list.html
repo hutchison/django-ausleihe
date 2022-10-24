@@ -1,0 +1,36 @@
+{% extends "ausleihe/base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col">
+      {% if object_list %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Titel</th>
+            <th>Medium</th>
+            <th>ISBN</th>
+            <th>Verlag</th>
+            <th>Ausgabe</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for buch in object_list %}
+          <tr>
+            <td>{{ buch.titel }}</td>
+            <td>{{ buch.medium }}</td>
+            <td>{{ buch.isbn }}</td>
+            <td>{{ buch.verlag }}</td>
+            <td>{{ buch.ausgabe }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>Bisher sind keine Bücher vorhanden.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock content %}

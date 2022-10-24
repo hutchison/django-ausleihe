@@ -17,7 +17,7 @@ class Medium(models.Model):
         return self.id
 
 
-class BuchAutor(models.Model):
+class Autor(models.Model):
     vorname = models.CharField(max_length=100, blank=True)
     nachname = models.CharField(max_length=200)
 
@@ -30,15 +30,40 @@ class BuchAutor(models.Model):
         ordering = ("nachname", "vorname")
 
 
+class Verlag(models.Model):
+    name = models.CharField(max_length=200, unique=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Verlag"
+        verbose_name_plural = "Verlage"
+        ordering = ("name",)
+
+
 class Buch(models.Model):
     titel = models.CharField(max_length=300)
     isbn = models.CharField(max_length=17, verbose_name="ISBN", blank=True)
-    verlag = models.CharField(max_length=200, blank=True)
     ausgabe = models.CharField(max_length=50, blank=True)
     beschreibung = models.TextField(blank=True)
 
-    medium = models.ForeignKey(Medium, on_delete=models.CASCADE)
-    autoren = models.ManyToManyField(BuchAutor, related_name="buecher")
+    medium = models.ForeignKey(
+        Medium,
+        on_delete=models.CASCADE,
+        related_name="buecher",
+    )
+    verlag = models.ForeignKey(
+        Verlag,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="buecher",
+    )
+    autoren = models.ManyToManyField(
+        Autor,
+        related_name="buecher",
+    )
 
     class Meta:
         verbose_name = "Buch"

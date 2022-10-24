@@ -1,27 +1,42 @@
 from django.contrib import admin
 
 from .models import (
-    Medium,
+    Autor,
     Buch,
-    BuchAutor,
+    Medium,
+    Verlag,
 )
 
-class MediumAdmin(admin.ModelAdmin):
-    model = Medium
 
-admin.site.register(Medium, MediumAdmin)
+class BuchInlineAdmin(admin.StackedInline):
+    model = Buch
+    extra = 1
 
+@admin.register(Buch)
 class BuchAdmin(admin.ModelAdmin):
     model = Buch
     list_display = ("titel", "medium", "isbn", "verlag", "ausgabe", "beschreibung")
-    fields = (("medium", "isbn"), "titel", ("verlag", "ausgabe"), "beschreibung")
+    fields = (
+        ("medium", "isbn"),
+        "titel",
+        "autoren",
+        ("verlag", "ausgabe"),
+        "beschreibung",
+    )
     search_fields = ["titel", "medium", "isbn", "verlag", "beschreibung"]
+    filter_horizontal = ["autoren"]
 
-admin.site.register(Buch, BuchAdmin)
-
-class BuchAutorAdmin(admin.ModelAdmin):
-    model = BuchAutor
+@admin.register(Autor)
+class AutorAdmin(admin.ModelAdmin):
+    model = Autor
     list_display = ("nachname", "vorname")
     search_fields = ["vorname", "nachname"]
 
-admin.site.register(BuchAutor, BuchAutorAdmin)
+@admin.register(Verlag)
+class VerlagAdmin(admin.ModelAdmin):
+    model = Verlag
+
+@admin.register(Medium)
+class MediumAdmin(admin.ModelAdmin):
+    model = Medium
+    inlines = [BuchInlineAdmin]
