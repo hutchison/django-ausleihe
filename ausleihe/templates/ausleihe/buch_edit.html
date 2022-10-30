@@ -1,0 +1,42 @@
+{% extends "ausleihe/base.html" %}
+
+{% load static sekizai_tags %}
+
+{% block css %}
+{% addtoblock "css" %}
+<link rel="stylesheet" href="{% static 'exoral/select2/css/select2.min.css' %}" type="text/css" media="screen" title="select2" charset="utf-8">
+{% endaddtoblock %}
+{% endblock css %}
+
+{% block js %}
+{% addtoblock "js" %}
+<script src="{% static 'exoral/select2/js/select2.min.js' %}"></script>
+<script charset="utf-8" type="text/javascript">
+  $(document).ready(
+    function() {
+      $('#autoren').select2();
+    }
+  );
+</script>
+{% endaddtoblock %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:buch-list' %}">Bücher</a></li>
+      {# Hier muss auch wirklich object stehen, weil es das alte Objekt repräsentiert, welches überschrieben wird: #}
+      <li class="breadcrumb-item" aria-current="page">{{ object }}</li>
+      <li class="breadcrumb-item active" aria-current="page">bearbeiten</li>
+    </ol>
+  </nav>
+
+  <div class="row">
+    <div class="col">
+      {% include "ausleihe/buch_form.html" %}
+    </div>
+  </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,83 @@
+{% extends "ausleihe/base.html" %}
+
+{% block content %}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:buch-list' %}">Bücher</a></li>
+      <li class="breadcrumb-item" aria-current="page">{{ buch }}</li>
+      {% if perms.ausleihe.change_buch %}
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:buch-edit' buch.id %}">bearbeiten</a></li>
+      {% endif %}
+    </ol>
+  </nav>
+  {% if messages %}
+  {% for message in messages %}
+  {% if message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+  <div class="row">
+    <div class="col">
+      <div class="alert alert-warning">
+        {{ message }}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  {% endfor %}
+  {% endif %}
+  <div class="row">
+    <div class="col">
+      <table class="table">
+        <tbody>
+          <tr>
+            <th>Titel</th>
+            <td>{{ buch.titel }}</td>
+          </tr>
+          <tr>
+            <th>Mediatheknr.</th>
+            <td>{{ buch.medium }}</td>
+          </tr>
+          <tr>
+            <th>ISBN</th>
+            <td>{{ buch.isbn }}</td>
+          </tr>
+          <tr>
+            <th>Ausgabe</th>
+            <td>{{ buch.ausgabe }}</td>
+          </tr>
+          <tr>
+            <th>Verlag</th>
+            <td><a href="{% url 'ausleihe:verlag-detail' buch.verlag.id %}">{{ buch.verlag }}</a></td>
+          </tr>
+          <tr>
+            <th>Beschreibung</th>
+            <td style="white-space: pre;">{{ buch.beschreibung }}</td>
+          </tr>
+          <tr>
+            <th>Autoren</th>
+            <td>{% include "ausleihe/buch_autoren_links.html" %}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% if perms.ausleihe.change_buch %}
+  <div class="row">
+    <div class="col">
+      <div class="alert alert-danger">
+        Wenn du das Buch löschen willst, dann erledige das
+        <a class="alert-link" target="_blank" href="{% url 'admin:ausleihe_buch_change' buch.id %}">über die Admin-Oberfläche</a>.
+        Die Mediatheknr. wird dabei nicht gelöscht. Auch dies kannst du
+        <a class="alert-link" target="_blank" href="{% url 'admin:ausleihe_medium_change' buch.medium.id %}">über die Admin-Oberfläche</a>
+        erledigen.
+
+        {% if not user.is_staff %}
+        Dafür musst du von einem Administrator den <em>Mitarbeiter-Status</em> erhalten.
+        Wende dich an die Admins, damit sie dir das Häkchen setzen.
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock content %}

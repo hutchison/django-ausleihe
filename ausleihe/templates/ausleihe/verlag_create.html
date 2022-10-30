@@ -1,0 +1,21 @@
+{% extends "ausleihe/base.html" %}
+
+{% block content %}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:autor-list' %}">Autoren</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:buch-list' %}">Bücher</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verlag-list' %}"><strong>Verlage</strong></a></li>
+      <li class="breadcrumb-item active" aria-current="page">hinzufügen</li>
+    </ol>
+  </nav>
+
+  <div class="row">
+    <div class="col">
+      {% include "ausleihe/verlag_form.html" %}
+    </div>
+  </div>
+</div>
+{% endblock content %}

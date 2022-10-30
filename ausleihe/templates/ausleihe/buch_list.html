@@ -1,15 +1,27 @@
 {% extends "ausleihe/base.html" %}
 
 {% block content %}
-<div class="container-fluid">
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:autor-list' %}">Autoren</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:buch-list' %}"><strong>Bücher</strong></a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verlag-list' %}">Verlage</a></li>
+      {% if perms.ausleihe.add_buch %}
+      <li class="breadcrumb-item active" aria-current="page"><a href="{% url 'ausleihe:buch-create' %}">hinzufügen</a></li>
+      {% endif %}
+    </ol>
+  </nav>
   <div class="row">
     <div class="col">
       {% if object_list %}
       <table class="table">
         <thead>
           <tr>
+            <th>Mediatheknr.</th>
             <th>Titel</th>
-            <th>Medium</th>
+            <th>Autoren</th>
             <th>ISBN</th>
             <th>Verlag</th>
             <th>Ausgabe</th>
@@ -18,10 +30,17 @@
         <tbody>
           {% for buch in object_list %}
           <tr>
-            <td>{{ buch.titel }}</td>
             <td>{{ buch.medium }}</td>
+            <td><a href="{% url 'ausleihe:buch-detail' buch.id %}">{{ buch.titel }}</a></td>
+            <td>
+              {% include "ausleihe/buch_autoren_links.html" %}
+            </td>
             <td>{{ buch.isbn }}</td>
-            <td>{{ buch.verlag }}</td>
+            <td>
+              {% if buch.verlag %}
+              <a href="{% url 'ausleihe:verlag-detail' buch.verlag.id %}">{{ buch.verlag }}</a>
+              {% endif %}
+            </td>
             <td>{{ buch.ausgabe }}</td>
           </tr>
           {% endfor %}

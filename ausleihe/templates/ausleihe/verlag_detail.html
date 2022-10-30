@@ -1,0 +1,76 @@
+{% extends "ausleihe/base.html" %}
+
+{% block content %}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verlag-list' %}">Verlage</a></li>
+      <li class="breadcrumb-item" aria-current="page">{{ verlag }}</li>
+      {% if perms.ausleihe.change_verlag %}
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verlag-edit' verlag.id %}">bearbeiten</a></li>
+      {% endif %}
+    </ol>
+  </nav>
+  <div class="row">
+    <div class="col">
+      <table class="table">
+        <tbody>
+          <tr>
+            <th>Name</th>
+            <td>{{ verlag.name }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% if perms.ausleihe.change_verlag %}
+  <div class="row">
+    <div class="col">
+      <div class="alert alert-danger">
+        Wenn du den kompletten Verlag löschen willst, dann erledige das <a class="alert-link" target="_blank" href="{% url 'admin:ausleihe_verlag_change' verlag.id %}">über die Admin-Oberfläche</a>.
+        {% if not user.is_staff %}
+        Dafür musst du von einem Administrator den <em>Mitarbeiter-Status</em> erhalten. Wende dich an die Admins, damit sie dir das Häkchen setzen.
+        {% endif %}
+        Bedenke, dass beim Löschen eines Verlags auch alle dazugehörigen Bücher gelöscht werden. Das ist meist keine gute Idee. In der Admin-Oberfläche siehst du genau, was dazu gelöscht wird.
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  <div class="row">
+    <div class="col">
+      <h4>Bücher</h4>
+      {% if verlag.buecher.exists %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Mediatheknr.</th>
+            <th>Titel</th>
+            <th>ISBN</th>
+            <th>Verlag</th>
+            <th>Ausgabe</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for buch in verlag.buecher.all %}
+          <tr>
+            <td>{{ buch.medium }}</td>
+            <td><a href="{% url 'ausleihe:buch-detail' buch.id %}">{{ buch.titel }}</a></td>
+            <td>{{ buch.isbn }}</td>
+            <td><a href="{% url 'ausleihe:verlag-detail' buch.verlag.id %}">{{ buch.verlag }}</a></td>
+            <td>{{ buch.ausgabe }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="text-muted">
+        Keine Bücher vorhanden.
+        {% if perms.ausleihe.add_buch %}
+        <a href="{% url 'ausleihe:buch-create' %}">Füge eins hinzu.</a></p>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock content %}

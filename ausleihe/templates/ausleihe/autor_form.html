@@ -1,0 +1,12 @@
+      <form method="post" accept-charset="utf-8">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="vorname"><strong>Vorname</strong></label>
+          <input class="form-control" id="vorname" name="vorname" required value="{{ autor.vorname }}">
+        </div>
+        <div class="form-group">
+          <label for="nachname"><strong>Nachname</strong></label>
+          <input class="form-control" id="nachname" name="nachname" required value="{{ autor.nachname }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Speichern</button>
+      </form>

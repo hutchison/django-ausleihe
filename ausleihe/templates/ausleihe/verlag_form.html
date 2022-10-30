@@ -1,0 +1,8 @@
+      <form method="post" accept-charset="utf-8">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="name"><strong>Name</strong></label>
+          <input class="form-control" id="name" name="name" required value="{{ verlag.name }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Speichern</button>
+      </form>
