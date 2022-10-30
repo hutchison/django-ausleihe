@@ -11,6 +11,7 @@ from .models import (
 class BuchInlineAdmin(admin.StackedInline):
     model = Buch
     extra = 1
+    filter_horizontal = ["autoren"]
 
 @admin.register(Buch)
 class BuchAdmin(admin.ModelAdmin):
