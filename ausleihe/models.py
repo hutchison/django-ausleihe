@@ -71,3 +71,21 @@ class Buch(models.Model):
 
     def __str__(self):
         return self.titel
+
+    @staticmethod
+    def dict_from_post_data(post_data):
+        buch = {
+            "ausgabe": post_data.get("ausgabe", "").strip(),
+            "beschreibung": post_data.get("beschreibung", "").strip(),
+            "isbn": post_data.get("isbn", "").replace("-", "").strip(),
+            "medium_id": post_data.get("medium_id", "").strip(),
+            "titel": post_data.get("titel", "").strip(),
+            "verlag_id": post_data.get("verlag"),
+        }
+
+        v = None
+        if buch["verlag_id"]:
+            v = Verlag.objects.get(id=int(buch["verlag_id"]))
+        buch["verlag"] = v
+
+        return buch
