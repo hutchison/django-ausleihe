@@ -47,7 +47,11 @@
           </tr>
           <tr>
             <th>Verlag</th>
-            <td><a href="{% url 'ausleihe:verlag-detail' buch.verlag.id %}">{{ buch.verlag }}</a></td>
+            <td>
+              {% if buch.verlag %}
+              <a href="{% url 'ausleihe:verlag-detail' buch.verlag.id %}">{{ buch.verlag }}</a>
+              {% endif %}
+            </td>
           </tr>
           <tr>
             <th>Beschreibung</th>
