@@ -11,10 +11,12 @@
 {% block js %}
 {% addtoblock "js" %}
 <script src="{% static 'ausleihe/select2/js/select2.min.js' %}"></script>
+<script src="{% static 'ausleihe/js/enter_next.js' %}"></script>
 <script charset="utf-8" type="text/javascript">
   $(document).ready(
     function() {
       $('#autoren').select2();
+      $(".enter-next").keydown(enter_next);
     }
   );
 </script>

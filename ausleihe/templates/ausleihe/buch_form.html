@@ -2,15 +2,15 @@
         {% csrf_token %}
         <div class="form-group">
           <label for="titel"><strong>Titel</strong></label>
-          <input class="form-control" id="titel" name="titel" required value="{{ buch.titel }}">
+          <input class="form-control enter-next" id="titel" name="titel" data-index="1" required value="{{ buch.titel }}" />
         </div>
         <div class="row">
           <div class="col">
             <div class="form-group">
               <label for="medium_id"><strong>Mediatheknummer</strong></label>
               <input
-                class="form-control {% if errors.medium_id %}is-invalid{% endif %}"
-                id="medium_id" name="medium_id" aria-describedby="medium_help" required value="{{ buch.medium_id }}">
+                class="form-control enter-next {% if errors.medium_id %}is-invalid{% endif %}"
+                id="medium_id" name="medium_id" aria-describedby="medium_help" data-index="2" required value="{{ buch.medium_id }}" />
               {% if errors.medium_id %}
               <div class="invalid-feedback">
                 {{ errors.medium_id }}
@@ -23,13 +23,13 @@
           <div class="col">
             <div class="form-group">
               <label for="isbn">ISBN</label>
-              <input class="form-control" id="isbn" name="isbn" value="{{ buch.isbn }}">
+              <input class="form-control enter-next" id="isbn" name="isbn" data-index="3" value="{{ buch.isbn }}" />
             </div>
           </div>
           <div class="col">
             <div class="form-group">
               <label for="ausgabe">Ausgabe</label>
-              <input class="form-control" id="ausgabe" name="ausgabe" value="{{ buch.ausgabe }}">
+              <input class="form-control enter-next" id="ausgabe" name="ausgabe" data-index="4" value="{{ buch.ausgabe }}" />
               <small id="ausgabe_help" class="form-text text-muted">
                 Siehe <a href="https://de.wikipedia.org/wiki/Edition">Edition</a> bei Wikipedia.
               </small>
@@ -38,7 +38,7 @@
         </div>
         <div class="form-group">
           <label for="verlag">Verlag</label>
-          <select name="verlag" id="verlag" class="form-control">
+          <select class="form-control enter-next" id="verlag" name="verlag" data-index="5">
             <option value=""></option>
             {% for verlag in verlage %}
             <option value="{{ verlag.id }}" {% if verlag == buch.verlag %}selected{% endif %}>{{ verlag.name }}</option>
@@ -47,7 +47,7 @@
         </div>
         <div class="form-group">
           <label for="beschreibung">Beschreibung</label>
-          <textarea class="form-control" id="beschreibung" name="beschreibung" rows="3">{{ buch.beschreibung }}</textarea>
+          <textarea class="form-control" id="beschreibung" name="beschreibung" rows="3" data-index="6">{{ buch.beschreibung }}</textarea>
         </div>
         <div class="form-group">
           <label for="autoren">Autoren</label>
