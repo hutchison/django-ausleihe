@@ -4,7 +4,7 @@
           <label for="titel"><strong>Titel</strong></label>
           <input class="form-control enter-next" id="titel" name="titel" data-index="1" required value="{{ buch.titel }}" />
           <small id="medium_help" class="form-text text-muted">
-            Zur schnelleren Eingabe, kannst du mittels Enter <kbd>⏎</kbd> von Titel → Mediatheknummer → … → Verlag weiterspringen.
+            Zur schnelleren Eingabe, kannst du mittels Enter <kbd>⏎</kbd> von Titel → Mediatheknummer → ISBN → Ausgabe weiterspringen.
           </small>
         </div>
         <div class="row">
@@ -39,36 +39,42 @@
             </div>
           </div>
         </div>
-        <div class="form-group">
-          <label for="verlag">Verlag</label>
-          <select class="form-control enter-next" id="verlag" name="verlag" data-index="5">
-            <option value=""></option>
-            {% for verlag in verlage %}
-            <option value="{{ verlag.id }}" {% if verlag == buch.verlag %}selected{% endif %}>{{ verlag.name }}</option>
-            {% endfor %}
-          </select>
-          {% if perms.ausleihe.add_verlag %}
-          <small id="verlag_help" class="form-text text-muted">
-            <a href="{% url 'ausleihe:verlag-create' %}" target="_blank">Füge hier einen fehlenden Verlag hinzu.</a>
-          </small>
-          {% endif %}
+        <div class="form-row">
+          <div class="col">
+            <div class="form-group">
+              <label for="verlag">Verlag</label>
+              <select class="form-control enter-next special-select" id="verlag" name="verlag">
+                <option value=""></option>
+                {% for verlag in verlage %}
+                <option value="{{ verlag.id }}" {% if verlag == buch.verlag %}selected{% endif %}>{{ verlag.name }}</option>
+                {% endfor %}
+              </select>
+              {% if perms.ausleihe.add_verlag %}
+              <small id="verlag_help" class="form-text text-muted">
+                <a href="{% url 'ausleihe:verlag-create' %}" target="_blank">Füge hier einen fehlenden Verlag hinzu.</a>
+              </small>
+              {% endif %}
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="autoren">Autoren</label>
+              <select class="form-control special-select" id="autoren" name="autoren" multiple="multiple">
+                {% for autor in autoren %}
+                <option value="{{ autor.id }}" {% if autor in buch.autoren.all %}selected{% endif %}>{{ autor }}</option>
+                {% endfor %}
+              </select>
+              {% if perms.ausleihe.add_autor %}
+              <small id="autoren_help" class="form-text text-muted">
+                <a href="{% url 'ausleihe:autor-create' %}" target="_blank">Füge hier fehlende Autor:innen hinzu.</a>
+              </small>
+              {% endif %}
+            </div>
+          </div>
         </div>
         <div class="form-group">
           <label for="beschreibung">Beschreibung</label>
-          <textarea class="form-control" id="beschreibung" name="beschreibung" rows="3" data-index="6">{{ buch.beschreibung }}</textarea>
-        </div>
-        <div class="form-group">
-          <label for="autoren">Autoren</label>
-          <select class="form-control js-states" id="autoren" name="autoren" multiple="multiple">
-            {% for autor in autoren %}
-            <option value="{{ autor.id }}" {% if autor in buch.autoren.all %}selected{% endif %}>{{ autor }}</option>
-            {% endfor %}
-          </select>
-          {% if perms.ausleihe.add_autor %}
-          <small id="autoren_help" class="form-text text-muted">
-            <a href="{% url 'ausleihe:autor-create' %}" target="_blank">Füge hier fehlende Autor:innen hinzu.</a>
-          </small>
-          {% endif %}
+          <textarea class="form-control" id="beschreibung" name="beschreibung" rows="3">{{ buch.beschreibung }}</textarea>
         </div>
         <button type="submit" class="btn btn-primary">Speichern</button>
       </form>
