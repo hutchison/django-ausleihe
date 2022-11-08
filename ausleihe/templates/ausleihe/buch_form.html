@@ -4,7 +4,7 @@
           <label for="titel"><strong>Titel</strong></label>
           <input class="form-control enter-next" id="titel" name="titel" data-index="1" required value="{{ buch.titel }}" />
           <small id="medium_help" class="form-text text-muted">
-            Zur schnelleren Eingabe, kannst du mittels Enter <kbd>⏎</kbd> von Titel → Mediatheknummer → ISBN → Ausgabe weiterspringen.
+            Zur schnelleren Eingabe, kannst du mittels Enter <kbd>⏎</kbd> von Titel → Mediatheknummer → ISBN → Ausgabe → Verlag weiterspringen.
           </small>
         </div>
         <div class="row">
@@ -43,7 +43,7 @@
           <div class="col">
             <div class="form-group">
               <label for="verlag">Verlag</label>
-              <select class="form-control enter-next special-select" id="verlag" name="verlag">
+              <select class="form-control enter-next special-select" id="verlag" name="verlag" data-index="5">
                 <option value=""></option>
                 {% for verlag in verlage %}
                 <option value="{{ verlag.id }}" {% if verlag == buch.verlag %}selected{% endif %}>{{ verlag.name }}</option>
