@@ -20,4 +20,5 @@ urlpatterns = [
     path('verlage/neu', views.VerlagCreate.as_view(), name='verlag-create'),
     path('verlage/<int:verlag_id>', views.VerlagDetail.as_view(), name='verlag-detail'),
     path('verlage/<int:verlag_id>/bearbeiten', views.VerlagEdit.as_view(), name='verlag-edit'),
+    path('verleihen', views.Verleihen.as_view(), name='verleihen'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

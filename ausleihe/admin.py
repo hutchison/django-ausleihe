@@ -3,6 +3,7 @@ from django.contrib import admin
 from .models import (
     Autor,
     Buch,
+    Leihe,
     Medium,
     Verlag,
 )
@@ -41,3 +42,23 @@ class VerlagAdmin(admin.ModelAdmin):
 class MediumAdmin(admin.ModelAdmin):
     model = Medium
     inlines = [BuchInlineAdmin]
+
+@admin.register(Leihe)
+class LeiheAdmin(admin.ModelAdmin):
+    model = Leihe
+    readonly_fields = ("anfang", "erzeugt", "verleiht_von")
+    fields = (
+        ("medium", "nutzer"),
+        ("anfang", "ende"),
+        ("erzeugt", "verleiht_von"),
+        "zurueckgebracht",
+    )
+    list_display = (
+        "medium",
+        "nutzer",
+        "anfang",
+        "ende",
+        "zurueckgebracht",
+        "erzeugt",
+        "verleiht_von"
+    )

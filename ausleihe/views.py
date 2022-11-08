@@ -4,10 +4,15 @@ from django.shortcuts import render, reverse, redirect
 from django.views import View
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, UpdateView
+from django.contrib.auth import get_user_model
+
+from datetime import date, datetime, timedelta
+from fsmedhro_core.models import FachschaftUser
 
 from .models import (
     Autor,
     Buch,
+    Leihe,
     Medium,
     Verlag,
 )
@@ -212,3 +217,78 @@ class VerlagEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     def get_success_url(self):
         messages.success(self.request, "Gespeichert!")
         return reverse("ausleihe:verlag-detail", kwargs={"verlag_id": self.object.id})
+
+
+class Verleihen(LoginRequiredMixin, PermissionRequiredMixin, View):
+    template_name = "ausleihe/verleihen.html"
+    permission_required = "ausleihe.add_leihe"
+    user_model = get_user_model()
+
+    def get_common_context(self):
+        context = {
+            "medien": Medium.objects.all(),
+            "nutzer": FachschaftUser.objects.prefetch_related("user").order_by(
+                "user__last_name",
+                "user__first_name",
+            ),
+            "anfang": date.today(),
+            "ende": date.today() + timedelta(days=30),
+        }
+        return context
+
+    def get(self, request):
+        context = self.get_common_context()
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        context = self.get_common_context()
+        errors = {}
+
+        medium_id = request.POST.get("medium_id")
+        nutzer_id = request.POST.get("nutzer_id")
+
+        # überpfüe Eingabefehler:
+
+        if not Medium.objects.filter(id=medium_id).exists():
+            errors["medium_id"] = "Mediatheknummer existiert nicht."
+            context["medium_id"] = medium_id
+
+        if not FachschaftUser.objects.filter(id=nutzer_id).exists():
+            errors["nutzer_id"] = "Nutzer:in existiert nicht."
+            context["nutzer_id"] = nutzer_id
+
+        if errors:
+            context["errors"] = errors
+            return render(request, self.template_name, context)
+
+        medium = Medium.objects.get(id=medium_id)
+        nutzer = FachschaftUser.objects.get(id=nutzer_id)
+        anfang = date.fromisoformat(request.POST.get("anfang"))
+        ende = date.fromisoformat(request.POST.get("ende"))
+
+        # überprüfe logische Fehler:
+
+        if ende < anfang:
+            errors["ende"] = "Ende darf nicht vor dem Anfang liegen."
+
+        if medium.aktuell_ausgeliehen():
+            errors["aktuell_ausgeliehen"] = True
+
+        if errors:
+            context["errors"] = errors
+            return render(request, self.template_name, context)
+
+        leihe = Leihe(
+            medium=medium,
+            nutzer=nutzer,
+            anfang=anfang,
+            ende=ende,
+            verleiht_von=request.user,
+        )
+        leihe.save()
+
+        context["verliehen_an"] = nutzer
+        context["verliehen_bis"] = ende
+        context["verleih_erfolgreich"] = True
+
+        return render(request, self.template_name, context)

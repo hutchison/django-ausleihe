@@ -1,4 +1,8 @@
+from django.conf import settings
 from django.db import models
+from datetime import date
+
+from fsmedhro_core.models import FachschaftUser
 
 
 class Medium(models.Model):
@@ -15,6 +19,13 @@ class Medium(models.Model):
 
     def __str__(self):
         return self.id
+
+    def aktuell_ausgeliehen(self):
+        return self.leihe_set.filter(
+            anfang__lte=date.today(),   # anfang <= today <= ende
+            ende__gte=date.today(),
+            zurueckgebracht=False,
+        ).exists()
 
 
 class Autor(models.Model):
@@ -89,3 +100,33 @@ class Buch(models.Model):
         buch["verlag"] = v
 
         return buch
+
+
+class Leihe(models.Model):
+    medium = models.ForeignKey(Medium, on_delete=models.PROTECT)
+    nutzer = models.ForeignKey(
+        FachschaftUser,
+        on_delete=models.PROTECT,
+        related_name='entliehen',
+    )
+    anfang = models.DateField(auto_now=True)
+    ende = models.DateField()
+    zurueckgebracht = models.BooleanField(default=False, verbose_name="zurückgebracht")
+    erzeugt = models.DateTimeField(auto_now=True)
+    verleiht_von = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name='verliehen',
+    )
+
+    class Meta:
+        verbose_name = "Leihe"
+        verbose_name_plural = "Leihen"
+
+    def __str__(self):
+        r = "✓" if self.zurueckgebracht else "✗"
+        return (
+            f"{self.medium} an {self.nutzer} "
+            f"({self.anfang} – {self.ende}) "
+            f"durch {self.verleiht_von} am {self.erzeugt} {r}"
+        )

@@ -1,0 +1,100 @@
+{% extends "ausleihe/base.html" %}
+
+{% load static sekizai_tags %}
+
+{% block css %}
+{% addtoblock "css" %}
+<link rel="stylesheet" href="{% static 'ausleihe/selectize/css/selectize.bootstrap4.css' %}" type="text/css" media="screen" charset="utf-8">
+{% endaddtoblock %}
+{% endblock css %}
+
+{% block js %}
+{% addtoblock "js" %}
+<script src="{% static 'ausleihe/js/enter_next.js' %}"></script>
+<script src="{% static 'ausleihe/selectize/js/standalone/selectize.min.js' %}"></script>
+<script charset="utf-8" type="text/javascript">
+  $(document).ready(
+    function() {
+      $select = $('.special-select').selectize();
+      $(".enter-next").keydown(enter_next);
+      document.getElementById("medium_id").focus()
+    }
+  );
+</script>
+{% endaddtoblock %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:buch-list' %}">Bücher</a></li>
+      {% if perms.ausleihe.add_leihe %}
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verleihen' %}"><strong>Verleihen</strong></a></li>
+      {% endif %}
+    </ol>
+  </nav>
+
+  {% if errors.aktuell_ausgeliehen %}
+  <div class="alert alert-danger" role="alert">
+    Verleih nicht möglich: das Medium ist aktuell ausgeliehen.
+  </div>
+  {% endif %}
+
+  {% if verleih_erfolgreich %}
+  <div class="alert alert-success" role="alert">
+    Bis zum {{ verliehen_bis }} an {{ verliehen_an }} verliehen.
+  </div>
+  {% endif %}
+
+  <form method="post" accept-charset="utf-8">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col">
+        <div class="form-group">
+          <label for="medium_id"><strong>Mediatheknummer</strong></label>
+          <input class="form-control enter-next {% if errors.medium_id %}is-invalid{% endif %}" type="text" name="medium_id" id="medium_id" value="{{ medium_id }}" required data-index="1">
+          {% if errors.medium_id %}
+          <div class="invalid-feedback">{{ errors.medium_id }}</div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-group">
+          <label for="nutzer_id"><strong>Nutzer</strong></label>
+          <select class="form-control special-select {% if errors.nutzer_id %}is-invalid{% endif %}" name="nutzer_id" id="nutzer_id" required data-index="2">
+            <option value=""></option>
+            {% for n in nutzer %}
+            <option value="{{ n.id }}">{{ n }} ({{ n.user }})</option>
+            {% endfor %}
+          </select>
+          {% if errors.nutzer_id %}
+          <div class="invalid-feedback">{{ errors.nutzer_id }}</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="form-group">
+          <label for="anfang"><strong>Anfang</strong></label>
+          <input class="form-control" type="date" name="anfang" value="{{ anfang|date:"Y-m-d" }}" id="anfang" readonly required>
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-group">
+          <label for="ende"><strong>Ende</strong></label>
+          <input class="form-control {% if errors.ende %}is-invalid{% endif %}" type="date" name="ende" value="{{ ende|date:"Y-m-d" }}" id="ende" required>
+          {% if errors.ende %}
+          <div class="invalid-feedback">{{ errors.ende }}</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary">Speichern</button>
+    </div>
+  </form>
+</div>
+{% endblock content %}
