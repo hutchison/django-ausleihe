@@ -11,6 +11,7 @@
       {% endif %}
       {% if perms.ausleihe.view_leihe %}
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verliehen' %}">verliehen</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a href="{% url 'ausleihe:verliehen-an-suche' %}"><strong>nach Nutzer suchen</strong></a></li>
       {% endif %}
     </ol>
   </nav>
@@ -18,8 +19,10 @@
 <div class="{% if perms.ausleihe.view_leihe %}container-fluid{% else %}container{% endif %}">
   <div class="row">
     <div class="col">
+      <h3>{{ nutzer }} ({{ nutzer.user }})</h3>
       {% include "ausleihe/verliehen_table.html" %}
     </div>
   </div>
 </div>
 {% endblock content %}
+

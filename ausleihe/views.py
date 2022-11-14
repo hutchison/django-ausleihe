@@ -1,8 +1,9 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.shortcuts import render, reverse, redirect
+from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.views import View
 from django.views.generic import DetailView, ListView
+from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth import get_user_model
 
@@ -20,7 +21,32 @@ from .models import (
 
 class Home(LoginRequiredMixin, View):
     def get(self, request):
-        return render(request, "ausleihe/home.html")
+        fuser = FachschaftUser.objects.get(user=request.user)
+        aktuell_verliehen = Leihe.objects.prefetch_related(
+            "medium__buecher",
+        ).filter(
+            zurueckgebracht=False,
+            nutzer=fuser,
+        )
+
+        historisch_verliehen = Leihe.objects.prefetch_related(
+            "medium__buecher",
+        ).filter(
+            zurueckgebracht=True,
+            nutzer=fuser,
+        )
+
+        context = {
+            "aktuell_verliehen": aktuell_verliehen,
+            "historisch_verliehen": historisch_verliehen,
+        }
+
+        return render(request, "ausleihe/home.html", context)
+
+
+class MediumDetail(LoginRequiredMixin, DetailView):
+    model = Medium
+    pk_url_kwarg = "medium_id"
 
 
 class AutorList(LoginRequiredMixin, ListView):
@@ -292,3 +318,64 @@ class Verleihen(LoginRequiredMixin, PermissionRequiredMixin, View):
         context["verleih_erfolgreich"] = True
 
         return render(request, self.template_name, context)
+
+
+class Zuruecknehmen(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = "ausleihe.change_leihe"
+
+    def get(self, request, leihe_id):
+        l = Leihe.objects.filter(id=leihe_id).update(
+            zurueckgebracht=True,
+            ende=date.today(),
+        )
+        return redirect("ausleihe:verliehen")
+
+
+class LeiheList(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    permission_required = "ausleihe.view_leihe"
+    queryset = Leihe.objects.prefetch_related(
+        "medium",
+        "nutzer",
+        "verleiht_von",
+    ).filter(
+        zurueckgebracht=False,
+    ).order_by(
+        "ende",
+        "nutzer",
+    )
+
+class LeiheUserDetail(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = "ausleihe.view_leihe"
+    template_name = "ausleihe/leihe_user_detail.html"
+    user_model = get_user_model()
+
+    def get(self, request):
+        username = request.GET.get("username", None)
+
+        user = get_object_or_404(self.user_model, username=username)
+        fuser = get_object_or_404(FachschaftUser, user=user.id)
+
+        leihen = Leihe.objects.filter(nutzer=fuser)
+
+        context = {
+            "nutzer": fuser,
+            "aktuell_verliehen": leihen.filter(zurueckgebracht=False),
+            "historisch_verliehen": leihen.filter(zurueckgebracht=True),
+        }
+
+        return render(request, self.template_name, context)
+
+
+class LeiheUserSuche(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
+    permission_required = "ausleihe.view_leihe"
+    template_name = "ausleihe/leihe_user_suche.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["nutzer"] = FachschaftUser.objects.prefetch_related("user").order_by(
+            "user__last_name",
+            "user__first_name",
+        )
+
+        return context

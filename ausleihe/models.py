@@ -130,3 +130,12 @@ class Leihe(models.Model):
             f"({self.anfang} – {self.ende}) "
             f"durch {self.verleiht_von} am {self.erzeugt} {r}"
         )
+
+    def ist_ueberfaellig(self):
+        return date.today() > self.ende
+
+    def differenz_heute(self):
+        return abs((date.today() - self.ende).days)
+
+    def dauer(self):
+        return (self.ende - self.anfang).days

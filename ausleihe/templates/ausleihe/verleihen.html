@@ -31,7 +31,11 @@
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:buch-list' %}">Bücher</a></li>
       {% if perms.ausleihe.add_leihe %}
-      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verleihen' %}"><strong>Verleihen</strong></a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verleihen' %}"><strong>verleihen</strong></a></li>
+      {% endif %}
+      {% if perms.ausleihe.view_leihe %}
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verliehen' %}">verliehen</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a href="{% url 'ausleihe:verliehen-an-suche' %}">nach Nutzer suchen</a></li>
       {% endif %}
     </ol>
   </nav>

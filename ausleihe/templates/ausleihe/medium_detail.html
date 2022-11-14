@@ -5,21 +5,28 @@
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
-      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:autor-list' %}">Autoren</a></li>
-      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:buch-list' %}"><strong>Bücher</strong></a></li>
-      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verlag-list' %}">Verlage</a></li>
-      {% if perms.ausleihe.add_buch %}
-      <li class="breadcrumb-item active" aria-current="page"><a href="{% url 'ausleihe:buch-create' %}">hinzufügen</a></li>
-      {% endif %}
+      <li class="breadcrumb-item active" aria-current="page">{{ medium }}</li>
     </ol>
   </nav>
   <div class="row">
     <div class="col">
-      {% if object_list %}
+      <table class="table">
+        <tbody>
+          <tr>
+            <th>Mediatheknr.</th>
+            <td>{{ medium.id }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% if medium.buecher.exists %}
+  <div class="row">
+    <div class="col">
+      <h4>dazugehörige Bücher</h4>
       <table class="table">
         <thead>
           <tr>
-            <th>Mediatheknr.</th>
             <th>Titel</th>
             <th>Autoren</th>
             <th>ISBN</th>
@@ -28,9 +35,8 @@
           </tr>
         </thead>
         <tbody>
-          {% for buch in object_list %}
+          {% for buch in medium.buecher.all %}
           <tr>
-            <td><a href="{% url 'ausleihe:medium-detail' buch.medium.id %}">{{ buch.medium }}</a></td>
             <td><a href="{% url 'ausleihe:buch-detail' buch.id %}">{{ buch.titel }}</a></td>
             <td>
               {% include "ausleihe/buch_autoren_links.html" %}
@@ -46,10 +52,8 @@
           {% endfor %}
         </tbody>
       </table>
-      {% else %}
-      <p>Bisher sind keine Bücher vorhanden.</p>
-      {% endif %}
     </div>
   </div>
+  {% endif %}
 </div>
 {% endblock content %}

@@ -1,0 +1,73 @@
+{% extends "ausleihe/base.html" %}
+
+{% block content %}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:buch-list' %}">Bücher</a></li>
+      {% if perms.ausleihe.add_leihe %}
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verleihen' %}">verleihen</a></li>
+      {% endif %}
+      {% if perms.ausleihe.view_leihe %}
+      <li class="breadcrumb-item active" aria-current="page"><a href="{% url 'ausleihe:verliehen' %}"><strong>verliehen</strong></a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verliehen-an-suche' %}">nach Nutzer suchen</a></li>
+      {% endif %}
+    </ol>
+  </nav>
+</div>
+<div class="{% if object_list %}container-fluid{% else %}container{% endif %}">
+  <div class="row">
+    <div class="col">
+      {% if object_list %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Mediatheknr.</th>
+            <th>Nutzer</th>
+            <th>Anfang</th>
+            <th>Ende</th>
+            <th>Δ</th>
+            <th>verliehen von</th>
+            {% if perms.ausleihe.change_leihe %}
+            <th>zurücknehmen</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for leihe in object_list %}
+          <tr>
+            <td>
+              <a href="{% url 'ausleihe:medium-detail' leihe.medium.id %}">{{ leihe.medium }}</a>
+            </td>
+            <td>{{ leihe.nutzer }} ({{ leihe.nutzer.user }})</td>
+            <td>{{ leihe.anfang }}</td>
+            <td>{{ leihe.ende|date:"l" }}, {{ leihe.ende }}</td>
+            <td>
+              {% if leihe.ist_ueberfaellig %}
+              {% with leihe.differenz_heute as d %}
+                {{ d }} Tag{% if d != 1 %}e{% endif %} überfällig
+              {% endwith %}
+              {% else %}
+              {% with leihe.differenz_heute as d %}
+                noch {{ d }} Tag{% if d != 1 %}e{% endif %}
+              {% endwith %}
+              {% endif %}
+            </td>
+            <td>{{ leihe.verleiht_von.get_full_name }} ({{ leihe.verleiht_von }})</td>
+            {% if perms.ausleihe.change_leihe %}
+            <td>
+              <a class="btn btn-primary btn-sm" href="{% url 'ausleihe:zuruecknehmen' leihe.id %}">zurücknehmen</a>
+            </td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>Aktuell ist nichts verliehen.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock content %}
