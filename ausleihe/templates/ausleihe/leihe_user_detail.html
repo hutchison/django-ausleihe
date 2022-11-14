@@ -21,7 +21,7 @@
 <div class="{% if perms.ausleihe.view_leihe and aktuell_verliehen %}container-fluid{% else %}container{% endif %}">
   <div class="row">
     <div class="col">
-      {% include "ausleihe/verliehen_aktuell_table.html" %}
+      {% include "ausleihe/verliehen_aktuell_table.html" with username=nutzer.user %}
     </div>
   </div>
 </div>

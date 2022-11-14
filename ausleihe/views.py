@@ -1,11 +1,12 @@
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import render, reverse, redirect, get_object_or_404
+from django.utils.http import urlencode
 from django.views import View
 from django.views.generic import DetailView, ListView
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView
-from django.contrib.auth import get_user_model
 
 from datetime import date, datetime, timedelta
 from fsmedhro_core.models import FachschaftUser
@@ -328,7 +329,15 @@ class Zuruecknehmen(LoginRequiredMixin, PermissionRequiredMixin, View):
             zurueckgebracht=True,
             ende=date.today(),
         )
-        return redirect("ausleihe:verliehen")
+
+        username = request.GET.get("username", None)
+        if username:
+            # umleiten zu verliehen-an:
+            url = reverse("ausleihe:verliehen-an")
+            parameter = urlencode({"username": username})
+            return redirect(f"{url}?{parameter}")
+        else:
+            return redirect("ausleihe:verliehen")
 
 
 class LeiheList(LoginRequiredMixin, PermissionRequiredMixin, ListView):

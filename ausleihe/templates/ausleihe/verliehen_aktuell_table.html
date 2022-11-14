@@ -51,7 +51,7 @@
       {% endif %}
       {% if perms.ausleihe.change_leihe %}
       <td>
-        <a class="btn btn-primary btn-sm" href="{% url 'ausleihe:zuruecknehmen' leihe.id %}">zurücknehmen</a>
+        <a class="btn btn-primary btn-sm" href="{% url 'ausleihe:zuruecknehmen' leihe.id %}{% if username %}?username={{ username }}{% endif %}">zurücknehmen</a>
       </td>
       {% endif %}
     </tr>

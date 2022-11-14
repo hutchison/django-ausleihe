@@ -40,7 +40,13 @@
             <td>
               <a href="{% url 'ausleihe:medium-detail' leihe.medium.id %}">{{ leihe.medium }}</a>
             </td>
-            <td>{{ leihe.nutzer }} ({{ leihe.nutzer.user }})</td>
+            <td>
+              {% if perms.ausleihe.view_leihe %}
+              <a href="{% url 'ausleihe:verliehen-an' %}?username={{ leihe.nutzer.user }}">{{ leihe.nutzer }} ({{ leihe.nutzer.user }})</a>
+              {% else %}
+              {{ leihe.nutzer }} ({{ leihe.nutzer.user }})
+              {% endif %}
+            </td>
             <td>{{ leihe.anfang }}</td>
             <td>{{ leihe.ende|date:"l" }}, {{ leihe.ende }}</td>
             <td>
