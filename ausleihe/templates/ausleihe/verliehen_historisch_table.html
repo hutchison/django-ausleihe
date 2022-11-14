@@ -1,0 +1,39 @@
+{% if historisch_verliehen %}
+<h4>bisher entliehen</h4>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Mediatheknr.</th>
+      <th>enthält</th>
+      <th>Anfang</th>
+      <th>Ende</th>
+      <th>Dauer</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for leihe in historisch_verliehen %}
+    <tr>
+      <td>
+        <a href="{% url 'ausleihe:medium-detail' leihe.medium.id %}">{{ leihe.medium }}</a>
+      </td>
+      <td>
+        {% if leihe.medium.buecher.exists %}
+        {% for buch in leihe.medium.buecher.all %}
+        {% if forloop.last %}
+        <a href="{% url 'ausleihe:buch-detail' buch.id %}">📘 {{ buch }}</a>
+        {% else %}
+        <a href="{% url 'ausleihe:buch-detail' buch.id %}">📘 {{ buch }}</a>, 
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+      </td>
+      <td>{{ leihe.anfang }}</td>
+      <td>{{ leihe.ende|date:"l" }}, {{ leihe.ende }}</td>
+      <td>{{ leihe.dauer }} Tage</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>Bisher nichts entliehen.</p>
+{% endif %}

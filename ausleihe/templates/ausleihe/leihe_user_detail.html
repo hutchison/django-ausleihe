@@ -15,14 +15,22 @@
       {% endif %}
     </ol>
   </nav>
+  <h3>{{ nutzer }} ({{ nutzer.user }})</h3>
 </div>
-<div class="{% if perms.ausleihe.view_leihe %}container-fluid{% else %}container{% endif %}">
+
+<div class="{% if perms.ausleihe.view_leihe and aktuell_verliehen %}container-fluid{% else %}container{% endif %}">
   <div class="row">
     <div class="col">
-      <h3>{{ nutzer }} ({{ nutzer.user }})</h3>
-      {% include "ausleihe/verliehen_table.html" %}
+      {% include "ausleihe/verliehen_aktuell_table.html" %}
+    </div>
+  </div>
+</div>
+
+<div class="{% if perms.ausleihe.view_leihe and historisch_verliehen %}container-fluid{% else %}container{% endif %}">
+  <div class="row">
+    <div class="col">
+      {% include "ausleihe/verliehen_historisch_table.html" %}
     </div>
   </div>
 </div>
 {% endblock content %}
-
