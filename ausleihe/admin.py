@@ -41,7 +41,6 @@ class VerlagAdmin(admin.ModelAdmin):
 @admin.register(Medium)
 class MediumAdmin(admin.ModelAdmin):
     model = Medium
-    inlines = [BuchInlineAdmin]
 
 @admin.register(Leihe)
 class LeiheAdmin(admin.ModelAdmin):
