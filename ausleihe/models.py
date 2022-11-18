@@ -16,6 +16,7 @@ class Medium(models.Model):
     class Meta:
         verbose_name = "Medium"
         verbose_name_plural = "Medien"
+        ordering = ("id",)
 
     def __str__(self):
         return self.id
@@ -79,6 +80,7 @@ class Buch(models.Model):
     class Meta:
         verbose_name = "Buch"
         verbose_name_plural = "Bücher"
+        ordering = ("medium", "titel")
 
     def __str__(self):
         return self.titel
@@ -122,6 +124,7 @@ class Leihe(models.Model):
     class Meta:
         verbose_name = "Leihe"
         verbose_name_plural = "Leihen"
+        ordering = ("-ende",)
 
     def __str__(self):
         r = "✓" if self.zurueckgebracht else "✗"
