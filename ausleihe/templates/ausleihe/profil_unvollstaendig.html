@@ -1,0 +1,26 @@
+{% extends "ausleihe/base.html" %}
+
+{% block content %}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:buch-list' %}">Bücher</a></li>
+      {% if perms.ausleihe.add_leihe %}
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verleihen' %}">verleihen</a></li>
+      {% endif %}
+      {% if perms.ausleihe.view_leihe %}
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verliehen' %}">verliehen</a></li>
+      {% endif %}
+    </ol>
+  </nav>
+</div>
+
+<div class="container">
+  <p>
+    Hallo {{ request.user.first_name }},<br>
+    leider ist dein Profil noch unvollständig.
+    Bitte <a href="{% url 'fsmedhro_core:edit' %}?next={% url 'ausleihe:home' %}">aktualisiere deine Daten</a>, damit dir Medien ausgeliehen werden können.
+  </p>
+</div>
+{% endblock content %}

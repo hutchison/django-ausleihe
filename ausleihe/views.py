@@ -21,28 +21,34 @@ from .models import (
 
 
 class Home(LoginRequiredMixin, View):
+    template_name = "ausleihe/home.html"
+
     def get(self, request):
-        fuser = FachschaftUser.objects.get(user=request.user)
-        aktuell_verliehen = Leihe.objects.prefetch_related(
-            "medium__buecher",
-        ).filter(
-            zurueckgebracht=False,
-            nutzer=fuser,
-        )
+        try:
+            fuser = FachschaftUser.objects.get(user=request.user)
+        except FachschaftUser.DoesNotExist:
+            return render(request, "ausleihe/profil_unvollstaendig.html")
+        else:
+            aktuell_verliehen = Leihe.objects.prefetch_related(
+                "medium__buecher",
+            ).filter(
+                zurueckgebracht=False,
+                nutzer=fuser,
+            )
 
-        historisch_verliehen = Leihe.objects.prefetch_related(
-            "medium__buecher",
-        ).filter(
-            zurueckgebracht=True,
-            nutzer=fuser,
-        )
+            historisch_verliehen = Leihe.objects.prefetch_related(
+                "medium__buecher",
+            ).filter(
+                zurueckgebracht=True,
+                nutzer=fuser,
+            )
 
-        context = {
-            "aktuell_verliehen": aktuell_verliehen,
-            "historisch_verliehen": historisch_verliehen,
-        }
+            context = {
+                "aktuell_verliehen": aktuell_verliehen,
+                "historisch_verliehen": historisch_verliehen,
+            }
 
-        return render(request, "ausleihe/home.html", context)
+            return render(request, self.template_name, context)
 
 
 class MediumDetail(LoginRequiredMixin, DetailView):
