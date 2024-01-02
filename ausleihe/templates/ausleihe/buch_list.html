@@ -1,4 +1,29 @@
 {% extends "ausleihe/base.html" %}
+{% load static %}
+
+{% block js %}
+<script src="{% static 'ausleihe/js/helpers.js' %}"></script>
+<script charset="utf-8">
+  const table_rows_sel = "#buecher > tbody > tr";
+
+  function on_input_filter(event) {
+    let v = event.target.value;
+    if (v == '') {
+      document.querySelectorAll(table_rows_sel).forEach(
+        elem => { show(elem) }
+      );
+    } else {
+      display_filter(table_rows_sel, v);
+    }
+  }
+
+  function setup_event_listeners() {
+    document.getElementById("filter").addEventListener("input", on_input_filter);
+  }
+
+  document.addEventListener("DOMContentLoaded", setup_event_listeners);
+</script>
+{% endblock js %}
 
 {% block content %}
 <div class="container">
@@ -16,7 +41,8 @@
   <div class="row">
     <div class="col">
       {% if object_list %}
-      <table class="table">
+      <input type="search" class="form-control" placeholder="Suche" id="filter">
+      <table class="table" id="buecher">
         <thead>
           <tr>
             <th>Mediatheknr.</th>
