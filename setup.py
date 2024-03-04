@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-ausleihe',
-    version='0.2.0',
+    version='0.2.1',
     packages=find_packages(),
     include_package_data=True,
     description='Django-App für die Ausleihe von Medien.',
@@ -18,7 +18,7 @@ setup(
     url='https://github.com/hutchison/django-ausleihe',
     install_requires=[
         'Django>=3.1',
-        'django-fsmedhro-core>=0.3.0',
+        'django-fsmedhro-core>=0.3.1',
         'djangorestframework',
     ],
     python_requires=">=3.9",
