@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-ausleihe',
-    version='0.1.4',
+    version='0.2.0',
     packages=find_packages(),
     include_package_data=True,
     description='Django-App für die Ausleihe von Medien.',
@@ -17,10 +17,11 @@ setup(
     license='MIT License',
     url='https://github.com/hutchison/django-ausleihe',
     install_requires=[
-        'Django>=3.0',
-        'django-fsmedhro-core>=0.2.6',
+        'Django>=3.1',
+        'django-fsmedhro-core>=0.3.0',
+        'djangorestframework',
     ],
-    python_requires=">=3.6",
+    python_requires=">=3.9",
     author='Martin Darmüntzel',
     author_email='martin@trivialanalog.de',
     classifiers=[
@@ -31,9 +32,6 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
