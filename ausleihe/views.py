@@ -258,12 +258,16 @@ class Verleihen(LoginRequiredMixin, PermissionRequiredMixin, View):
     user_model = get_user_model()
 
     def get_common_context(self):
+        fs_user = FachschaftUser.objects.prefetch_related(
+            "user", "kontaktdaten",
+        ).order_by(
+            "user__last_name",
+            "user__first_name",
+        )
+
         context = {
             "medien": Medium.objects.all(),
-            "nutzer": FachschaftUser.objects.prefetch_related("user").order_by(
-                "user__last_name",
-                "user__first_name",
-            ),
+            "nutzer": fs_user,
             "anfang": date.today(),
             "ende": date.today() + timedelta(days=30),
         }

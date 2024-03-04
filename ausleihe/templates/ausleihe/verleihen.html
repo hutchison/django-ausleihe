@@ -13,13 +13,72 @@
 <script src="{% static 'ausleihe/js/enter_next.js' %}"></script>
 <script src="{% static 'ausleihe/selectize/js/standalone/selectize.min.js' %}"></script>
 <script charset="utf-8" type="text/javascript">
-  $(document).ready(
-    function() {
-      $select = $('.special-select').selectize();
-      $(".enter-next").keydown(enter_next);
-      document.getElementById("medium_id").focus()
+  const api_url = "/app:fachschaft/api/kontaktdaten/";
+
+  function format_kontakt(kontakt) {
+    let check_line = '<p class="text-danger">Noch nicht verifiziert!</p>';
+    if (kontakt.check_user !== undefined) {
+      check_line = `<p class="text-success">verifiziert von
+        ${kontakt.check_user.first_name} ${kontakt.check_user.last_name}
+        (${kontakt.check_user.username})
+        am ${kontakt.gecheckt_datum_hr.toLocaleDateString()} um ${kontakt.gecheckt_datum_hr.toLocaleTimeString()} Uhr</p>`
     }
-  );
+    return `
+      <div class="card mt-3">
+        <div class="card-body">
+          <strong>${kontakt.user.first_name} ${kontakt.user.last_name}</strong>
+          <address style="white-space:pre;">${kontakt.adresse}</address>
+          <p>${kontakt.telefonnummer}</p>
+          <p>hinzugefügt am ${kontakt.erzeugt.toLocaleDateString()} um ${kontakt.erzeugt.toLocaleTimeString()} Uhr</p>
+          ${check_line}
+        </div>
+      </div>
+    `
+  }
+
+  async function zeige_kontaktdaten(nutzer_id) {
+    $("#kontaktdaten_header").hide();
+    $("#kontaktdaten_warning").hide();
+    $("#kontaktdaten").empty();
+
+    if (nutzer_id) {
+      let resp = await fetch(api_url + nutzer_id);
+      const kontaktdaten = await resp.json();
+
+      if (kontaktdaten.length > 0) {
+        $("#kontaktdaten_header").show();
+
+        for (let k of kontaktdaten) {
+          resp = await fetch(k.fachschaftuser);
+          const fuser = await resp.json();
+          k.fuser = fuser;
+
+          resp = await fetch(fuser.user);
+          const user = await resp.json();
+          k.user = user;
+
+          k.erzeugt = new Date(Date.parse(k.created));
+
+          if (k.gecheckt_von != null) {
+            resp = await fetch(k.gecheckt_von);
+            const check_user = await resp.json();
+            k.check_user = check_user;
+            k.gecheckt_datum_hr = new Date(Date.parse(k.gecheckt_datum));
+          }
+
+          $("#kontaktdaten").append(format_kontakt(k));
+        }
+      } else {
+        $("#kontaktdaten_warning").show();
+      }
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function(event) {
+    $("#nutzer_id").selectize({onChange: zeige_kontaktdaten});
+    document.getElementById("medium_id").onkeydown = enter_next;
+    document.getElementById("medium_id").focus();
+  });
 </script>
 {% endaddtoblock %}
 {% endblock %}
@@ -96,8 +155,24 @@
         </div>
       </div>
     </div>
-    <div class="form-group">
-      <button type="submit" class="btn btn-primary">Speichern</button>
+    <div class="row">
+      <div class="col-7">
+        <h5 id="kontaktdaten_header" style="display: none;">Verfügbare Kontaktdaten</h5>
+        <div id="kontaktdaten_warning" class="alert alert-danger" style="display: none;">
+          <h4>Keine Kontaktdaten vorhanden</h4>
+          <p>
+            Für diesen Studierenden sind keine Kontaktdaten vorhanden.
+            Über das Profil können Kontaktdaten hinzugefügt werden.
+            Wenn Kontaktdaten vorliegen, sollten diese vor dem Verleih von Medien verifiziert werden.
+          </p>
+        </div>
+        <div id="kontaktdaten"></div>
+      </div>
+      <div class="col">
+        <div class="form-group text-right">
+          <button type="submit" class="btn btn-primary">Speichern</button>
+        </div>
+      </div>
     </div>
   </form>
 </div>
