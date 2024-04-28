@@ -30,8 +30,8 @@
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
-      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:autor-list' %}">Autoren</a></li>
       <li class="breadcrumb-item" aria-current="page">{{ object_list.count }} <a href="{% url 'ausleihe:buch-list' %}"><strong>Bücher</strong></a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:autor-list' %}">Autoren</a></li>
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verlag-list' %}">Verlage</a></li>
       {% if perms.ausleihe.add_buch %}
       <li class="breadcrumb-item active" aria-current="page"><a href="{% url 'ausleihe:buch-create' %}">hinzufügen</a></li>

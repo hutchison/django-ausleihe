@@ -1,0 +1,35 @@
+<div class="container">
+  <div class="row">
+    <div class="col">
+      {% if object_list %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Mediatheknr.</th>
+            <th>dazugehörige Medien</th>
+            <th class="text-right">verliehen bis einschließlich</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for leihe in object_list %}
+          <tr>
+            <td>
+              <a href="{% url 'ausleihe:medium-detail' leihe.medium.id %}">{{ leihe.medium }}</a>
+            </td>
+            <td>
+              {% if leihe.medium.buecher.exists %}
+              📚 {{ leihe.medium.buecher.all|join:", " }}
+              {% endif %}
+            </td>
+            <td class="text-right">{{ leihe.ende|date:"l" }}, {{ leihe.ende|date:"d.m.Y" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>Aktuell ist nichts verliehen.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+

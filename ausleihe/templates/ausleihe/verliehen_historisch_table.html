@@ -3,11 +3,11 @@
 <table class="table">
   <thead>
     <tr>
-      <th>Mediatheknr.</th>
-      <th>enthält</th>
-      <th>Anfang</th>
-      <th>Ende</th>
-      <th>Dauer</th>
+      <th class="col-1">Mediatheknr.</th>
+      <th class="col-4">enthält</th>
+      <th class="text-right col-1">Anfang</th>
+      <th class="text-right col-2">Ende</th>
+      <th>Δ</th>
     </tr>
   </thead>
   <tbody>
@@ -20,16 +20,16 @@
         {% if leihe.medium.buecher.exists %}
         {% for buch in leihe.medium.buecher.all %}
         {% if forloop.last %}
-        <a href="{% url 'ausleihe:buch-detail' buch.id %}">📘 {{ buch }}</a>
+        <a href="{% url 'ausleihe:buch-detail' buch.id %}">📚 {{ buch }}</a>
         {% else %}
-        <a href="{% url 'ausleihe:buch-detail' buch.id %}">📘 {{ buch }}</a>, 
+        <a href="{% url 'ausleihe:buch-detail' buch.id %}">📚 {{ buch }}</a>, 
         {% endif %}
         {% endfor %}
         {% endif %}
       </td>
-      <td>{{ leihe.anfang }}</td>
-      <td>{{ leihe.ende|date:"l" }}, {{ leihe.ende }}</td>
-      <td>{{ leihe.dauer }} Tage</td>
+      <td class="text-right">{{ leihe.anfang|date:"d.m.Y" }}</td>
+      <td class="text-right">{{ leihe.ende|date:"l" }}, {{ leihe.ende|date:"d.m.Y" }}</td>
+      <td>{{ leihe.dauer }}&thinsp;d</td>
     </tr>
     {% endfor %}
   </tbody>

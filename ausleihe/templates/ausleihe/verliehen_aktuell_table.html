@@ -1,12 +1,12 @@
-{% if aktuell_verliehen %}
+{% if aktuell_verliehen.exists %}
 <h4>aktuell entliehen</h4>
 <table class="table">
   <thead>
     <tr>
-      <th>Mediatheknr.</th>
-      <th>enthält</th>
-      <th>Anfang</th>
-      <th>Ende</th>
+      <th class="col-1">Mediatheknr.</th>
+      <th class="col-4">enthält</th>
+      <th class="text-right col-1">Anfang</th>
+      <th class="text-right col-2">Ende</th>
       <th>Δ</th>
       {% if perms.ausleihe.view_leihe %}
       <th>verliehen von</th>
@@ -26,23 +26,23 @@
         {% if leihe.medium.buecher.exists %}
         {% for buch in leihe.medium.buecher.all %}
         {% if forloop.last %}
-        <a href="{% url 'ausleihe:buch-detail' buch.id %}">📘 {{ buch }}</a>
+        <a href="{% url 'ausleihe:buch-detail' buch.id %}">📚 {{ buch }}</a>
         {% else %}
-        <a href="{% url 'ausleihe:buch-detail' buch.id %}">📘 {{ buch }}</a>, 
+        <a href="{% url 'ausleihe:buch-detail' buch.id %}">📚 {{ buch }}</a>, 
         {% endif %}
         {% endfor %}
         {% endif %}
       </td>
-      <td>{{ leihe.anfang }}</td>
-      <td>{{ leihe.ende|date:"l" }}, {{ leihe.ende }}</td>
+      <td class="text-right">{{ leihe.anfang|date:"d.m.Y" }}</td>
+      <td class="text-right">{{ leihe.ende|date:"l" }}, {{ leihe.ende|date:"d.m.Y" }}</td>
       <td>
         {% if leihe.ist_ueberfaellig %}
         {% with leihe.differenz_heute as d %}
-        {{ d }} Tag{% if d != 1 %}e{% endif %} überfällig
+        <span class="text-danger">{{ d }}&thinsp;d überfällig</span>
         {% endwith %}
         {% else %}
         {% with leihe.differenz_heute as d %}
-        noch {{ d }} Tag{% if d != 1 %}e{% endif %}
+        noch {{ d }}&thinsp;d
         {% endwith %}
         {% endif %}
       </td>

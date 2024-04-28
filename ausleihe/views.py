@@ -350,11 +350,11 @@ class Zuruecknehmen(LoginRequiredMixin, PermissionRequiredMixin, View):
             return redirect("ausleihe:verliehen")
 
 
-class LeiheList(LoginRequiredMixin, PermissionRequiredMixin, ListView):
-    permission_required = "ausleihe.view_leihe"
+class LeiheList(LoginRequiredMixin, ListView):
     queryset = Leihe.objects.prefetch_related(
         "medium",
-        "nutzer",
+        "medium__buecher",
+        "nutzer__user",
         "verleiht_von",
     ).filter(
         zurueckgebracht=False,
@@ -372,9 +372,16 @@ class LeiheUserDetail(LoginRequiredMixin, PermissionRequiredMixin, View):
         username = request.GET.get("username", None)
 
         user = get_object_or_404(self.user_model, username=username)
-        fuser = get_object_or_404(FachschaftUser, user=user.id)
+        fuser = get_object_or_404(
+            FachschaftUser,
+            user=user.id
+        )
 
-        leihen = Leihe.objects.filter(nutzer=fuser)
+        leihen = Leihe.objects.filter(nutzer=fuser).prefetch_related(
+            "medium__buecher",
+            "nutzer__user",
+            "verleiht_von",
+        )
 
         context = {
             "nutzer": fuser,
