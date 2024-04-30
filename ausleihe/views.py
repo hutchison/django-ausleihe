@@ -9,7 +9,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 
 from datetime import date, datetime, timedelta
-from fsmedhro_core.models import FachschaftUser
+from fsmedhro_core.models import FachschaftUser, Kontaktdaten
 
 from .models import (
     Autor,
@@ -377,6 +377,8 @@ class LeiheUserDetail(LoginRequiredMixin, PermissionRequiredMixin, View):
             user=user.id
         )
 
+        kontaktdaten = Kontaktdaten.objects.filter(fachschaftuser=fuser)
+
         leihen = Leihe.objects.filter(nutzer=fuser).prefetch_related(
             "medium__buecher",
             "nutzer__user",
@@ -387,6 +389,7 @@ class LeiheUserDetail(LoginRequiredMixin, PermissionRequiredMixin, View):
             "nutzer": fuser,
             "aktuell_verliehen": leihen.filter(zurueckgebracht=False),
             "historisch_verliehen": leihen.filter(zurueckgebracht=True),
+            "kontaktdaten": kontaktdaten,
         }
 
         return render(request, self.template_name, context)

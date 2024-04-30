@@ -33,4 +33,32 @@
     </div>
   </div>
 </div>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col">
+      <h4>Kontaktdaten</h4>
+      {% for kontakt in kontaktdaten %}
+      <div class="card mt-3 mb-3">
+        <div class="card-body">
+          <strong>{{ kontakt.user.first_name }} {{kontakt.user.last_name }}</strong>
+          <address style="white-space:pre;">{{ kontakt.adresse }}</address>
+          <p>{{ kontakt.telefonnummer }}</p>
+          <p>hinzugefügt am {{ kontakt.created|date:"d.m.Y" }} um {{ kontakt.created|date:"H:i" }} Uhr</p>
+          {% if kontakt.gecheckt_von and kontakt.gecheckt_datum %}
+          <span class="text-success">
+            Überprüft von {{ kontakt.gecheckt_von.get_full_name }} ({{ kontakt.gecheckt_von }})
+            am {{ kontakt.gecheckt_datum }}.
+          </span>
+          {% else %}
+          <span class="text-danger">Noch nicht verifiziert!</span>
+          {% endif %}
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-danger">Aktuell keine Kontaktdaten vorhanden.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
 {% endblock content %}
