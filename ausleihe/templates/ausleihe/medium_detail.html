@@ -27,11 +27,11 @@
       <table class="table">
         <thead>
           <tr>
-            <th>Titel</th>
-            <th>Autoren</th>
-            <th>ISBN</th>
-            <th>Verlag</th>
-            <th>Ausgabe</th>
+            <th class="col-4">Titel</th>
+            <th class="col-4">Autoren</th>
+            <th class="col-2">ISBN</th>
+            <th class="col-1">Verlag</th>
+            <th class="col-1">Ausgabe</th>
           </tr>
         </thead>
         <tbody>
@@ -48,6 +48,51 @@
               {% endif %}
             </td>
             <td>{{ buch.ausgabe }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+  {% if perms.ausleihe.view_leihe and medium.leihe_set.exists %}
+  <div class="row">
+    <div class="col">
+      <h4>Verleihhistorie</h4>
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="col-2 text-right">Anfang</th>
+            <th class="col-2 text-right">Ende</th>
+            <th class="col-2 text-right">Δ</th>
+            <th class="col-3">Nutzer</th>
+            <th class="col-3">Verleiher:in</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for leihe in medium.leihe_set.all %}
+          <tr>
+            <td class="text-right">{{ leihe.anfang|date:"d.m.Y" }}</td>
+            <td class="text-right">{{ leihe.ende|date:"l" }}, {{ leihe.ende|date:"d.m.Y" }}</td>
+            <td class="text-right">
+              {% if leihe.zurueckgebracht %}
+              {{ leihe.dauer }}&thinsp;d
+              {% else %}
+                {% if leihe.ist_ueberfaellig %}
+                  {% with leihe.differenz_heute as d %}
+                  <span class="text-danger">{{ d }}&thinsp;d überfällig</span>
+                  {% endwith %}
+                {% else %}
+                  {% with leihe.differenz_heute as d %}
+                    noch {{ d }}&thinsp;d
+                  {% endwith %}
+                {% endif %}
+              {% endif %}
+            </td>
+            <td>
+              <a href="{% url 'ausleihe:verliehen-an' %}?username={{ leihe.nutzer.user }}">{{ leihe.nutzer }} ({{ leihe.nutzer.user }})</a>
+            </td>
+            <td>{{ leihe.verleiht_von.get_full_name }} ({{ leihe.verleiht_von }})</td>
           </tr>
           {% endfor %}
         </tbody>

@@ -7,7 +7,10 @@
       <th class="col-4">enthält</th>
       <th class="text-right col-1">Anfang</th>
       <th class="text-right col-2">Ende</th>
-      <th>Δ</th>
+      <th class="col-1">Δ</th>
+      {% if perms.ausleihe.view_leihe %}
+      <th>verliehen von</th>
+      {% endif %}
     </tr>
   </thead>
   <tbody>
@@ -30,6 +33,7 @@
       <td class="text-right">{{ leihe.anfang|date:"d.m.Y" }}</td>
       <td class="text-right">{{ leihe.ende|date:"l" }}, {{ leihe.ende|date:"d.m.Y" }}</td>
       <td>{{ leihe.dauer }}&thinsp;d</td>
+      <td>{{ leihe.verleiht_von.get_full_name }} ({{ leihe.verleiht_von }})</td>
     </tr>
     {% endfor %}
   </tbody>
