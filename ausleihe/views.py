@@ -16,6 +16,9 @@ from .models import (
     Buch,
     Leihe,
     Medium,
+    Skillset,
+    SkillsetItem,
+    SkillsetItemRelation,
     Verlag,
 )
 
@@ -408,3 +411,15 @@ class LeiheUserSuche(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
         )
 
         return context
+
+
+class SkillsetList(LoginRequiredMixin, ListView):
+    queryset = Skillset.objects.prefetch_related(
+        "item_relations",
+    )
+
+
+class SkillsetItemList(LoginRequiredMixin, ListView):
+    queryset = SkillsetItem.objects.prefetch_related(
+        "skillset_relations",
+    )

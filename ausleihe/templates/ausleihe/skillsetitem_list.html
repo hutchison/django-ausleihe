@@ -1,0 +1,40 @@
+{% extends "ausleihe/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
+      <li class="breadcrumb-item" aria-current="page">{{ skillset_list.count }} <a href="{% url 'ausleihe:skillset-list' %}">Skill Sets</a></li>
+      <li class="breadcrumb-item" aria-current="page">{{ skillsetitem_list.count }} <a href="{% url 'ausleihe:skillsetitem-list' %}"><strong>Skill Set Items</strong></a></li>
+    </ol>
+  </nav>
+  <div class="row">
+    <div class="col">
+      {% if skillsetitem_list %}
+      <table class="table" id="skillsets">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Beschreibung</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for skillsetitem in skillsetitem_list %}
+          <tr>
+            <td>{{ skillsetitem.id }}</td>
+            <td>{{ skillsetitem.name }}</td>
+            <td>{{ skillsetitem.beschreibung }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>Bisher sind keine Skill Set Items vorhanden.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock content %}

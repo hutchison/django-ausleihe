@@ -5,6 +5,9 @@ from .models import (
     Buch,
     Leihe,
     Medium,
+    Skillset,
+    SkillsetItem,
+    SkillsetItemRelation,
     Verlag,
 )
 
@@ -61,3 +64,15 @@ class LeiheAdmin(admin.ModelAdmin):
         "erzeugt",
         "verleiht_von"
     )
+
+@admin.register(Skillset)
+class SkillsetAdmin(admin.ModelAdmin):
+    model = Skillset
+
+@admin.register(SkillsetItem)
+class SkillsetItemAdmin(admin.ModelAdmin):
+    model = SkillsetItem
+
+@admin.register(SkillsetItemRelation)
+class SkillsetItemRelationAdmin(admin.ModelAdmin):
+    model = SkillsetItemRelation
