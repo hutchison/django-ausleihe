@@ -7,7 +7,7 @@
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:buch-list' %}">Bücher</a></li>
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:autor-list' %}">Autoren</a></li>
-      <li class="breadcrumb-item" aria-current="page">{{ object_list.count }} <a href="{% url 'ausleihe:verlag-list' %}"><strong>Verlage</strong></a></li>
+      <li class="breadcrumb-item" aria-current="page">{{ verlag_list.count }} <a href="{% url 'ausleihe:verlag-list' %}"><strong>Verlage</strong></a></li>
       {% if perms.ausleihe.add_verlag %}
       <li class="breadcrumb-item active" aria-current="page"><a href="{% url 'ausleihe:verlag-create' %}">hinzufügen</a></li>
       {% endif %}
@@ -15,7 +15,7 @@
   </nav>
   <div class="row">
     <div class="col">
-      {% if object_list %}
+      {% if verlag_list %}
       <table class="table">
         <thead>
           <tr>
@@ -24,7 +24,7 @@
           </tr>
         </thead>
         <tbody>
-          {% for verlag in object_list %}
+          {% for verlag in verlag_list %}
           <tr>
             <td>{{ verlag.id }}</td>
             <td><a href="{% url 'ausleihe:verlag-detail' verlag.id %}">{{ verlag.name }}</a></td>

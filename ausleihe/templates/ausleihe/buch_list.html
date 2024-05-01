@@ -30,7 +30,7 @@
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
-      <li class="breadcrumb-item" aria-current="page">{{ object_list.count }} <a href="{% url 'ausleihe:buch-list' %}"><strong>Bücher</strong></a></li>
+      <li class="breadcrumb-item" aria-current="page">{{ buch_list.count }} <a href="{% url 'ausleihe:buch-list' %}"><strong>Bücher</strong></a></li>
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:autor-list' %}">Autoren</a></li>
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verlag-list' %}">Verlage</a></li>
       {% if perms.ausleihe.add_buch %}
@@ -40,7 +40,7 @@
   </nav>
   <div class="row">
     <div class="col">
-      {% if object_list %}
+      {% if buch_list %}
       <input type="search" class="form-control" placeholder="Suche" id="filter">
       <table class="table" id="buecher">
         <thead>
@@ -54,7 +54,7 @@
           </tr>
         </thead>
         <tbody>
-          {% for buch in object_list %}
+          {% for buch in buch_list %}
           <tr>
             <td><a href="{% url 'ausleihe:medium-detail' buch.medium.id %}">{{ buch.medium }}</a></td>
             <td><a href="{% url 'ausleihe:buch-detail' buch.id %}">{{ buch.titel }}</a></td>

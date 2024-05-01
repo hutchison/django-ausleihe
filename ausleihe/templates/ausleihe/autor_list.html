@@ -6,7 +6,7 @@
     <ol class="breadcrumb">
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:buch-list' %}">Bücher</a></li>
-      <li class="breadcrumb-item" aria-current="page">{{ object_list.count }} <a href="{% url 'ausleihe:autor-list' %}"><strong>Autoren</strong></a></li>
+      <li class="breadcrumb-item" aria-current="page">{{ autor_list.count }} <a href="{% url 'ausleihe:autor-list' %}"><strong>Autoren</strong></a></li>
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verlag-list' %}">Verlage</a></li>
       {% if perms.ausleihe.add_autor %}
       <li class="breadcrumb-item active" aria-current="page"><a href="{% url 'ausleihe:autor-create' %}">hinzufügen</a></li>
@@ -15,7 +15,7 @@
   </nav>
   <div class="row">
     <div class="col">
-      {% if object_list %}
+      {% if autor_list %}
       <table class="table">
         <thead>
           <tr>
@@ -24,7 +24,7 @@
           </tr>
         </thead>
         <tbody>
-          {% for autor in object_list %}
+          {% for autor in autor_list %}
           <tr>
             <td>{{ autor.id }}</td>
             <td><a href="{% url 'ausleihe:autor-detail' autor.id %}">{{ autor.vorname }} {{ autor.nachname }}</a></td>
