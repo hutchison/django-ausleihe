@@ -18,21 +18,25 @@
   </nav>
 </div>
 
-<div class="{% if perms.ausleihe.view_leihe and aktuell_verliehen.exists %}container-fluid{% else %}container{% endif %}">
+{% if perms.ausleihe.view_leihe %}
+<div class="container-fluid">
   <div class="row">
     <div class="col">
       {% include "ausleihe/verliehen_aktuell_table.html" with username=nutzer.user %}
     </div>
   </div>
 </div>
+{% endif %}
 
-<div class="{% if perms.ausleihe.view_leihe and historisch_verliehen.exists %}container-fluid{% else %}container{% endif %}">
+{% if perms.ausleihe.view_leihe %}
+<div class="container-fluid">
   <div class="row">
     <div class="col">
       {% include "ausleihe/verliehen_historisch_table.html" %}
     </div>
   </div>
 </div>
+{% endif %}
 
 <div class="container-fluid">
   <div class="row">
