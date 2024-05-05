@@ -13,29 +13,26 @@
   </nav>
   <div class="row">
     <div class="col">
-      {% if skillsetitem_list %}
-      <table class="table" id="skillsets">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Beschreibung</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for skillsetitem in skillsetitem_list %}
-          <tr>
-            <td>{{ skillsetitem.id }}</td>
-            <td><a hreF="{% url 'ausleihe:skillsetitem-edit' skillsetitem.id %}">{{ skillsetitem.name }}</a></td>
-            <td style="white-space: pre;">{{ skillsetitem.beschreibung }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      {% else %}
-      <p>Bisher sind keine Skill Set Items vorhanden.</p>
-      {% endif %}
+      <form action="{% url 'ausleihe:skillsetitem-create' %}" method="post" accept-charset="utf-8">
+        {% csrf_token %}
+        <div class="form-group">
+          <textarea class="form-control" id="items" name="items" rows="10" placeholder="Ein neues Item pro Zeile"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Speichern</button>
+      </form>
     </div>
   </div>
+  {% if new_items %}
+  <div class="row">
+    <div class="col">
+      <h3>Neue Skill Set Items</h3>
+      <ul>
+        {% for item in new_items %}
+        <li>{{ item.name }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endif %}
 </div>
 {% endblock content %}

@@ -2,11 +2,12 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import render, reverse, redirect, get_object_or_404
+from django.urls import reverse_lazy
 from django.utils.http import urlencode
 from django.views import View
 from django.views.generic import DetailView, ListView
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from datetime import date, datetime, timedelta
 from fsmedhro_core.models import FachschaftUser, Kontaktdaten
@@ -423,3 +424,45 @@ class SkillsetItemList(LoginRequiredMixin, ListView):
     queryset = SkillsetItem.objects.prefetch_related(
         "skillset_relations",
     )
+
+
+class SkillsetItemCreate(LoginRequiredMixin, PermissionRequiredMixin, View):
+    template_name = "ausleihe/skillsetitem_create.html"
+    permission_required = "ausleihe.create_skillsetitem"
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+    def post(self, request):
+        items = request.POST.get("items", "").strip().split("\r\n")
+        new_items = []
+
+        for item in items:
+            new_item, created = SkillsetItem.objects.get_or_create(name=item)
+            if created:
+                new_items.append(new_item)
+
+        context = {
+            "new_items": new_items,
+        }
+
+        return render(request, self.template_name, context)
+
+
+class SkillsetItemEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    model = SkillsetItem
+    permission_required = "ausleihe.change_skillsetitem"
+    fields = ["name", "beschreibung"]
+    pk_url_kwarg = "skillsetitem_id"
+    template_name_suffix = "_edit"
+
+    def get_success_url(self):
+        messages.success(self.request, "Gespeichert!")
+        return reverse("ausleihe:skillsetitem-list")
+
+
+class SkillsetItemDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+    model = SkillsetItem
+    permission_required = "ausleihe.delete_skillsetitem"
+    pk_url_kwarg = "skillsetitem_id"
+    success_url = reverse_lazy("ausleihe:skillsetitem-list")

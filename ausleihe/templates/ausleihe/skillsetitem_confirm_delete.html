@@ -1,0 +1,24 @@
+{% extends "ausleihe/base.html" %}
+
+{% block content %}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
+      <li class="breadcrumb-item" aria-current="page">{{ skillset_list.count }} <a href="{% url 'ausleihe:skillset-list' %}">Skill Sets</a></li>
+      <li class="breadcrumb-item" aria-current="page">{{ skillsetitem_list.count }} <a href="{% url 'ausleihe:skillsetitem-list' %}"><strong>Skill Set Items</strong></a></li>
+      <li class="breadcrumb-item active" aria-current="page">löschen</li>
+    </ol>
+  </nav>
+
+  <div class="row">
+    <div class="col">
+      <form method="post" accept-charset="utf-8">
+        {% csrf_token %}
+        <p>Soll <strong>{{ object }}</strong> wirklich gelöscht werden?</p>
+        <button type="submit" class="btn btn-danger">Löschen</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock content %}
