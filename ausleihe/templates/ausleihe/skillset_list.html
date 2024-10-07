@@ -17,8 +17,8 @@
       <table class="table" id="skillsets">
         <thead>
           <tr>
-            <th>Mediatheknr.</th>
-            <th>Name</th>
+            <th class="col-1">Mediatheknr.</th>
+            <th class="col-3">Name</th>
             <th>Beschreibung</th>
           </tr>
         </thead>
@@ -26,7 +26,7 @@
           {% for skillset in skillset_list %}
           <tr>
             <td><a href="{% url 'ausleihe:medium-detail' skillset.medium.id %}">{{ skillset.medium }}</a></td>
-            <td>{{ skillset.name }}</td>
+            <td><a href="{% url 'ausleihe:skillset-detail' skillset.id %}">{{ skillset.name }}</a></td>
             <td>{{ skillset.beschreibung }}</td>
           </tr>
           {% endfor %}
