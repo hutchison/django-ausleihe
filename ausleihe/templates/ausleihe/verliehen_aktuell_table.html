@@ -25,11 +25,7 @@
       <td>
         {% if leihe.medium.buecher.exists %}
         {% for buch in leihe.medium.buecher.all %}
-        {% if forloop.last %}
-        <a href="{% url 'ausleihe:buch-detail' buch.id %}">📚 {{ buch }}</a>
-        {% else %}
-        <a href="{% url 'ausleihe:buch-detail' buch.id %}">📚 {{ buch }}</a>, 
-        {% endif %}
+        <a href="{% url 'ausleihe:buch-detail' buch.id %}">📚 {{ buch }}</a>{% if not forloop.last %}, {% endif %}
         {% endfor %}
         {% endif %}
       </td>

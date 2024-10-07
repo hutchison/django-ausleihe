@@ -1,7 +1,3 @@
               {% for autor in buch.autoren.all %}
-              {% if forloop.last %}
-              <a href="{% url 'ausleihe:autor-detail' autor.id %}">{{ autor }}</a>
-              {% else %}
-              <a href="{% url 'ausleihe:autor-detail' autor.id %}">{{ autor }}</a>, 
-              {% endif %}
+              <a href="{% url 'ausleihe:autor-detail' autor.id %}">{{ autor }}</a>{% if not forloop.last %}, {% endif %}
               {% endfor %}
