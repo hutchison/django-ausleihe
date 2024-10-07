@@ -19,6 +19,7 @@ urlpatterns = [
     path('medien', views.MediumList.as_view(), name='medium-list'),
     path('medien/<str:medium_id>', views.MediumDetail.as_view(), name='medium-detail'),
     path('skillsets', views.SkillsetList.as_view(), name='skillset-list'),
+    path('skillsets/<int:skillset_id>', views.SkillsetDetail.as_view(), name='skillset-detail'),
     path('skillsetitems', views.SkillsetItemList.as_view(), name='skillsetitem-list'),
     path('skillsetitems/neu', views.SkillsetItemCreate.as_view(), name='skillsetitem-create'),
     path('skillsetitems/<int:skillsetitem_id>/bearbeiten', views.SkillsetItemEdit.as_view(), name='skillsetitem-edit'),

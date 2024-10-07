@@ -58,6 +58,7 @@ class Home(LoginRequiredMixin, View):
 class MediumList(LoginRequiredMixin, ListView):
     queryset = Medium.objects.prefetch_related(
         "buecher",
+        "skillsets",
     )
 
 
@@ -425,6 +426,11 @@ class SkillsetList(LoginRequiredMixin, ListView):
         "item_relations",
         "medium",
     )
+
+
+class SkillsetDetail(LoginRequiredMixin, DetailView):
+    model = Skillset
+    pk_url_kwarg = "skillset_id"
 
 
 class SkillsetItemList(LoginRequiredMixin, ListView):

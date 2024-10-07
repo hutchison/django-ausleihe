@@ -5,6 +5,7 @@
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:medium-list' %}">Medien</a></li>
       <li class="breadcrumb-item active" aria-current="page">{{ medium }}</li>
     </ol>
   </nav>
@@ -48,6 +49,29 @@
               {% endif %}
             </td>
             <td>{{ buch.ausgabe }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+  {% if medium.skillsets.exists %}
+  <div class="row">
+    <div class="col">
+      <h4>dazugehörige Skillsets</h4>
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="col-4">Name</th>
+            <th class="col-4">Beschreibung</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for skillset in medium.skillsets.all %}
+          <tr>
+            <td><a href="{% url 'ausleihe:skillset-detail' skillset.id %}">{{ skillset.name }}</a></td>
+            <td> {{ skillset.beschreibung }}</td>
           </tr>
           {% endfor %}
         </tbody>
