@@ -423,6 +423,7 @@ class LeiheUserSuche(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
 class SkillsetList(LoginRequiredMixin, ListView):
     queryset = Skillset.objects.prefetch_related(
         "item_relations",
+        "medium",
     )
 
 
