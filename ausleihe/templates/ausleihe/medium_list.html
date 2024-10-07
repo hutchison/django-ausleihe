@@ -26,6 +26,7 @@
           <tr>
             <th class="col-1">Nr.</th>
             <th class="col-4">Bücher</th>
+            <th class="col-4">Skillsets</th>
           </tr>
         </thead>
         <tbody>
@@ -35,6 +36,12 @@
             <td>
               {% for buch in medium.buecher.all %}
               <a href="{% url 'ausleihe:buch-detail' buch.id %}">{{ buch }}</a>{% if not forloop.last %}, {% endif %}
+              {% endfor %}
+            </td>
+            <td>
+              {% for skillset in medium.skillsets.all %}
+              <a href="{% url 'ausleihe:skillset-detail' skillset.id %}">{{ skillset }}</a>{% if not forloop.last %}, {% endif %}
+              </a>
               {% endfor %}
             </td>
           </tr>
