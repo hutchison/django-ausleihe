@@ -1,0 +1,108 @@
+{% extends "ausleihe/base.html" %}
+{% load static %}
+
+{% block js %}
+<script charset="utf-8" type="text/javascript">
+var chosen_skillsetitems = new Set();
+
+function add_skillsetitem() {
+  let skillsetitems = document.getElementsByClassName("skillsetitem");
+  let n = skillsetitems.length;
+  let last = skillsetitems[n-1];
+  let c = last.cloneNode(true);
+
+  c.querySelector("[name='item_quantities']").value = '';
+  c.querySelector("[name='item_ids']").value = '';
+
+  last.after(c);
+}
+
+function check_skillsetitems(event) {
+  chosen_skillsetitems.clear();
+  let submit_button = document.getElementById("submit");
+  submit_button.disabled = false;
+
+  for (elem of document.getElementsByTagName("select")) {
+    elem.classList.remove("is-invalid");
+
+    if (elem.value) {
+      if (chosen_skillsetitems.has(elem.value)) {
+        elem.classList.add("is-invalid");
+        submit_button.disabled = true;
+      } else {
+        chosen_skillsetitems.add(elem.value);
+      }
+    }
+  }
+}
+
+document.addEventListener("DOMContentLoaded",
+  () => {
+    document.getElementById("add_item").addEventListener("click", add_skillsetitem);
+    for (elem of document.getElementsByTagName("select")) {
+      elem.addEventListener("change", check_skillsetitems);
+    }
+  }
+);
+</script>
+{% endblock js %}
+
+{% block content %}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillset-list' %}"><strong>Skill Sets</strong></a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillsetitem-list' %}">Skill Set Items</a></li>
+      <li class="breadcrumb-item active" aria-current="page">hinzufügen</li>
+    </ol>
+  </nav>
+
+  <form method="post" accept-charset="utf-8">
+    <div class="row">
+      <div class="col">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="medium_id"><strong>Mediatheknummer</strong></label>
+          <input class="form-control" id="medium_id" name="medium_id" required value="{{ skillset.medium_id }}">
+        </div>
+        <div class="form-group">
+          <label for="name"><strong>Name</strong></label>
+          <input class="form-control" id="name" name="name" required value="{{ skillset.name }}">
+        </div>
+        <div class="form-group">
+          <label for="beschreibung">Beschreibung</label>
+          <textarea class="form-control" id="beschreibung" name="beschreibung" rows="3">{{ skillset.beschreibung }}</textarea>
+        </div>
+        <button type="submit" id="submit" class="btn btn-primary">Speichern</button>
+      </div>
+      <div class="col">
+        <label>dazugehörige Skill Set Items</label>
+        {% for _ in "123"|make_list %}
+        <div class="form-group skillsetitem">
+          <div class="form-row">
+            <div class="col-md-2 col-sm-2">
+              <input type="number" min="0" step="1" class="form-control" name="item_quantities">
+            </div>
+            <div class="col">
+              <select class="custom-select" name="item_ids">
+                <option value="">---</option>
+                {% for item in items %}
+                <option value="{{ item.pk }}">{{ item.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+        <button type="button" id="add_item" class="btn btn-success">weiteres Item hinzufügen</button>
+      </div>
+    </div>
+  </form>
+  {% if saved_skillset %}
+  <div class="alert alert-success mt-3" role="alert">
+    {{ saved_skillset.name }} erfolgreich mit dem Medium {{ saved_skillset.medium }} gespeichert. Siehe <a href="{% url 'ausleihe:skillset-detail' saved_skillset.id %}" class="alert-link" target="_blank">hier.</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock content %}

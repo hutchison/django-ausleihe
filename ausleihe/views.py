@@ -433,6 +433,53 @@ class SkillsetDetail(LoginRequiredMixin, DetailView):
     pk_url_kwarg = "skillset_id"
 
 
+class SkillsetCreate(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = "ausleihe.create_skillset"
+    template_name = "ausleihe/skillset_create.html"
+
+    def get_common_context(self):
+        context = {
+            "items": SkillsetItem.objects.all(),
+        }
+        return context
+
+    def get(self, request):
+        context = self.get_common_context()
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        medium_id = request.POST.get("medium_id")
+        name = request.POST.get("name")
+        beschreibung = request.POST.get("beschreibung")
+        item_quantities = request.POST.getlist("item_quantities")
+        item_ids = request.POST.getlist("item_ids")
+
+        medium, created = Medium.objects.get_or_create(pk=medium_id)
+        skillset = Skillset.objects.create(
+            medium=medium,
+            name=name,
+            beschreibung=beschreibung,
+        )
+
+        skillset_items = [
+            (int(quant), int(item_id))
+            for quant, item_id in zip(item_quantities, item_ids)
+            if quant and item_id
+        ]
+
+        for quant, item_id in skillset_items:
+            SkillsetItemRelation.objects.create(
+                skillset=skillset,
+                item=SkillsetItem.objects.get(id=item_id),
+                anzahl=quant,
+            )
+
+        messages.success(self.request, f"Gespeichert unter Medium {medium}!")
+        context = self.get_common_context()
+        context['saved_skillset'] = skillset
+        return render(request, self.template_name, context)
+
+
 class SkillsetItemList(LoginRequiredMixin, ListView):
     queryset = SkillsetItem.objects.prefetch_related(
         "skillset_relations",
