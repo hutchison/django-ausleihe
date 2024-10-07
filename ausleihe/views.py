@@ -55,6 +55,12 @@ class Home(LoginRequiredMixin, View):
             return render(request, self.template_name, context)
 
 
+class MediumList(LoginRequiredMixin, ListView):
+    queryset = Medium.objects.prefetch_related(
+        "buecher",
+    )
+
+
 class MediumDetail(LoginRequiredMixin, DetailView):
     model = Medium
     pk_url_kwarg = "medium_id"

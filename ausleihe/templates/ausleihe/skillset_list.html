@@ -6,6 +6,7 @@
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:medium-list' %}">Medien</a></li>
       <li class="breadcrumb-item" aria-current="page">{{ skillset_list.count }} <a href="{% url 'ausleihe:skillset-list' %}"><strong>Skill Sets</strong></a></li>
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillsetitem-list' %}">Skill Set Items</a></li>
     </ol>

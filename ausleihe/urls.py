@@ -16,6 +16,7 @@ urlpatterns = [
     path('bücher/neu', views.BuchCreate.as_view(), name='buch-create'),
     path('bücher/<int:buch_id>', views.BuchDetail.as_view(), name='buch-detail'),
     path('bücher/<int:buch_id>/bearbeiten', views.BuchEdit.as_view(), name='buch-edit'),
+    path('medien', views.MediumList.as_view(), name='medium-list'),
     path('medien/<str:medium_id>', views.MediumDetail.as_view(), name='medium-detail'),
     path('skillsets', views.SkillsetList.as_view(), name='skillset-list'),
     path('skillsetitems', views.SkillsetItemList.as_view(), name='skillsetitem-list'),
