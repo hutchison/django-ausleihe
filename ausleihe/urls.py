@@ -24,6 +24,7 @@ urlpatterns = [
     path('verlage/<int:verlag_id>/bearbeiten', views.VerlagEdit.as_view(), name='verlag-edit'),
     path('skillsets', views.SkillsetList.as_view(), name='skillset-list'),
     path('skillsets/<int:skillset_id>', views.SkillsetDetail.as_view(), name='skillset-detail'),
+    path('skillsets/<int:skillset_id>/bearbeiten', views.SkillsetEdit.as_view(), name='skillset-edit'),
     path('skillsets/neu', views.SkillsetCreate.as_view(), name='skillset-create'),
     path('skillsetitems', views.SkillsetItemList.as_view(), name='skillsetitem-list'),
     path('skillsetitems/neu', views.SkillsetItemCreate.as_view(), name='skillsetitem-create'),

@@ -10,9 +10,10 @@
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
-      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillset-list' %}"><strong>Skill Sets</strong></a></li>
-      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillsetitem-list' %}">Skill Set Items</a></li>
-      <li class="breadcrumb-item active" aria-current="page">hinzufügen</li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillset-list' %}">Skill Sets</a></li>
+      {# Hier muss auch wirklich object stehen, weil es das alte Objekt repräsentiert, welches überschrieben wird: #}
+      <li class="breadcrumb-item" aria-current="page">{{ object.name }}</li>
+      <li class="breadcrumb-item active" aria-current="page">bearbeiten</li>
     </ol>
   </nav>
 

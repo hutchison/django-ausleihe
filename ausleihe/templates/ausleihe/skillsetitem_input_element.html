@@ -1,0 +1,15 @@
+<div class="form-group skillsetitem">
+  <div class="form-row">
+    <div class="col-md-2 col-sm-2">
+      <input type="number" min="0" step="1" class="form-control" name="item_quantities" value="{{ r.anzahl }}">
+    </div>
+    <div class="col">
+      <select class="custom-select" name="item_ids">
+        <option value="">---</option>
+        {% for item in items %}
+        <option value="{{ item.pk }}"{% if item.pk == r.item.pk %} selected{% endif %}>{{ item.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+</div>

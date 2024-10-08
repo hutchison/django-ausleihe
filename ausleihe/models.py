@@ -135,6 +135,24 @@ class Skillset(models.Model):
         verbose_name_plural = "Skillsets"
         ordering = ("name",)
 
+    @staticmethod
+    def dict_from_post_data(post_data):
+        skillset = {
+            "medium_id": post_data.get("medium_id", "").strip(),
+            "name": post_data.get("name", "").strip(),
+            "beschreibung": post_data.get("beschreibung", "").strip(),
+            "items": [
+                (int(q), int(i))
+                for q, i in zip(
+                    post_data.getlist("item_quantities"),
+                    post_data.getlist("item_ids")
+                )
+                if q and i
+            ],
+        }
+
+        return skillset
+
 
 class SkillsetItemRelation(models.Model):
     skillset = models.ForeignKey(

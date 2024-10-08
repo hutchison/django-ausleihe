@@ -480,6 +480,51 @@ class SkillsetCreate(LoginRequiredMixin, PermissionRequiredMixin, View):
         return render(request, self.template_name, context)
 
 
+class SkillsetEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    model = Skillset
+    permission_required = "ausleihe.change_skillset"
+    fields = ["medium", "name", "beschreibung"]
+    pk_url_kwarg = "skillset_id"
+    template_name_suffix = "_edit"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['items'] = SkillsetItem.objects.all()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        skillset_neu = Skillset.dict_from_post_data(request.POST)
+
+        medium_alt = self.object.medium
+        medium, created = Medium.objects.get_or_create(pk=skillset_neu["medium_id"])
+        if created:
+            messages.warning(
+                request,
+                f"Es wurde das neue Medium {medium} erzeugt."
+            )
+
+        self.object.medium = medium
+        self.object.name = skillset_neu["name"]
+        self.object.beschreibung = skillset_neu["beschreibung"]
+
+        self.object.save()
+
+        SkillsetItemRelation.objects.filter(skillset=self.object).delete()
+        for q, i in skillset_neu["items"]:
+            self.object.item_relations.create(anzahl=q, item_id=i)
+
+        if not medium_alt.skillsets.exists():
+            messages.warning(
+                request,
+                (f"Das alte Medium {medium_alt} hat keine Skillsets mehr. "
+                 "Bitte überprüfe das.")
+            )
+
+        return redirect('ausleihe:skillset-detail', skillset_id=self.object.id)
+
+
 class SkillsetItemList(LoginRequiredMixin, ListView):
     queryset = SkillsetItem.objects.prefetch_related(
         "skillset_relations",

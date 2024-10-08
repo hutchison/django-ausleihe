@@ -8,6 +8,9 @@
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:medium-list' %}">Medien</a></li>
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillset-list' %}">Skill Sets</a></li>
       <li class="breadcrumb-item" aria-current="page">{{ skillset.name }}</li>
+      {% if perms.ausleihe.change_skillset %}
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillset-edit' skillset.id %}">bearbeiten</a></li>
+      {% endif %}
     </ol>
   </nav>
   <div class="row">
@@ -53,5 +56,36 @@
       </table>
     </div>
   </div>
+
+  {% if messages %}
+  {% for message in messages %}
+  <div class="row">
+    <div class="col">
+      <div class="alert alert-{{ message.tags}}">
+        {{ message }}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if perms.ausleihe.delete_skillset %}
+  <div class="row">
+    <div class="col">
+      <div class="alert alert-danger">
+        Wenn du das Skill Set löschen willst, dann erledige das
+        <a class="alert-link" target="_blank" href="{% url 'admin:ausleihe_skillset_change' skillset.id %}">über die Admin-Oberfläche</a>.
+        Die Mediatheknr. wird dabei nicht gelöscht. Auch dies kannst du
+        <a class="alert-link" target="_blank" href="{% url 'admin:ausleihe_medium_change' skillset.medium.id %}">über die Admin-Oberfläche</a>
+        erledigen.
+
+        {% if not user.is_staff %}
+        Dafür musst du von einem Administrator den <em>Mitarbeiter-Status</em> erhalten.
+        Wende dich an die Admins, damit sie dir das Häkchen setzen.
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
 </div>
 {% endblock content %}

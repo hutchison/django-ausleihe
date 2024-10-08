@@ -1,0 +1,38 @@
+<form method="post" accept-charset="utf-8">
+  <div class="row">
+    <div class="col">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="medium_id"><strong>Mediatheknummer</strong></label>
+        <input class="form-control" id="medium_id" name="medium_id" required value="{{ skillset.medium_id }}">
+      </div>
+      <div class="form-group">
+        <label for="name"><strong>Name</strong></label>
+        <input class="form-control" id="name" name="name" required value="{{ skillset.name }}">
+      </div>
+      <div class="form-group">
+        <label for="beschreibung">Beschreibung</label>
+        <textarea class="form-control" id="beschreibung" name="beschreibung" rows="3">{{ skillset.beschreibung }}</textarea>
+      </div>
+      <button type="submit" id="submit" class="btn btn-primary">Speichern</button>
+    </div>
+    <div class="col">
+      <label>dazugehörige Skill Set Items</label>
+      {% if skillset.item_relations.exists %}
+      {# vorhandenes Skillset wird bearbeitet #}
+        {% for r in skillset.item_relations.all %}
+          {% include "ausleihe/skillsetitem_input_element.html" with r=r %}
+        {% endfor %}
+      {% else %}
+      {# neues Skillset wird erzeugt #}
+        {% for _ in "123"|make_list %}
+          {% include "ausleihe/skillsetitem_input_element.html" %}
+        {% endfor %}
+      {% endif %}
+      <button type="button" id="add_item" class="btn btn-success">weiteres Item hinzufügen</button>
+      <small id="medium_help" class="form-text text-muted">
+        Zum Entfernen eines Skillset Items setze einfach den Namen auf <code>---</code>.
+      </small>
+    </div>
+  </div>
+</form>
