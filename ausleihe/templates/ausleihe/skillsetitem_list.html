@@ -9,7 +9,9 @@
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:medium-list' %}">Medien</a></li>
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillset-list' %}">Skill Sets</a></li>
       <li class="breadcrumb-item" aria-current="page">{{ skillsetitem_list.count }} <a href="{% url 'ausleihe:skillsetitem-list' %}"><strong>Skill Set Items</strong></a></li>
+      {% if perms.ausleihe.add_skillset %}
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillsetitem-create' %}">hinzufügen</a></li>
+      {% endif %}
     </ol>
   </nav>
   <div class="row">
@@ -18,7 +20,7 @@
       <table class="table" id="skillsets">
         <thead>
           <tr>
-            <th>ID</th>
+            <th class="col-1">ID</th>
             <th>Name</th>
             <th>Beschreibung</th>
           </tr>
@@ -27,7 +29,13 @@
           {% for skillsetitem in skillsetitem_list %}
           <tr>
             <td>{{ skillsetitem.id }}</td>
-            <td><a hreF="{% url 'ausleihe:skillsetitem-edit' skillsetitem.id %}">{{ skillsetitem.name }}</a></td>
+            <td>
+              {% if perms.ausleihe.change_skillset %}
+              <a href="{% url 'ausleihe:skillsetitem-edit' skillsetitem.id %}">{{ skillsetitem.name }}</a>
+              {% else %}
+              {{ skillsetitem.name }}
+              {% endif %}
+            </td>
             <td style="white-space: pre;">{{ skillsetitem.beschreibung }}</td>
           </tr>
           {% endfor %}
