@@ -14,15 +14,13 @@
   </nav>
   {% if messages %}
   {% for message in messages %}
-  {% if message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
   <div class="row">
     <div class="col">
-      <div class="alert alert-warning">
+      <div class="alert alert-{{ message.tags }}">
         {{ message }}
       </div>
     </div>
   </div>
-  {% endif %}
   {% endfor %}
   {% endif %}
   <div class="row">
