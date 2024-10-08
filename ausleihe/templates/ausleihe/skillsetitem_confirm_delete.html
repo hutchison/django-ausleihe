@@ -16,6 +16,32 @@
       <form method="post" accept-charset="utf-8">
         {% csrf_token %}
         <p>Soll <strong>{{ object }}</strong> wirklich gelöscht werden?</p>
+        {% if object.skillset_relations.exists %}
+        <p>
+          Folgende Verbindungen zu den Skillsets werden dadurch ebenfalls gelöscht:
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>SkillSet</th>
+                <th>Item</th>
+                <th>Anzahl</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for sr in object.skillset_relations.all %}
+            <tr>
+              <td><a href="{% url 'ausleihe:skillset-detail' sr.skillset.id %}">{{ sr.skillset.name }}</a></td>
+              <td>{{ sr.item }}</td>
+              <td>{{ sr.anzahl}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+          <ul>
+          </ul>
+          Vielleicht sollten diese Skillsets erst bearbeitet werden, bevor das Item gelöscht wird.
+        </p>
+        {% endif %}
         <button type="submit" class="btn btn-danger">Löschen</button>
       </form>
     </div>
