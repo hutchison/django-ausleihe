@@ -25,8 +25,7 @@
         <thead>
           <tr>
             <th class="col-1">Nr.</th>
-            <th class="col-4">Bücher</th>
-            <th class="col-4">Skillsets</th>
+            <th>enthält</th>
           </tr>
         </thead>
         <tbody>
@@ -35,12 +34,13 @@
             <td><a href="{% url 'ausleihe:medium-detail' medium.id %}">{{ medium }}</a></td>
             <td>
               {% for buch in medium.buecher.all %}
-              <a href="{% url 'ausleihe:buch-detail' buch.id %}">{{ buch }}</a>{% if not forloop.last %}, {% endif %}
+              <a href="{% url 'ausleihe:buch-detail' buch.id %}">📚 {{ buch }}</a>{% if not forloop.last %}, {% endif %}
               {% endfor %}
-            </td>
-            <td>
+              {% if medium.buecher.exists and medium.skillsets.exists %}
+              <br>
+              {% endif %}
               {% for skillset in medium.skillsets.all %}
-              <a href="{% url 'ausleihe:skillset-detail' skillset.id %}">{{ skillset }}</a>{% if not forloop.last %}, {% endif %}
+              <a href="{% url 'ausleihe:skillset-detail' skillset.id %}">🧰 {{ skillset }}</a>{% if not forloop.last %}, {% endif %}
               </a>
               {% endfor %}
             </td>
