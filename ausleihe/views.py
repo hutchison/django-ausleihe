@@ -492,6 +492,7 @@ class SkillsetEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['items'] = SkillsetItem.objects.all()
+        context['skills'] = Skill.objects.all()
         return context
 
     def post(self, request, *args, **kwargs):
@@ -509,6 +510,7 @@ class SkillsetEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
 
         self.object.medium = medium
         self.object.name = skillset_neu["name"]
+        self.object.skill = Skill.objects.get(id=skillset_neu["skill_id"])
 
         self.object.save()
 

@@ -10,6 +10,15 @@
         <label for="name"><strong>Name</strong></label>
         <input class="form-control" id="name" name="name" required value="{{ skillset.name }}">
       </div>
+      <div class="form-group">
+        <label for="skill"><strong>Skill</strong></label>
+        <select class="custom-select" name="skill">
+          <option value="">---</option>
+          {% for skill in skills %}
+          <option value="{{ skill.pk }}"{% if skill.pk == skillset.skill.pk %} selected{% endif %}>{{ skill.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
       <button type="submit" id="submit" class="btn btn-primary">Speichern</button>
     </div>
     <div class="col">
