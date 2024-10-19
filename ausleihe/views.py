@@ -433,7 +433,9 @@ class SkillsetList(LoginRequiredMixin, ListView):
 
 
 class SkillsetDetail(LoginRequiredMixin, DetailView):
-    model = Skillset
+    queryset = Skillset.objects.prefetch_related(
+        "item_relations__item",
+    )
     pk_url_kwarg = "skillset_id"
 
 
@@ -483,7 +485,9 @@ class SkillsetCreate(LoginRequiredMixin, PermissionRequiredMixin, View):
 
 
 class SkillsetEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
-    model = Skillset
+    queryset = Skillset.objects.prefetch_related(
+        "item_relations__item",
+    )
     permission_required = "ausleihe.change_skillset"
     fields = ["medium", "name"]
     pk_url_kwarg = "skillset_id"
