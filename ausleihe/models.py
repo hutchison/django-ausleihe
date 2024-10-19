@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.shortcuts import reverse
 from datetime import date
 
 from fsmedhro_core.models import FachschaftUser
@@ -130,6 +131,9 @@ class Skill(models.Model):
 
     def __str__(self):
         return f"Skill Nr. {self.nummer}: {self.name}"
+
+    def get_absolute_url(self):
+        return reverse("ausleihe:skill-detail", kwargs={"skill_id": self.id})
 
 
 class SkillsetItem(models.Model):

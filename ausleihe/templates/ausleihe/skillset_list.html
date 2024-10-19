@@ -27,6 +27,7 @@
           <tr>
             <th class="col-1">Mediatheknr.</th>
             <th class="col-3">Name</th>
+            <th class="col-3">Skill</th>
             <th>Beschreibung</th>
           </tr>
         </thead>
@@ -35,6 +36,7 @@
           <tr>
             <td><a href="{% url 'ausleihe:medium-detail' skillset.medium.id %}">{{ skillset.medium }}</a></td>
             <td><a href="{% url 'ausleihe:skillset-detail' skillset.id %}">{{ skillset.name }}</a></td>
+            <td><a href="{% url 'ausleihe:skill-detail' skillset.skill.id %}">{{ skillset.skill.name }}</a></td>
             <td>{{ skillset.beschreibung }}</td>
           </tr>
           {% endfor %}

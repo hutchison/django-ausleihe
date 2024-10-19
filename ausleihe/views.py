@@ -581,6 +581,11 @@ class SkillList(LoginRequiredMixin, ListView):
     model = Skill
 
 
+class SkillDetail(LoginRequiredMixin, DetailView):
+    model = Skill
+    pk_url_kwarg = "skill_id"
+
+
 class SkillCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Skill
     permission_required = "ausleihe.add_skill"
@@ -590,3 +595,11 @@ class SkillCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     def get_success_url(self):
         messages.success(self.request, "Gespeichert!")
         return reverse("ausleihe:skill-list")
+
+
+class SkillEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    model = Skill
+    permission_required = "ausleihe.change_skill"
+    form_class = SkillForm
+    pk_url_kwarg = "skill_id"
+    template_name_suffix = "_create"
