@@ -160,7 +160,7 @@ class Skillset(models.Model):
     )
     skill = models.ForeignKey(
         Skill,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="skillsets",
     )
 
