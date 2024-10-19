@@ -1,0 +1,35 @@
+{% extends "ausleihe/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+<style type="text/css" media="screen">
+  .asteriskField {
+    display: none;
+  }
+  .requiredField {
+    font-weight: bold;
+  }
+</style>
+{% endblock css %}
+
+{% block content %}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skill-list' %}"><strong>Skills</strong></a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillset-list' %}">Skill Sets</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillsetitem-list' %}">Skill Set Items</a></li>
+      <li class="breadcrumb-item active" aria-current="page">hinzufügen</li>
+    </ol>
+  </nav>
+
+  {% crispy form %}
+
+  {% if saved_skill %}
+  <div class="alert alert-success mt-3" role="alert">
+    {{ saved_skill.name }} erfolgreich gespeichert. Siehe <a href="{% url 'ausleihe:skill-detail' saved_skill.id %}" class="alert-link" target="_blank">hier.</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock content %}

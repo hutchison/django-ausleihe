@@ -7,8 +7,13 @@
     <ol class="breadcrumb">
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:medium-list' %}">Medien</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skill-list' %}">Skills</a></li>
+      {% if perms.ausleihe.change_skillset %}
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillset-list' %}">Skill Sets</a></li>
-      <li class="breadcrumb-item" aria-current="page">{{ skillsetitem_list.count }} <a href="{% url 'ausleihe:skillsetitem-list' %}"><strong>Skill Set Items</strong></a></li>
+      {% endif %}
+      {% if perms.ausleihe.change_skillsetitem %}
+      <li class="breadcrumb-item" aria-current="page">{{ skillsetitem_list.count }} <a href="{% url 'ausleihe:skillsetitem-list' %}"><strong>Skill Set Item{% if skillsetitem_list.count > 1 %}s{% endif %}</strong></a></li>
+      {% endif %}
       {% if perms.ausleihe.add_skillset %}
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillsetitem-create' %}">hinzufügen</a></li>
       {% endif %}

@@ -17,10 +17,14 @@ from .models import (
     Buch,
     Leihe,
     Medium,
+    Skill,
     Skillset,
     SkillsetItem,
     SkillsetItemRelation,
     Verlag,
+)
+from .forms import (
+    SkillForm,
 )
 
 
@@ -571,3 +575,18 @@ class SkillsetItemDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView
     permission_required = "ausleihe.delete_skillsetitem"
     pk_url_kwarg = "skillsetitem_id"
     success_url = reverse_lazy("ausleihe:skillsetitem-list")
+
+
+class SkillList(LoginRequiredMixin, ListView):
+    model = Skill
+
+
+class SkillCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    model = Skill
+    permission_required = "ausleihe.add_skill"
+    template_name_suffix = "_create"
+    form_class = SkillForm
+
+    def get_success_url(self):
+        messages.success(self.request, "Gespeichert!")
+        return reverse("ausleihe:skill-list")

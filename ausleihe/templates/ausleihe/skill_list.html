@@ -7,41 +7,47 @@
     <ol class="breadcrumb">
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:medium-list' %}">Medien</a></li>
-      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skill-list' %}">Skills</a></li>
+      <li class="breadcrumb-item" aria-current="page">{{ skill_list.count }} <a href="{% url 'ausleihe:skill-list' %}"><strong>Skill{% if skill_list.count > 1 %}s{% endif %}</strong></a></li>
       {% if perms.ausleihe.change_skillset %}
-      <li class="breadcrumb-item" aria-current="page">{{ skillset_list.count }} <a href="{% url 'ausleihe:skillset-list' %}"><strong>Skill Set{% if skillset.count > 1 %}s{% endif %}</strong></a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillset-list' %}">Skill Sets</a></li>
       {% endif %}
       {% if perms.ausleihe.change_skillsetitem %}
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillsetitem-list' %}">Skill Set Items</a></li>
       {% endif %}
-      {% if perms.ausleihe.add_skillset %}
-      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillset-create' %}">hinzufügen</a></li>
+      {% if perms.ausleihe.add_skill %}
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skill-create' %}">hinzufügen</a></li>
       {% endif %}
     </ol>
   </nav>
   <div class="row">
     <div class="col">
-      {% if skillset_list %}
+      {% if skill_list %}
       <table class="table" id="skillsets">
         <thead>
           <tr>
-            <th class="col-1">Mediatheknr.</th>
+            <th class="col-1">Nr.</th>
             <th class="col-3">Name</th>
-            <th>Beschreibung</th>
+            <th>Anz. Plätze</th>
+            <th>min. Personen</th>
+            <th>max. Personen</th>
+            <th>Dauer (min)</th>
           </tr>
         </thead>
         <tbody>
-          {% for skillset in skillset_list %}
+          {% for skill in skill_list %}
           <tr>
-            <td><a href="{% url 'ausleihe:medium-detail' skillset.medium.id %}">{{ skillset.medium }}</a></td>
-            <td><a href="{% url 'ausleihe:skillset-detail' skillset.id %}">{{ skillset.name }}</a></td>
-            <td>{{ skillset.beschreibung }}</td>
+            <td>{{ skill.nummer }}</td>
+            <td>{{ skill.name }}</td>
+            <td>{{ skill.anzahl_plaetze }}</td>
+            <td>{{ skill.min_personen }}</td>
+            <td>{{ skill.max_personen }}</td>
+            <td>{{ skill.dauer }}</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
       {% else %}
-      <p>Bisher sind keine Skill Sets vorhanden.</p>
+      <p>Bisher sind keine Skills vorhanden.</p>
       {% endif %}
     </div>
   </div>

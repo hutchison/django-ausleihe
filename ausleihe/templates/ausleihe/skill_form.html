@@ -1,0 +1,38 @@
+<form method="post" accept-charset="utf-8">
+  {% csrf_token %}
+  <div class="row">
+    <div class="col">
+      <div class="form-group">
+        <label for="nummer"><strong>Nr.</strong></label>
+        <input class="form-control" id="nummer" name="nummer" required value="{{ skill.nummer }}">
+      </div>
+    </div>
+    <div class="col">
+      <div class="form-group">
+        <label for="name"><strong>Name</strong></label>
+        <input class="form-control" id="name" name="name" required value="{{ skill.name }}">
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <div class="form-group">
+        <label for="anzahl_plaetze"><strong>Anz. Plätze</strong></label>
+        <input class="form-control" id="anzahl_plaetze" name="anzahl_plaetze" required value="{{ skill.anzahl_plaetze }}">
+      </div>
+    </div>
+    <div class="col">
+      <div class="form-group">
+        <label for="min_personen"><strong>min. Personen</strong></label>
+        <input class="form-control" id="min_personen" name="min_personen" required value="{{ skill.min_personen }}">
+      </div>
+    </div>
+    <div class="col">
+      <div class="form-group">
+        <label for="max_personen"><strong>max. Personen</strong></label>
+        <input class="form-control" id="max_personen" name="max_personen" required value="{{ skill.max_personen }}">
+      </div>
+    </div>
+  </div>
+  <button type="submit" id="submit" class="btn btn-primary">Speichern</button>
+</form>
