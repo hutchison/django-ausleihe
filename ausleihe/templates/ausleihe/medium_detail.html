@@ -64,14 +64,14 @@
         <thead>
           <tr>
             <th class="col-4">Name</th>
-            <th class="col-4">Beschreibung</th>
+            <th class="col-4">Skill</th>
           </tr>
         </thead>
         <tbody>
           {% for skillset in medium.skillsets.all %}
           <tr>
             <td><a href="{% url 'ausleihe:skillset-detail' skillset.id %}">{{ skillset.name }}</a></td>
-            <td> {{ skillset.beschreibung }}</td>
+            <td><a href="{% url 'ausleihe:skill-detail' skillset.skill.id %}">{{ skillset.skill.name }}</td>
           </tr>
           {% endfor %}
         </tbody>

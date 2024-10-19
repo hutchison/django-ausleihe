@@ -151,7 +151,6 @@ class SkillsetItem(models.Model):
 
 class Skillset(models.Model):
     name = models.CharField(max_length=200)
-    beschreibung = models.TextField(blank=True)
 
     medium = models.ForeignKey(
         Medium,

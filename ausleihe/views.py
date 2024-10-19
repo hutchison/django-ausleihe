@@ -454,7 +454,6 @@ class SkillsetCreate(LoginRequiredMixin, PermissionRequiredMixin, View):
     def post(self, request):
         medium_id = request.POST.get("medium_id")
         name = request.POST.get("name")
-        beschreibung = request.POST.get("beschreibung")
         item_quantities = request.POST.getlist("item_quantities")
         item_ids = request.POST.getlist("item_ids")
 
@@ -462,7 +461,6 @@ class SkillsetCreate(LoginRequiredMixin, PermissionRequiredMixin, View):
         skillset = Skillset.objects.create(
             medium=medium,
             name=name,
-            beschreibung=beschreibung,
         )
 
         skillset_items = [
@@ -487,7 +485,7 @@ class SkillsetCreate(LoginRequiredMixin, PermissionRequiredMixin, View):
 class SkillsetEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Skillset
     permission_required = "ausleihe.change_skillset"
-    fields = ["medium", "name", "beschreibung"]
+    fields = ["medium", "name"]
     pk_url_kwarg = "skillset_id"
     template_name_suffix = "_edit"
 
@@ -511,7 +509,6 @@ class SkillsetEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
 
         self.object.medium = medium
         self.object.name = skillset_neu["name"]
-        self.object.beschreibung = skillset_neu["beschreibung"]
 
         self.object.save()
 
