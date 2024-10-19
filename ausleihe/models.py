@@ -104,6 +104,34 @@ class Buch(models.Model):
         return buch
 
 
+class Skill(models.Model):
+    nummer = models.PositiveSmallIntegerField(unique=True)
+    name = models.CharField(max_length=200, unique=True)
+    anzahl_plaetze = models.PositiveSmallIntegerField(
+        verbose_name="Anzahl benötigter Plätze",
+        help_text="Wie viele Plätze werden von den vorhandenen Plätzen eines Raumes benötigt?"
+    )
+    min_personen = models.PositiveSmallIntegerField(
+        verbose_name="Mind. Personen",
+        help_text="Wie viele Personen werden mindestens für die Durchführung benötigt?"
+    )
+    max_personen = models.PositiveSmallIntegerField(
+        verbose_name="Max. Personen",
+        help_text="Wie viele Personen können maximal an der Durchführung beteilgt sein?"
+    )
+    dauer = models.PositiveSmallIntegerField(
+        help_text="Zeitraum (min)"
+    )
+
+    class Meta:
+        verbose_name = "Skill"
+        verbose_name_plural = "Skills"
+        ordering = ("nummer",)
+
+    def __str__(self):
+        return f"Skill Nr. {self.nummer}: {self.name}"
+
+
 class SkillsetItem(models.Model):
     name = models.CharField(max_length=200, unique=True)
     beschreibung = models.TextField(blank=True)

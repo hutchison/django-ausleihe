@@ -5,6 +5,7 @@ from .models import (
     Buch,
     Leihe,
     Medium,
+    Skill,
     Skillset,
     SkillsetItem,
     SkillsetItemRelation,
@@ -64,6 +65,21 @@ class LeiheAdmin(admin.ModelAdmin):
         "erzeugt",
         "verleiht_von"
     )
+
+@admin.register(Skill)
+class SkillAdmin(admin.ModelAdmin):
+    model = Skill
+
+    list_display = (
+        "nummer",
+        "name",
+        "min_personen",
+        "max_personen",
+        "anzahl_plaetze",
+        "dauer",
+    )
+
+    list_display_links = ["name"]
 
 @admin.register(Skillset)
 class SkillsetAdmin(admin.ModelAdmin):
