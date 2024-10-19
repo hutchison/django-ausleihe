@@ -154,6 +154,11 @@ class Skillset(models.Model):
         on_delete=models.CASCADE,
         related_name="skillsets",
     )
+    skill = models.ForeignKey(
+        Skill,
+        on_delete=models.CASCADE,
+        related_name="skillsets",
+    )
 
     def __str__(self):
         return f"{self.name} ({self.id})"
