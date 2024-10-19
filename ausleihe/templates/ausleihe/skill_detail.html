@@ -37,6 +37,12 @@
           </tr>
         </tbody>
       </table>
+      {% if skill.beschreibung %}
+      <h6>Beschreibung</h6>
+      <p>
+        {{ skill.beschreibung }}
+      </p>
+      {% endif %}
       {% if skill.skillsets.exists %}
       <h5>Vorhandene Skill Sets</h5>
       <table class="table" id="skillsets">

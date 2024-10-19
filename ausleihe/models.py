@@ -123,6 +123,7 @@ class Skill(models.Model):
     dauer = models.PositiveSmallIntegerField(
         help_text="Zeitraum (min)"
     )
+    beschreibung = models.TextField(blank=True)
 
     class Meta:
         verbose_name = "Skill"

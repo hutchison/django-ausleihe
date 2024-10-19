@@ -18,6 +18,7 @@ class SkillForm(ModelForm):
             "min_personen",
             "max_personen",
             "dauer",
+            "beschreibung",
         ]
 
     def __init__(self, *args, **kwargs):
@@ -48,6 +49,11 @@ class SkillForm(ModelForm):
                 ),
                 Column(
                     Field("dauer"),
+                ),
+            ),
+            Row(
+                Column(
+                    Field("beschreibung"),
                 ),
             ),
         )
