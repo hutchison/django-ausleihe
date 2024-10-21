@@ -25,7 +25,7 @@
 
   {% crispy form %}
 
-  {% if perms.ausleihe.delete_skillset %}
+  {% if perms.ausleihe.delete_raum and raum %}
   <div class="row">
     <div class="col">
       <div class="alert alert-danger">
