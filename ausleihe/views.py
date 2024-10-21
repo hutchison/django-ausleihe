@@ -588,7 +588,16 @@ class SkillsetItemDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView
 
 
 class SkillList(LoginRequiredMixin, ListView):
-    model = Skill
+    queryset = Skill.objects.prefetch_related(
+        "raeume",
+    )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["raeume"] = Raum.objects.prefetch_related("skills")
+
+        return context
 
 
 class SkillDetail(LoginRequiredMixin, DetailView):

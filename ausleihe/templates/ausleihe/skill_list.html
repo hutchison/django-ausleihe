@@ -22,6 +22,7 @@
       {% endif %}
     </ol>
   </nav>
+
   <div class="row">
     <div class="col">
       {% if skill_list %}
@@ -54,5 +55,33 @@
       {% endif %}
     </div>
   </div>
+
+  {% if skill_list %}
+  <div class="row">
+    <div class="col">
+      <table class="table" id="verfuegbar">
+        <caption>Verfügbarkeit der Skills in den Räumen</caption>
+        <thead>
+          <tr>
+            <th>Räume / Skills</th>
+            {% for skill in skill_list %}
+            <th><abbr title="{{ skill.name }}">{{ skill.nummer }}</abbr></th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for raum in raeume %}
+          <tr>
+            <td>{{ raum }}</td>
+            {% for skill in skill_list %}
+            <td>{% if skill in raum.skills.all %}✓{% endif %}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
 </div>
 {% endblock content %}
