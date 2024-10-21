@@ -30,6 +30,46 @@ class Medium(models.Model):
         ).exists()
 
 
+class Leihe(models.Model):
+    medium = models.ForeignKey(Medium, on_delete=models.PROTECT)
+    nutzer = models.ForeignKey(
+        FachschaftUser,
+        on_delete=models.PROTECT,
+        related_name='entliehen',
+    )
+    anfang = models.DateField(auto_now=True)
+    ende = models.DateField()
+    zurueckgebracht = models.BooleanField(default=False, verbose_name="zurückgebracht")
+    erzeugt = models.DateTimeField(auto_now=True)
+    verleiht_von = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name='verliehen',
+    )
+
+    class Meta:
+        verbose_name = "Leihe"
+        verbose_name_plural = "Leihen"
+        ordering = ("-ende",)
+
+    def __str__(self):
+        r = "✓" if self.zurueckgebracht else "✗"
+        return (
+            f"{self.medium} an {self.nutzer} "
+            f"({self.anfang} – {self.ende}) "
+            f"durch {self.verleiht_von} am {self.erzeugt} {r}"
+        )
+
+    def ist_ueberfaellig(self):
+        return date.today() > self.ende
+
+    def differenz_heute(self):
+        return abs((date.today() - self.ende).days)
+
+    def dauer(self):
+        return (self.ende - self.anfang).days
+
+
 class Autor(models.Model):
     vorname = models.CharField(max_length=100, blank=True)
     nachname = models.CharField(max_length=200)
@@ -213,43 +253,3 @@ class SkillsetItemRelation(models.Model):
         verbose_name_plural = "Skillset-Item Relationen"
         ordering = ("skillset", "item")
         unique_together = ["skillset", "item"]
-
-
-class Leihe(models.Model):
-    medium = models.ForeignKey(Medium, on_delete=models.PROTECT)
-    nutzer = models.ForeignKey(
-        FachschaftUser,
-        on_delete=models.PROTECT,
-        related_name='entliehen',
-    )
-    anfang = models.DateField(auto_now=True)
-    ende = models.DateField()
-    zurueckgebracht = models.BooleanField(default=False, verbose_name="zurückgebracht")
-    erzeugt = models.DateTimeField(auto_now=True)
-    verleiht_von = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.PROTECT,
-        related_name='verliehen',
-    )
-
-    class Meta:
-        verbose_name = "Leihe"
-        verbose_name_plural = "Leihen"
-        ordering = ("-ende",)
-
-    def __str__(self):
-        r = "✓" if self.zurueckgebracht else "✗"
-        return (
-            f"{self.medium} an {self.nutzer} "
-            f"({self.anfang} – {self.ende}) "
-            f"durch {self.verleiht_von} am {self.erzeugt} {r}"
-        )
-
-    def ist_ueberfaellig(self):
-        return date.today() > self.ende
-
-    def differenz_heute(self):
-        return abs((date.today() - self.ende).days)
-
-    def dauer(self):
-        return (self.ende - self.anfang).days
