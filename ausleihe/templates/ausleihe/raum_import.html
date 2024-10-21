@@ -1,0 +1,28 @@
+{% extends "ausleihe/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+<style type="text/css" media="screen">
+  .asteriskField {
+    display: none;
+  }
+  .requiredField {
+    font-weight: bold;
+  }
+</style>
+{% endblock css %}
+
+{% block content %}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skill-list' %}">Skills</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:raum-list' %}">Raum</a></li>
+      <li class="breadcrumb-item active" aria-current="page">aus dem LSF importieren</li>
+    </ol>
+  </nav>
+
+  {% crispy form %}
+</div>
+{% endblock content %}

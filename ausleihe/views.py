@@ -1,3 +1,5 @@
+from datetime import date, datetime, timedelta
+
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -7,9 +9,10 @@ from django.utils.http import urlencode
 from django.views import View
 from django.views.generic import DetailView, ListView
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 
-from datetime import date, datetime, timedelta
+import requests
+
 from fsmedhro_core.models import FachschaftUser, Kontaktdaten
 
 from .models import (
@@ -27,7 +30,9 @@ from .models import (
 from .forms import (
     SkillForm,
     RaumForm,
+    RaumImportForm,
 )
+from .parsers import LSFRoomParser
 
 
 class Home(LoginRequiredMixin, View):
@@ -638,3 +643,31 @@ class RaumEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     def get_success_url(self):
         messages.success(self.request, "Gespeichert!")
         return reverse("ausleihe:raum-list")
+
+
+class RaumImport(LoginRequiredMixin, PermissionRequiredMixin, FormView):
+    template_name = "ausleihe/raum_import.html"
+    form_class = RaumImportForm
+    permission_required = "ausleihe.add_raum"
+
+    def get_success_url(self):
+        return reverse("ausleihe:raum-list")
+
+    def form_valid(self, form):
+        url = form.clean_url()
+        raum_id = form.raum_id
+        anzahl_plaetze = form.cleaned_data["anzahl_plaetze"]
+
+        r = requests.get(url)
+        parser = LSFRoomParser()
+        parser.feed(r.text)
+
+        raum_name = parser.room_name
+
+        raum = Raum.objects.create(
+            name=raum_name,
+            lsf_id=raum_id,
+            anzahl_plaetze=anzahl_plaetze,
+        )
+
+        return super().form_valid(form)

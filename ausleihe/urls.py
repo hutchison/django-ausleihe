@@ -37,6 +37,7 @@ urlpatterns = [
     path('räume', views.RaumList.as_view(), name='raum-list'),
     path('raum/neu', views.RaumCreate.as_view(), name='raum-create'),
     path('raum/<int:raum_id>/bearbeiten', views.RaumEdit.as_view(), name='raum-edit'),
+    path('raum/importieren', views.RaumImport.as_view(), name='raum-import'),
     path('verleihen', views.Verleihen.as_view(), name='verleihen'),
     path('verliehen', views.LeiheList.as_view(), name='verliehen'),
     path('verliehen/suche', views.LeiheUserSuche.as_view(), name='verliehen-an-suche'),
