@@ -5,6 +5,7 @@ from .models import (
     Buch,
     Leihe,
     Medium,
+    Raum,
     Skill,
     Skillset,
     SkillsetItem,
@@ -80,6 +81,7 @@ class SkillAdmin(admin.ModelAdmin):
     )
 
     list_display_links = ["name"]
+    filter_horizontal = ["raeume"]
 
 @admin.register(Skillset)
 class SkillsetAdmin(admin.ModelAdmin):
@@ -92,3 +94,12 @@ class SkillsetItemAdmin(admin.ModelAdmin):
 @admin.register(SkillsetItemRelation)
 class SkillsetItemRelationAdmin(admin.ModelAdmin):
     model = SkillsetItemRelation
+
+@admin.register(Raum)
+class RaumAdmin(admin.ModelAdmin):
+    model = Raum
+    list_display = (
+        "name",
+        "lsf_id",
+        "anzahl_plaetze",
+    )

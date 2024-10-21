@@ -17,6 +17,7 @@ from .models import (
     Buch,
     Leihe,
     Medium,
+    Raum,
     Skill,
     Skillset,
     SkillsetItem,
@@ -25,6 +26,7 @@ from .models import (
 )
 from .forms import (
     SkillForm,
+    RaumForm,
 )
 
 
@@ -585,7 +587,10 @@ class SkillList(LoginRequiredMixin, ListView):
 
 
 class SkillDetail(LoginRequiredMixin, DetailView):
-    model = Skill
+    queryset = Skill.objects.prefetch_related(
+        "raeume",
+        "skillsets",
+    )
     pk_url_kwarg = "skill_id"
 
 
@@ -606,3 +611,30 @@ class SkillEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     form_class = SkillForm
     pk_url_kwarg = "skill_id"
     template_name_suffix = "_create"
+
+
+class RaumList(LoginRequiredMixin, ListView):
+    model = Raum
+
+
+class RaumCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    model = Raum
+    permission_required = "ausleihe.add_raum"
+    template_name_suffix = "_create"
+    form_class = RaumForm
+
+    def get_success_url(self):
+        messages.success(self.request, "Gespeichert!")
+        return reverse("ausleihe:raum-list")
+
+
+class RaumEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    model = Raum
+    permission_required = "ausleihe.change_raum"
+    form_class = RaumForm
+    pk_url_kwarg = "raum_id"
+    template_name_suffix = "_create"
+
+    def get_success_url(self):
+        messages.success(self.request, "Gespeichert!")
+        return reverse("ausleihe:raum-list")

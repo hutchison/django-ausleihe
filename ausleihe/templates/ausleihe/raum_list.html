@@ -7,7 +7,7 @@
     <ol class="breadcrumb">
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:medium-list' %}">Medien</a></li>
-      <li class="breadcrumb-item" aria-current="page">{{ skill_list.count }} <a href="{% url 'ausleihe:skill-list' %}"><strong>Skill{% if skill_list.count > 1 %}s{% endif %}</strong></a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skill-list' %}">Skills</a></li>
       {% if perms.ausleihe.change_skillset %}
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillset-list' %}">Skill Sets</a></li>
       {% endif %}
@@ -15,42 +15,36 @@
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillsetitem-list' %}">Skill Set Items</a></li>
       {% endif %}
       {% if perms.ausleihe.change_raum %}
-      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:raum-list' %}">Räume</a></li>
+      <li class="breadcrumb-item" aria-current="page">{{ raum_list.count }} <a href="{% url 'ausleihe:raum-list' %}"><strong>{% if raum_list.count > 1 %}Räume{% else %}Raum{% endif %}</strong></a></li>
       {% endif %}
-      {% if perms.ausleihe.add_skill %}
-      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skill-create' %}">hinzufügen</a></li>
+      {% if perms.ausleihe.add_raum %}
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:raum-create' %}">hinzufügen</a></li>
       {% endif %}
     </ol>
   </nav>
   <div class="row">
     <div class="col">
-      {% if skill_list %}
-      <table class="table" id="skillsets">
+      {% if raum_list %}
+      <table class="table" id="raeume">
         <thead>
           <tr>
-            <th class="col-1">Nr.</th>
-            <th class="col-3">Name</th>
+            <th>Name</th>
+            <th>LSF ID</th>
             <th>Anz. Plätze</th>
-            <th>min. Personen</th>
-            <th>max. Personen</th>
-            <th>Dauer (min)</th>
           </tr>
         </thead>
         <tbody>
-          {% for skill in skill_list %}
+          {% for raum in raum_list %}
           <tr>
-            <td>{{ skill.nummer }}</td>
-            <td><a href="{% url 'ausleihe:skill-detail' skill.id %}">{{ skill.name }}</a></td>
-            <td>{{ skill.anzahl_plaetze }}</td>
-            <td>{{ skill.min_personen }}</td>
-            <td>{{ skill.max_personen }}</td>
-            <td>{{ skill.dauer }}</td>
+            <td><a href="{% url 'ausleihe:raum-edit' raum.id %}">{{ raum }}</a></td>
+            <td><a href="{{ raum.lsf_link }}">{{ raum.lsf_id }}</a></td>
+            <td>{{ raum.anzahl_plaetze }}</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
       {% else %}
-      <p>Bisher sind keine Skills vorhanden.</p>
+      <p>Bisher sind keine Räume vorhanden.</p>
       {% endif %}
     </div>
   </div>

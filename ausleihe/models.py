@@ -145,6 +145,28 @@ class Buch(models.Model):
         return buch
 
 
+class Raum(models.Model):
+    name = models.CharField(max_length=200, unique=True)
+    lsf_id = models.IntegerField(
+        unique=True,
+        verbose_name="LSF ID",
+    )
+    anzahl_plaetze = models.PositiveSmallIntegerField(
+        verbose_name="Anzahl verfügbarer Plätze",
+    )
+
+    class Meta:
+        verbose_name = "Raum"
+        verbose_name_plural = "Räume"
+        ordering = ("name",)
+
+    def __str__(self):
+        return self.name
+
+    def lsf_link(self):
+        return f"https://lsf.uni-rostock.de/qisserver/rds?state=verpublish&status=init&vmfile=no&moduleCall=webInfo&publishConfFile=webInfoRaum&publishSubDir=raum&keep=y&raum.rgid={self.lsf_id}"
+
+
 class Skill(models.Model):
     nummer = models.PositiveSmallIntegerField(unique=True)
     name = models.CharField(max_length=200, unique=True)
@@ -164,6 +186,13 @@ class Skill(models.Model):
         help_text="Zeitraum (min)"
     )
     beschreibung = models.TextField(blank=True)
+    raeume = models.ManyToManyField(
+        Raum,
+        related_name="skills",
+        verbose_name="Räume",
+        help_text="In welchen Räumen kann dieser Skill durchgeführt werden?",
+        blank=True,
+    )
 
     class Meta:
         verbose_name = "Skill"

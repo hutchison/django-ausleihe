@@ -43,6 +43,14 @@
         {{ skill.beschreibung }}
       </p>
       {% endif %}
+      {% if skill.raeume.exists %}
+      <h6>Verfügbar in folgenden Räumen</h6>
+      <ul>
+      {% for raum in skill.raeume.all %}
+      <li>{{ raum }}</li>
+      {% endfor %}
+      </ul>
+      {% endif %}
       {% if skill.skillsets.exists %}
       <h5>Vorhandene Skill Sets</h5>
       <table class="table" id="skillsets">
