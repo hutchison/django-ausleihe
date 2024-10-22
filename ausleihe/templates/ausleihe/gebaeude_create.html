@@ -1,0 +1,47 @@
+{% extends "ausleihe/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+<style type="text/css" media="screen">
+  .asteriskField {
+    display: none;
+  }
+  .requiredField {
+    font-weight: bold;
+  }
+</style>
+{% endblock css %}
+
+{% block content %}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skill-list' %}">Skills</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:gebaeude-list' %}">Gebäude</a></li>
+      <li class="breadcrumb-item active" aria-current="page">hinzufügen</li>
+    </ol>
+  </nav>
+
+  {% crispy form %}
+
+  {% if perms.ausleihe.delete_gebaeude and gebaeude %}
+  <div class="row">
+    <div class="col">
+      <div class="alert alert-danger">
+        <p>
+          Wenn du das Gebäude löschen willst, dann erledige das
+          <a class="alert-link" target="_blank" href="{% url 'admin:ausleihe_gebaeude_change' gebaeude.id %}">über die Admin-Oberfläche</a>.
+        </p>
+        {% if not user.is_staff %}
+        <p>
+        Dafür musst du von einem Administrator den <em>Mitarbeiter-Status</em> erhalten.
+        Wende dich an die Admins, damit sie dir das Häkchen setzen.
+        </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock content %}

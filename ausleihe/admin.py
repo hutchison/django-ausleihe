@@ -3,6 +3,7 @@ from django.contrib import admin
 from .models import (
     Autor,
     Buch,
+    Gebaeude,
     Leihe,
     Medium,
     Raum,
@@ -94,6 +95,14 @@ class SkillsetItemAdmin(admin.ModelAdmin):
 @admin.register(SkillsetItemRelation)
 class SkillsetItemRelationAdmin(admin.ModelAdmin):
     model = SkillsetItemRelation
+
+@admin.register(Gebaeude)
+class GebaeudeAdmin(admin.ModelAdmin):
+    model = Gebaeude
+    list_display = (
+        "name",
+        "lsf_id",
+    )
 
 @admin.register(Raum)
 class RaumAdmin(admin.ModelAdmin):

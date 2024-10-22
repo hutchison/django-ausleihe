@@ -15,38 +15,31 @@
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillsetitem-list' %}">Skill Set Items</a></li>
       {% endif %}
       {% if perms.ausleihe.change_raum %}
-      <li class="breadcrumb-item" aria-current="page">{{ raum_list.count }} <a href="{% url 'ausleihe:raum-list' %}"><strong>{% if raum_list.count > 1 %}Räume{% else %}Raum{% endif %}</strong></a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:raum-list' %}">Räume</a></li>
       {% endif %}
       {% if perms.ausleihe.change_gebaeude %}
-      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:gebaeude-list' %}">Gebäude</a></li>
+      <li class="breadcrumb-item" aria-current="page">{{ gebaeude_list.count }} <a href="{% url 'ausleihe:gebaeude-list' %}"><strong>Gebäude</strong></a></li>
       {% endif %}
-      {% if perms.ausleihe.add_raum %}
-      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:raum-create' %}">hinzufügen</a></li>
-      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:raum-import' %}">aus dem LSF importieren</a></li>
+      {% if perms.ausleihe.add_gebaeude %}
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:gebaeude-create' %}">hinzufügen</a></li>
       {% endif %}
     </ol>
   </nav>
   <div class="row">
     <div class="col">
-      {% if raum_list %}
-      <table class="table" id="raeume">
+      {% if gebaeude_list %}
+      <table class="table" id="gebaeude">
         <thead>
           <tr>
             <th>Name</th>
-            <th>Gebäude</th>
             <th>LSF ID</th>
-            <th>Anz. Plätze</th>
           </tr>
         </thead>
         <tbody>
-          {% for raum in raum_list %}
+          {% for gebaeude in gebaeude_list %}
           <tr>
-            <td>
-              {% if perms.ausleihe.change_raum %}<a href="{% url 'ausleihe:raum-edit' raum.id %}">{{ raum }}</a>{% else %}{{ raum }}{% endif %}
-            </td>
-            <td>{{ raum.gebaeude.name }}</td>
-            <td><a href="{{ raum.lsf_link }}">{{ raum.lsf_id }}</a></td>
-            <td>{{ raum.anzahl_plaetze }}</td>
+            <td>{% if perms.ausleihe.change_gebaeude %}<a href="{% url 'ausleihe:gebaeude-edit' gebaeude.id %}">{{ gebaeude }}</a>{% else %}{{ gebaeude }}{% endif %}</td>
+            <td><a href="{{ gebaeude.lsf_link }}">{{ gebaeude.lsf_id }}</a></td>
           </tr>
           {% endfor %}
         </tbody>

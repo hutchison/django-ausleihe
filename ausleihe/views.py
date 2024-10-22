@@ -18,6 +18,7 @@ from fsmedhro_core.models import FachschaftUser, Kontaktdaten
 from .models import (
     Autor,
     Buch,
+    Gebaeude,
     Leihe,
     Medium,
     Raum,
@@ -28,9 +29,10 @@ from .models import (
     Verlag,
 )
 from .forms import (
-    SkillForm,
+    GebaeudeForm,
     RaumForm,
     RaumImportForm,
+    SkillForm,
 )
 from .parsers import LSFRoomParser
 
@@ -625,6 +627,33 @@ class SkillEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     form_class = SkillForm
     pk_url_kwarg = "skill_id"
     template_name_suffix = "_create"
+
+
+class GebaeudeList(LoginRequiredMixin, ListView):
+    model = Gebaeude
+
+
+class GebaeudeCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    model = Gebaeude
+    permission_required = "ausleihe.add_gebaeude"
+    template_name_suffix = "_create"
+    form_class = GebaeudeForm
+
+    def get_success_url(self):
+        messages.success(self.request, "Gespeichert!")
+        return reverse("ausleihe:gebaeude-list")
+
+
+class GebaeudeEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    model = Gebaeude
+    permission_required = "ausleihe.change_gebaeude"
+    form_class = GebaeudeForm
+    pk_url_kwarg = "gebaeude_id"
+    template_name_suffix = "_create"
+
+    def get_success_url(self):
+        messages.success(self.request, "Gespeichert!")
+        return reverse("ausleihe:gebaeude-list")
 
 
 class RaumList(LoginRequiredMixin, ListView):

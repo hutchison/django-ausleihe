@@ -145,6 +145,26 @@ class Buch(models.Model):
         return buch
 
 
+class Gebaeude(models.Model):
+    name = models.CharField(max_length=200, unique=True)
+    lsf_id = models.IntegerField(
+        unique=True,
+        verbose_name="LSF ID",
+        help_text="Die LSF ID steht in der URL (z.B. k_gebaeude.gebid=101)."
+    )
+
+    class Meta:
+        verbose_name = "Gebäude"
+        verbose_name_plural = "Gebäude"
+        ordering = ("name",)
+
+    def __str__(self):
+        return self.name
+
+    def lsf_link(self):
+        return f"https://lsf.uni-rostock.de/qisserver/rds?state=verpublish&publishContainer=buildingContainer&k_gebaeude.gebid={self.lsf_id}"
+
+
 class Raum(models.Model):
     name = models.CharField(max_length=200, unique=True)
     lsf_id = models.IntegerField(
@@ -153,6 +173,13 @@ class Raum(models.Model):
     )
     anzahl_plaetze = models.PositiveSmallIntegerField(
         verbose_name="Anzahl verfügbarer Plätze",
+    )
+    gebaeude = models.ForeignKey(
+        Gebaeude,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        verbose_name="Gebäude",
     )
 
     class Meta:

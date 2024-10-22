@@ -17,6 +17,7 @@ from crispy_forms.bootstrap import (
 )
 
 from .models import (
+    Gebaeude,
     Raum,
     Skill,
 )
@@ -82,14 +83,33 @@ class SkillForm(forms.ModelForm):
         )
 
 
+class GebaeudeForm(forms.ModelForm):
+    class Meta:
+        model = Gebaeude
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = "gebaeude"
+        self.helper.form_method = "post"
+        self.helper.add_input(Submit("submit", "Speichern"))
+        self.helper.layout = Layout(
+            Row(
+                Column(
+                    Field("name"),
+                ),
+                Column(
+                    Field("lsf_id"),
+                ),
+            ),
+        )
+
+
 class RaumForm(forms.ModelForm):
     class Meta:
         model = Raum
-        fields = [
-            "name",
-            "lsf_id",
-            "anzahl_plaetze",
-        ]
+        fields = "__all__"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -101,6 +121,9 @@ class RaumForm(forms.ModelForm):
             Row(
                 Column(
                     Field("name"),
+                ),
+                Column(
+                    Field("gebaeude"),
                 ),
             ),
             Row(
