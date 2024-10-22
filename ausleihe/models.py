@@ -146,7 +146,11 @@ class Buch(models.Model):
 
 
 class Gebaeude(models.Model):
-    name = models.CharField(max_length=200, unique=True)
+    name = models.CharField(
+        max_length=200,
+        unique=True,
+        help_text="Bitte benenne Gebäude immer so, wie sie auch im LSF heißen.",
+    )
     lsf_id = models.IntegerField(
         unique=True,
         verbose_name="LSF ID",
@@ -180,6 +184,10 @@ class Raum(models.Model):
         blank=True,
         null=True,
         verbose_name="Gebäude",
+        help_text=(
+            "Das Gebäude ist für den komfortablen Import von Zeiten "
+            "aus dem LSF erforderlich."
+        ),
     )
 
     class Meta:
