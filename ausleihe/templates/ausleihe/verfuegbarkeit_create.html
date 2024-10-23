@@ -1,5 +1,16 @@
 {% extends "ausleihe/base.html" %}
-{% load static %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+<style type="text/css" media="screen">
+  .asteriskField {
+    display: none;
+  }
+  .requiredField {
+    font-weight: bold;
+  }
+</style>
+{% endblock css %}
 
 {% block content %}
 <div class="container">
@@ -18,39 +29,53 @@
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:raum-list' %}">Räume</a></li>
       {% endif %}
       {% if perms.ausleihe.change_gebaeude %}
-      <li class="breadcrumb-item" aria-current="page">{{ gebaeude_list.count }} <a href="{% url 'ausleihe:gebaeude-list' %}"><strong>Gebäude</strong></a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:gebaeude-list' %}">Gebäude</a></li>
       {% endif %}
       {% if perms.ausleihe.change_verfuegbarkeit %}
-      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verfuegbarkeit-create' %}">Zeiten</a></li>
-      {% endif %}
-      {% if perms.ausleihe.add_gebaeude %}
-      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:gebaeude-create' %}">hinzufügen</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verfuegbarkeit-create' %}"><strong>Zeiten</strong></a></li>
       {% endif %}
     </ol>
   </nav>
-  <div class="row">
+
+  {% crispy form %}
+
+  <div class="row mt-4">
     <div class="col">
-      {% if gebaeude_list %}
-      <table class="table" id="gebaeude">
+      {% if zeiten %}
+      <h6>Verfügbare Zeiten ab heute</h6>
+      <table class="table" id="verfuegbarkeiten">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>LSF ID</th>
+            <th>Datum</th>
+            <th>Wochentag</th>
+            <th>Zeit</th>
+            <th>Raum</th>
+            <th>Notiz</th>
           </tr>
         </thead>
         <tbody>
-          {% for gebaeude in gebaeude_list %}
+          {% for v in zeiten %}
           <tr>
-            <td>{% if perms.ausleihe.change_gebaeude %}<a href="{% url 'ausleihe:gebaeude-edit' gebaeude.id %}">{{ gebaeude }}</a>{% else %}{{ gebaeude }}{% endif %}</td>
-            <td><a href="{{ gebaeude.lsf_link }}">{{ gebaeude.lsf_id }}</a></td>
+            <td>{{ v.datum }}</td>
+            <td>{{ v.datum|date:"l" }}</td>
+            <td>
+              {% if perms.ausleihe.change_verfuegbarkeit %}
+              <a href="{% url 'ausleihe:verfuegbarkeit-edit' v.id %}">{{ v.beginn }} – {{ v.ende }} Uhr</a>
+              {% else %}
+              {{ v.beginn }} – {{ v.ende }} Uhr
+              {% endif %}
+            </td>
+            <td>{{ v.raum }}</td>
+            <td>{{ v.notiz }}</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
       {% else %}
-      <p>Bisher sind keine Räume vorhanden.</p>
+      <p>Bisher sind keine Zeiten vorhanden.</p>
       {% endif %}
     </div>
   </div>
+
 </div>
 {% endblock content %}

@@ -12,6 +12,7 @@ from .models import (
     SkillsetItem,
     SkillsetItemRelation,
     Verlag,
+    Verfuegbarkeit,
 )
 
 
@@ -111,4 +112,13 @@ class RaumAdmin(admin.ModelAdmin):
         "name",
         "lsf_id",
         "anzahl_plaetze",
+    )
+
+@admin.register(Verfuegbarkeit)
+class VerfuegbarkeitAdmin(admin.ModelAdmin):
+    model = Verfuegbarkeit
+    list_display = (
+        "beginn",
+        "ende",
+        "raum",
     )

@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.utils.http import urlencode
 from django.views import View
 from django.views.generic import DetailView, ListView
@@ -27,12 +28,14 @@ from .models import (
     SkillsetItem,
     SkillsetItemRelation,
     Verlag,
+    Verfuegbarkeit,
 )
 from .forms import (
     GebaeudeForm,
     RaumForm,
     RaumImportForm,
     SkillForm,
+    VerfuegbarkeitForm,
 )
 from .parsers import LSFRoomParser
 
@@ -709,3 +712,42 @@ class RaumImport(LoginRequiredMixin, PermissionRequiredMixin, FormView):
         )
 
         return super().form_valid(form)
+
+
+class VerfuegbarkeitCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    model = Verfuegbarkeit
+    permission_required = "ausleihe.add_verfuegbarkeit"
+    template_name_suffix = "_create"
+    form_class = VerfuegbarkeitForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        today = timezone.localdate()
+        zeiten = Verfuegbarkeit.objects.filter(datum__gte=today)
+        context["zeiten"] = zeiten
+
+        return context
+
+    def get_success_url(self):
+        messages.success(self.request, "Gespeichert!")
+        return reverse("ausleihe:verfuegbarkeit-create")
+
+
+class VerfuegbarkeitUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    model = Verfuegbarkeit
+    permission_required = "ausleihe.change_verfuegbarkeit"
+    form_class = VerfuegbarkeitForm
+    pk_url_kwarg = "v_id"
+    template_name_suffix = "_form"
+
+    def get_success_url(self):
+        messages.success(self.request, "Gespeichert!")
+        return reverse("ausleihe:verfuegbarkeit-create")
+
+
+class VerfuegbarkeitDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+    model = Verfuegbarkeit
+    permission_required = "ausleihe.delete_verfuegbarkeit"
+    pk_url_kwarg = "v_id"
+    success_url = reverse_lazy("ausleihe:verfuegbarkeit-create")

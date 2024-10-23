@@ -1,16 +1,18 @@
 import re
 
 from django import forms
+from django.utils import timezone
 from django.core.exceptions import ValidationError
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (
-    Submit,
-    Layout,
+    Column,
     Div,
     Field,
+    HTML,
+    Layout,
     Row,
-    Column,
+    Submit,
 )
 from crispy_forms.bootstrap import (
     InlineCheckboxes,
@@ -20,6 +22,7 @@ from .models import (
     Gebaeude,
     Raum,
     Skill,
+    Verfuegbarkeit,
 )
 
 
@@ -184,3 +187,63 @@ class RaumImportForm(forms.Form):
             raise ValidationError("Dieser Raum existiert schon!")
 
         return url
+
+
+class VerfuegbarkeitForm(forms.ModelForm):
+    class Meta:
+        model = Verfuegbarkeit
+        fields = "__all__"
+        widgets = {
+            "datum": forms.TextInput(
+                attrs={"type": "date", "value": timezone.localdate()}
+            ),
+            "beginn": forms.TextInput(attrs={"type": "time"}),
+            "ende": forms.TextInput(attrs={"type": "time"}),
+            "notiz": forms.Textarea(attrs={"rows": 1}),
+        }
+
+    @property
+    def helper(self):
+        helper = FormHelper()
+        helper.form_id = "verfuegbarkeit"
+        helper.layout = Layout(
+            Row(
+                Column(
+                    Field("datum"),
+                    css_class="col-2",
+                ),
+                Column(
+                    Field("beginn"),
+                    css_class="col-2",
+                ),
+                Column(
+                    Field("ende"),
+                    css_class="col-2",
+                ),
+                Column(
+                    Field("raum"),
+                ),
+            ),
+            Row(
+                Column(
+                    Field("notiz"),
+                ),
+            ),
+            Row(
+                Column(
+                    Submit("submit", "Speichern"),
+                ),
+                Column(
+                    HTML("""
+                        {% if object %}
+                        <a href="{% url 'ausleihe:verfuegbarkeit-delete' object.id %}"
+                        class="btn btn-danger" role="button">Löschen</a>
+                        {% endif %}
+                    """
+                    ),
+                    css_class="col-3 text-right",
+                ),
+            ),
+        )
+
+        return helper

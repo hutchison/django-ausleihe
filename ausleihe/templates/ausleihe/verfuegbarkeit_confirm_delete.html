@@ -1,5 +1,4 @@
 {% extends "ausleihe/base.html" %}
-{% load static %}
 
 {% block content %}
 <div class="container">
@@ -18,38 +17,23 @@
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:raum-list' %}">Räume</a></li>
       {% endif %}
       {% if perms.ausleihe.change_gebaeude %}
-      <li class="breadcrumb-item" aria-current="page">{{ gebaeude_list.count }} <a href="{% url 'ausleihe:gebaeude-list' %}"><strong>Gebäude</strong></a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:gebaeude-list' %}">Gebäude</a></li>
       {% endif %}
       {% if perms.ausleihe.change_verfuegbarkeit %}
-      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verfuegbarkeit-create' %}">Zeiten</a></li>
-      {% endif %}
-      {% if perms.ausleihe.add_gebaeude %}
-      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:gebaeude-create' %}">hinzufügen</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verfuegbarkeit-create' %}">Zeit</a></li>
+      <li class="breadcrumb-item" aria-current="page">{{ object.id }}</li>
+      <li class="breadcrumb-item" aria-current="page">löschen</li>
       {% endif %}
     </ol>
   </nav>
+
   <div class="row">
     <div class="col">
-      {% if gebaeude_list %}
-      <table class="table" id="gebaeude">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>LSF ID</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for gebaeude in gebaeude_list %}
-          <tr>
-            <td>{% if perms.ausleihe.change_gebaeude %}<a href="{% url 'ausleihe:gebaeude-edit' gebaeude.id %}">{{ gebaeude }}</a>{% else %}{{ gebaeude }}{% endif %}</td>
-            <td><a href="{{ gebaeude.lsf_link }}">{{ gebaeude.lsf_id }}</a></td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      {% else %}
-      <p>Bisher sind keine Räume vorhanden.</p>
-      {% endif %}
+      <form method="post" accept-charset="utf-8">
+        {% csrf_token %}
+        <p>Soll <strong>{{ object }}</strong> wirklich gelöscht werden?</p>
+        <button type="submit" class="btn btn-danger">Löschen</button>
+      </form>
     </div>
   </div>
 </div>
