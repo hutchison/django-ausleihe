@@ -20,7 +20,12 @@
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skill-list' %}"><strong>Skills</strong></a></li>
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillset-list' %}">Skill Sets</a></li>
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillsetitem-list' %}">Skill Set Items</a></li>
+      {% if object %}
+      <li class="breadcrumb-item active" aria-current="page">{{ object }}</li>
+      <li class="breadcrumb-item active" aria-current="page">bearbeiten</li>
+      {% else %}
       <li class="breadcrumb-item active" aria-current="page">hinzufügen</li>
+      {% endif %}
     </ol>
   </nav>
 

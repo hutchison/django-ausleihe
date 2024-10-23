@@ -19,20 +19,29 @@
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skill-list' %}">Skills</a></li>
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:gebaeude-list' %}">Gebäude</a></li>
+      {% if object %}
+      <li class="breadcrumb-item active" aria-current="page">{{ object }}</li>
+      <li class="breadcrumb-item active" aria-current="page">bearbeiten</li>
+      {% else %}
       <li class="breadcrumb-item active" aria-current="page">hinzufügen</li>
+      {% endif %}
     </ol>
   </nav>
+
+  <div class="row">
+    <div class="col">
+      <p>Eine Liste aller Gebäude im LSF <a href="https://lsf.uni-rostock.de/qisserver/rds?state=change&type=6&moduleParameter=raumSelectGeb&nextdir=change&next=SearchSelect.vm&target=raumSearch&subdir=raum&init=y&source=state%3Dchange%26type%3D5%26moduleParameter%3DraumSearch%26nextdir%3Dchange%26next%3Dsearch.vm%26subdir%3Draum%26_form%3Ddisplay%26topitem%3Dfacilities%26subitem%3DsearchFacilities%26function%3Dnologgedin%26field%3Dgebid&targetfield=gebid&_form=display" target="_blank">findest du hier</a>.</p>
+    </div>
+  </div>
 
   {% crispy form %}
 
   {% if perms.ausleihe.delete_gebaeude and gebaeude %}
-  <div class="row">
+  <div class="row mt-5">
     <div class="col">
       <div class="alert alert-danger">
-        <p>
-          Wenn du das Gebäude löschen willst, dann erledige das
-          <a class="alert-link" target="_blank" href="{% url 'admin:ausleihe_gebaeude_change' gebaeude.id %}">über die Admin-Oberfläche</a>.
-        </p>
+        Wenn du das Gebäude löschen willst, dann erledige das
+        <a class="alert-link" target="_blank" href="{% url 'admin:ausleihe_gebaeude_change' gebaeude.id %}">über die Admin-Oberfläche</a>.
         {% if not user.is_staff %}
         <p>
         Dafür musst du von einem Administrator den <em>Mitarbeiter-Status</em> erhalten.
