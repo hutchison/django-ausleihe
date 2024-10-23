@@ -43,7 +43,8 @@
         {{ skill.beschreibung }}
       </p>
       {% endif %}
-      {% if skill.raeume.exists %}
+
+      {% if skill.raeume.exists and perms.ausleihe.change_skill %}
       <h6 class="mt-4">Verfügbar in folgenden Räumen</h6>
       <ul>
       {% for raum in skill.raeume.all %}
@@ -51,8 +52,9 @@
       {% endfor %}
       </ul>
       {% endif %}
+
       {% if skill.skillsets.exists %}
-      <h5>Vorhandene Skill Sets</h5>
+      <h6 class="mt-5">Vorhandene Skill Sets</h6>
       <table class="table" id="skillsets">
         <thead>
           <tr>

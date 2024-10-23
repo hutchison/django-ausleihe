@@ -458,6 +458,7 @@ class SkillsetCreate(LoginRequiredMixin, PermissionRequiredMixin, View):
     def get_common_context(self):
         context = {
             "items": SkillsetItem.objects.all(),
+            "skills": Skill.objects.all(),
         }
         return context
 
