@@ -1,8 +1,9 @@
-from datetime import date
+from datetime import date, timedelta
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Q, Sum
 from django.shortcuts import reverse
 from django.utils import timezone
 
@@ -204,6 +205,41 @@ class Raum(models.Model):
     def lsf_link(self):
         return f"https://lsf.uni-rostock.de/qisserver/rds?state=verpublish&status=init&vmfile=no&moduleCall=webInfo&publishConfFile=webInfoRaum&publishSubDir=raum&keep=y&raum.rgid={self.lsf_id}"
 
+    def kapazitaet(self, von, bis):
+        """
+        Hier müssen wir herausfinden, welche Reservierungen sich mit von und bis
+        überschneiden bzw. welche Sonderfälle wir ausschließen müssen.
+
+        zeit ist die Anfangszeit der Reservierung, ende = zeit + skill.dauer
+
+        Folgende Fälle können auftreten:
+
+            zeit       von     bis      ende
+                        |-------|
+        1           |-------|
+        2                   |-------|
+        3                 |---|                 (wird von 1 und 2 schon abgedeckt)
+        4           |---------------|
+        5           |---|
+        6                       |---|
+
+        """
+        res = Reservierung.objects.filter(
+            raum=self,
+        ).filter(
+            Q(zeit__lte=von, ende__gt=von)  |    # Fall 1
+            Q(zeit__lt=bis,  ende__gte=bis) |    # Fall 2
+            Q(zeit__lte=von, ende__gte=bis)      # Fall 4
+        ).annotate(
+            anzahl_plaetze=Sum("skill__anzahl_plaetze")
+        ).first()
+
+        l = 0
+        if res:
+            l = res.anzahl_plaetze
+
+        return self.anzahl_plaetze - l
+
 
 class Verfuegbarkeit(models.Model):
     datum = models.DateField()
@@ -212,6 +248,7 @@ class Verfuegbarkeit(models.Model):
     raum = models.ForeignKey(
         Raum,
         on_delete=models.CASCADE,
+        related_name="verfuegbarkeiten",
     )
     notiz = models.TextField(
         blank=True,
@@ -393,3 +430,84 @@ class SkillsetItemRelation(models.Model):
         verbose_name_plural = "Skillset-Item Relationen"
         ordering = ("skillset", "item")
         unique_together = ["skillset", "item"]
+
+
+class Reservierung(models.Model):
+    nutzer = models.ForeignKey(
+        FachschaftUser,
+        on_delete=models.PROTECT,
+        related_name='reservierungen',
+    )
+    skill = models.ForeignKey(
+        Skill,
+        on_delete=models.PROTECT,
+        related_name='reservierungen',
+    )
+    raum = models.ForeignKey(
+        Raum,
+        on_delete=models.PROTECT,
+        related_name='reservierungen',
+    )
+    zeit = models.DateTimeField(
+        verbose_name="Datum und Uhrzeit",
+        help_text="Für wann gilt die Reservierung?",
+    )
+    ende = models.DateTimeField(
+        editable=False,
+    )
+    erzeugt = models.DateTimeField(auto_now=True)
+
+    @property
+    def lokale_zeit(self):
+        return self.zeit.astimezone(timezone.get_current_timezone())
+
+    @property
+    def lokales_ende(self):
+        return self.ende.astimezone(timezone.get_current_timezone())
+
+    class Meta:
+        verbose_name = "Reservierung"
+        verbose_name_plural = "Reservierungen"
+        ordering = ("-zeit", "nutzer", "skill", "raum")
+
+    def __str__(self):
+        return (
+            f"{self.nutzer}; "
+            f"{self.skill}; "
+            f"{self.raum}; "
+            f"{self.lokale_zeit:%d.%m.%Y · %H:%M}"
+            "-"
+            f"{self.lokales_ende:%H:%M}"
+        )
+
+    def clean(self):
+        if self.skill not in self.raum.skills.all():
+            raise ValidationError("Skill wird in dem Raum nicht angeboten.")
+
+        # datetime wird immer mit TZ=UTC gespeichert, also muss ich das hier umrechnen:
+        lz = self.lokale_zeit
+        # Der Raum ist zeitlich verfügbar, wenn
+        # * das Datum stimmt
+        # * der Beginn der Verfügbarkeit <= der Reservierungszeit ist
+        # * das Ender der Verfügbarkeit >= der Reservierungszeit + Skilldauer ist
+        raum_ist_zeitlich_verfuegbar = self.raum.verfuegbarkeiten.filter(
+            datum=lz.date(),
+            beginn__lte=lz.time(),
+            ende__gte=(lz + timedelta(minutes=self.skill.dauer))
+        ).exists()
+        if not raum_ist_zeitlich_verfuegbar:
+            raise ValidationError(
+                "Der Raum bietet für diese gewünschte Zeit keine verfügbare Zeit an."
+            )
+
+        von = self.zeit
+        bis = self.zeit + timedelta(minutes=self.skill.dauer)
+        if not self.raum.kapazitaet(von, bis):
+            raise ValidationError(
+                "Dieser Raum hat zu dieser Zeit nicht genügend freie Plätze."
+            )
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        self.ende = self.zeit + timedelta(minutes=self.skill.dauer)
+        super().save(*args, **kwargs)

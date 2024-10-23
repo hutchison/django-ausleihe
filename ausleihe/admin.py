@@ -7,6 +7,7 @@ from .models import (
     Leihe,
     Medium,
     Raum,
+    Reservierung,
     Skill,
     Skillset,
     SkillsetItem,
@@ -121,4 +122,15 @@ class VerfuegbarkeitAdmin(admin.ModelAdmin):
         "beginn",
         "ende",
         "raum",
+    )
+
+@admin.register(Reservierung)
+class ReservierungAdmin(admin.ModelAdmin):
+    model = Reservierung
+    list_display = (
+        "nutzer",
+        "skill",
+        "raum",
+        "zeit",
+        "ende",
     )
