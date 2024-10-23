@@ -231,7 +231,7 @@ class VerfuegbarkeitForm(forms.ModelForm):
             ),
             Row(
                 Column(
-                    Submit("submit", "Speichern"),
+                    Submit("submit", "Hinzufügen"),
                 ),
                 Column(
                     HTML("""
