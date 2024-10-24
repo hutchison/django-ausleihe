@@ -63,7 +63,8 @@
       <table class="table" id="verfuegbar">
         <thead>
           <tr>
-            <th>Räume / Skills</th>
+            <th>Räume</th>
+            <th>Plätze</th>
             {% for skill in skill_list %}
             <th><abbr title="{{ skill.name }}">{{ skill.nummer }}</abbr></th>
             {% endfor %}
@@ -73,6 +74,7 @@
           {% for raum in raeume %}
           <tr>
             <td>{{ raum }}</td>
+            <td>{{ raum.anzahl_plaetze }}</td>
             {% for skill in skill_list %}
             <td>{% if skill in raum.skills.all %}✓{% endif %}</td>
             {% endfor %}
