@@ -545,6 +545,28 @@ class SkillsetEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         return redirect('ausleihe:skillset-detail', skillset_id=self.object.id)
 
 
+class SkillsetDuplicate(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = "ausleihe.change_skillset"
+
+    def get(self, request, skillset_id):
+        old_skillset_id = skillset_id
+        old_skillset = get_object_or_404(Skillset, id=old_skillset_id)
+
+        # Duplizieren:
+        old_skillset.pk = None
+        old_skillset.save()
+        new_skillset_id = old_skillset.pk
+
+        old_skillset = get_object_or_404(Skillset, id=old_skillset_id)
+        new_skillset = get_object_or_404(Skillset, id=new_skillset_id)
+
+        for r in old_skillset.item_relations.all():
+            new_skillset.item_relations.create(anzahl=r.anzahl, item_id=r.item_id)
+
+        messages.success(self.request, "Dupliziert! Hier kannst du es weiterbearbeiten.")
+        return redirect("ausleihe:skillset-edit", skillset_id=new_skillset_id)
+
+
 class SkillsetItemList(LoginRequiredMixin, ListView):
     queryset = SkillsetItem.objects.prefetch_related(
         "skillset_relations",
