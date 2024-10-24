@@ -436,17 +436,17 @@ class Reservierung(models.Model):
     nutzer = models.ForeignKey(
         FachschaftUser,
         on_delete=models.PROTECT,
-        related_name='reservierungen',
+        related_name="reservierungen",
     )
     skill = models.ForeignKey(
         Skill,
         on_delete=models.PROTECT,
-        related_name='reservierungen',
+        related_name="reservierungen",
     )
     raum = models.ForeignKey(
         Raum,
         on_delete=models.PROTECT,
-        related_name='reservierungen',
+        related_name="reservierungen",
     )
     zeit = models.DateTimeField(
         verbose_name="Datum und Uhrzeit",
