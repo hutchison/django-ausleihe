@@ -489,7 +489,7 @@ class Reservierung(models.Model):
         # Der Raum ist zeitlich verfügbar, wenn
         # * das Datum stimmt
         # * der Beginn der Verfügbarkeit <= der Reservierungszeit ist
-        # * das Ender der Verfügbarkeit >= der Reservierungszeit + Skilldauer ist
+        # * das Ende der Verfügbarkeit >= der Reservierungszeit + Skilldauer ist
         raum_ist_zeitlich_verfuegbar = self.raum.verfuegbarkeiten.filter(
             datum=lz.date(),
             beginn__lte=lz.time(),
