@@ -471,11 +471,15 @@ class SkillsetCreate(LoginRequiredMixin, PermissionRequiredMixin, View):
         name = request.POST.get("name")
         item_quantities = request.POST.getlist("item_quantities")
         item_ids = request.POST.getlist("item_ids")
+        skill_id = int(request.POST.get("skill_id"))
+
+        skill = get_object_or_404(Skill, id=skill_id)
 
         medium, created = Medium.objects.get_or_create(pk=medium_id)
         skillset = Skillset.objects.create(
             medium=medium,
             name=name,
+            skill=skill,
         )
 
         skillset_items = [
