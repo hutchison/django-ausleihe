@@ -107,7 +107,7 @@ class Buch(models.Model):
 
     medium = models.ForeignKey(
         Medium,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="buecher",
     )
     verlag = models.ForeignKey(
@@ -372,7 +372,7 @@ class Skillset(models.Model):
 
     medium = models.ForeignKey(
         Medium,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="skillsets",
     )
     skill = models.ForeignKey(
@@ -481,8 +481,12 @@ class Reservierung(models.Model):
         )
 
     def clean(self):
+        # Kann der Skill dem Raum durchgeführt werden?
         if self.skill not in self.raum.skills.all():
             raise ValidationError("Skill wird in dem Raum nicht angeboten.")
+
+        # Ist der Raum zeitlich verfügbar?
+        # Bietet der Raum zur gewünschten Zeit eine verfügbare Zeit an?
 
         # datetime wird immer mit TZ=UTC gespeichert, also muss ich das hier umrechnen:
         lz = self.lokale_zeit
@@ -500,12 +504,16 @@ class Reservierung(models.Model):
                 "Der Raum bietet für diese gewünschte Zeit keine verfügbare Zeit an."
             )
 
+        # Hat der Raum zu dieser Zeit genügend Kapazität (freie Plätze)?
         von = self.zeit
         bis = self.zeit + timedelta(minutes=self.skill.dauer)
         if not self.raum.kapazitaet(von, bis):
             raise ValidationError(
                 "Dieser Raum hat zu dieser Zeit nicht genügend freie Plätze."
             )
+
+        # Gibt es ein freies Medium, das dafür verliehen werden kann?
+
 
     def save(self, *args, **kwargs):
         self.clean()
