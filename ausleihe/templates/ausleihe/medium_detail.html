@@ -21,6 +21,28 @@
       </table>
     </div>
   </div>
+
+  {% if perms.ausleihe.delete_medium %}
+  <div class="row">
+    <div class="col">
+      <div class="alert alert-danger">
+        Wenn du das Medium löschen willst, dann erledige das
+        <a class="alert-link" target="_blank" href="{% url 'admin:ausleihe_medium_change' medium.id %}">über die Admin-Oberfläche</a>.
+
+        {% if medium.buecher.exists or medium.skillsets.exists  %}
+        Beachte, dass du das Medium nicht löschen kannst, wenn dem Medium noch Bücher oder Skill Sets zugeordnet sind.
+        Diese müssen erst einem anderen Medium zugeordnet werden.
+        {% endif %}
+
+        {% if not user.is_staff %}
+        Dafür musst du von einem Administrator den <em>Mitarbeiter-Status</em> erhalten.
+        Wende dich an die Admins, damit sie dir das Häkchen setzen.
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
   {% if medium.buecher.exists %}
   <div class="row">
     <div class="col">
