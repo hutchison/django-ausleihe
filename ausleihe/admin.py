@@ -128,9 +128,11 @@ class VerfuegbarkeitAdmin(admin.ModelAdmin):
 class ReservierungAdmin(admin.ModelAdmin):
     model = Reservierung
     list_display = (
+        "zeit",
+        "ende",
         "nutzer",
         "skill",
         "raum",
-        "zeit",
+        "medium",
         "ende",
     )

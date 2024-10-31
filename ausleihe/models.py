@@ -205,41 +205,6 @@ class Raum(models.Model):
     def lsf_link(self):
         return f"https://lsf.uni-rostock.de/qisserver/rds?state=verpublish&status=init&vmfile=no&moduleCall=webInfo&publishConfFile=webInfoRaum&publishSubDir=raum&keep=y&raum.rgid={self.lsf_id}"
 
-    def kapazitaet(self, von, bis):
-        """
-        Hier müssen wir herausfinden, welche Reservierungen sich mit von und bis
-        überschneiden bzw. welche Sonderfälle wir ausschließen müssen.
-
-        zeit ist die Anfangszeit der Reservierung, ende = zeit + skill.dauer
-
-        Folgende Fälle können auftreten:
-
-            zeit       von     bis      ende
-                        |-------|
-        1           |-------|
-        2                   |-------|
-        3                 |---|                 (wird von 1 und 2 schon abgedeckt)
-        4           |---------------|
-        5           |---|
-        6                       |---|
-
-        """
-        res = Reservierung.objects.filter(
-            raum=self,
-        ).filter(
-            Q(zeit__lte=von, ende__gt=von)  |    # Fall 1
-            Q(zeit__lt=bis,  ende__gte=bis) |    # Fall 2
-            Q(zeit__lte=von, ende__gte=bis)      # Fall 4
-        ).annotate(
-            anzahl_plaetze=Sum("skill__anzahl_plaetze")
-        ).first()
-
-        l = 0
-        if res:
-            l = res.anzahl_plaetze
-
-        return self.anzahl_plaetze - l
-
 
 class Verfuegbarkeit(models.Model):
     datum = models.DateField()
@@ -443,6 +408,11 @@ class Reservierung(models.Model):
         on_delete=models.PROTECT,
         related_name="reservierungen",
     )
+    medium = models.ForeignKey(
+        Medium,
+        on_delete=models.PROTECT,
+        related_name="reservierungen",
+    )
     raum = models.ForeignKey(
         Raum,
         on_delete=models.PROTECT,
@@ -468,23 +438,34 @@ class Reservierung(models.Model):
     class Meta:
         verbose_name = "Reservierung"
         verbose_name_plural = "Reservierungen"
-        ordering = ("-zeit", "nutzer", "skill", "raum")
+        ordering = ("-zeit", "nutzer", "skill", "medium", "raum")
 
     def __str__(self):
         return (
             f"{self.nutzer}; "
             f"{self.skill}; "
+            f"{self.medium}; "
             f"{self.raum}; "
             f"{self.lokale_zeit:%d.%m.%Y · %H:%M}"
             "-"
             f"{self.lokales_ende:%H:%M}"
         )
 
-    def clean(self):
+    def _skill_im_raum(self):
         # Kann der Skill dem Raum durchgeführt werden?
-        if self.skill not in self.raum.skills.all():
-            raise ValidationError("Skill wird in dem Raum nicht angeboten.")
+        return self.skill in self.raum.skills.all()
 
+    def _skill_vom_medium(self):
+        # Kann der Skill mit dem Medium durchgeführt werden?
+        # Ein Medium kann mehrere Skillsets haben, die jeweils einen Skill abdecken.
+        # Deckt irgendein Skillset den Skill ab, den wir reservieren wollen?
+        return any(
+            self.skill == sk_set.skill
+            for sk_set
+            in self.medium.skillsets.all()
+        )
+
+    def _raum_zeitlich_verfuegbar(self):
         # Ist der Raum zeitlich verfügbar?
         # Bietet der Raum zur gewünschten Zeit eine verfügbare Zeit an?
 
@@ -494,25 +475,93 @@ class Reservierung(models.Model):
         # * das Datum stimmt
         # * der Beginn der Verfügbarkeit <= der Reservierungszeit ist
         # * das Ende der Verfügbarkeit >= der Reservierungszeit + Skilldauer ist
-        raum_ist_zeitlich_verfuegbar = self.raum.verfuegbarkeiten.filter(
+        return self.raum.verfuegbarkeiten.filter(
             datum=lz.date(),
             beginn__lte=lz.time(),
             ende__gte=(lz + timedelta(minutes=self.skill.dauer))
         ).exists()
-        if not raum_ist_zeitlich_verfuegbar:
+
+    def _ueberschneidende_reservierungen_vom_raum(self):
+        """
+        Hier müssen wir herausfinden, welche Reservierungen sich mit von und bis
+        überschneiden bzw. welche Sonderfälle wir ausschließen müssen.
+
+        zeit ist die Anfangszeit der Reservierung, ende = zeit + skill.dauer
+
+        Folgende Fälle können auftreten:
+
+            zeit       von     bis      ende
+                        |-------|
+        1           |-------|
+        2                   |-------|
+        3                 |---|                 (wird von 1 und 2 schon abgedeckt)
+        4           |---------------|
+        5           |---|
+        6                       |---|
+        """
+        von, bis = self.zeit, self.zeit + timedelta(minutes=self.skill.dauer)
+        return self.raum.reservierungen.filter(
+            Q(zeit__lte = von, ende__gt  = von) |    # Fall 1
+            Q(zeit__lt  = bis, ende__gte = bis) |    # Fall 2
+            Q(zeit__lte = von, ende__gte = bis)      # Fall 4
+        )
+
+    def _raum_hat_kapazitaet(self):
+        r = self._ueberschneidende_reservierungen_vom_raum()
+        if r.exists():
+            # gehe alle überschneidenden Reservierungen zu diesem Raum durch und
+            # summiere die benötigten Plätze der Skills
+            r_plaetze = r.annotate(
+                anzahl_plaetze=Sum("skill__anzahl_plaetze")
+            ).first()
+
+            l = r_platze.anzahl_plaetze if r_plaetze else 0
+            kapazitaet = self.raum.anzahl_plaetze - l
+
+            return kapazitaet >= self.skill.anzahl_plaetze
+        else:
+            return self.raum.anzahl_plaetze     # True <=> (> 0)
+
+    def _ueberschneidende_reservierungen_vom_medium(self):
+        von, bis = self.zeit, self.zeit + timedelta(minutes=self.skill.dauer)
+        return self.medium.reservierungen.filter(
+            # siehe self._raum_hat_kapazitaet()
+            Q(zeit__lte = von, ende__gt  = von) |    # Fall 1
+            Q(zeit__lt  = bis, ende__gte = bis) |    # Fall 2
+            Q(zeit__lte = von, ende__gte = bis)      # Fall 4
+        )
+
+    def _medium_zeitlich_verfuegbar(self):
+        # Für das eigene Medium darf keine Reservierung in diesem Zeitraum existieren:
+        return not self._ueberschneidende_reservierungen_vom_medium().exists()
+
+    def _ueberschneidende_reservierungen_von_nutzer(self):
+        von, bis = self.zeit, self.zeit + timedelta(minutes=self.skill.dauer)
+        return self.nutzer.reservierungen.filter(
+            # siehe self._raum_hat_kapazitaet()
+            Q(zeit__lte = von, ende__gt  = von) |    # Fall 1
+            Q(zeit__lt  = bis, ende__gte = bis) |    # Fall 2
+            Q(zeit__lte = von, ende__gte = bis)      # Fall 4
+        )
+
+    def clean(self):
+        if not self._skill_im_raum():
+            raise ValidationError("Skill wird in dem Raum nicht angeboten.")
+
+        if not self._skill_vom_medium():
             raise ValidationError(
-                "Der Raum bietet für diese gewünschte Zeit keine verfügbare Zeit an."
+                f'Skill "{self.skill.name}" wird vom '
+                f'Medium "{self.medium}" nicht angeboten.'
             )
 
-        # Hat der Raum zu dieser Zeit genügend Kapazität (freie Plätze)?
-        von = self.zeit
-        bis = self.zeit + timedelta(minutes=self.skill.dauer)
-        if not self.raum.kapazitaet(von, bis):
-            raise ValidationError(
-                "Dieser Raum hat zu dieser Zeit nicht genügend freie Plätze."
-            )
+        if not self._raum_zeitlich_verfuegbar():
+            raise ValidationError("Der Raum bietet für diese Zeit keine verfügbare Zeit an.")
 
-        # Gibt es ein freies Medium, das dafür verliehen werden kann?
+        if not self._raum_hat_kapazitaet():
+            raise ValidationError("Dieser Raum hat zu dieser Zeit nicht genügend freie Plätze.")
+
+        if not self._medium_zeitlich_verfuegbar():
+            raise ValidationError("Das Medium ist in diesem Zeiraum schon reserviert.")
 
 
     def save(self, *args, **kwargs):
