@@ -318,6 +318,9 @@ class Skill(models.Model):
     def get_absolute_url(self):
         return reverse("ausleihe:skill-detail", kwargs={"skill_id": self.id})
 
+    def cap_name(self):
+        return "".join(c for c in self.name if c.isupper())
+
 
 class SkillsetItem(models.Model):
     name = models.CharField(max_length=200, unique=True)

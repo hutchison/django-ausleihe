@@ -20,9 +20,8 @@
           <tr>
             <th class="col-1">Nr.</th>
             <th class="col-3">Name</th>
-            <th>Anz. Plätze</th>
-            <th>min. Personen</th>
-            <th>max. Personen</th>
+            <th>Anzahl Personen</th>
+            <th>Anzahl benötigter Plätze</th>
             <th>Dauer (min)</th>
           </tr>
         </thead>
@@ -30,9 +29,14 @@
           <tr>
             <td>{{ skill.nummer }}</td>
             <td>{{ skill.name }}</td>
+            <td>
+              {% if skill.min_personen == skill.max_personen %}
+              {{ skill.min_personen }}
+              {% else %}
+              {{ skill.min_personen }} - {{ skill.max_personen }}
+              {% endif %}
+            </td>
             <td>{{ skill.anzahl_plaetze }}</td>
-            <td>{{ skill.min_personen }}</td>
-            <td>{{ skill.max_personen }}</td>
             <td>{{ skill.dauer }}</td>
           </tr>
         </tbody>
