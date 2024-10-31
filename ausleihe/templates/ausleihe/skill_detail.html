@@ -41,24 +41,22 @@
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+  {% if skill.beschreibung or skill.skillsets.exists %}
+  <div class="row">
+    <div class="col">
       {% if skill.beschreibung %}
       <h6>Beschreibung</h6>
       <p>
         {{ skill.beschreibung }}
       </p>
       {% endif %}
-
-      {% if skill.raeume.exists and perms.ausleihe.change_skill %}
-      <h6 class="mt-4">Verfügbar in folgenden Räumen</h6>
-      <ul>
-      {% for raum in skill.raeume.all %}
-      <li>{{ raum }}</li>
-      {% endfor %}
-      </ul>
-      {% endif %}
-
+    </div>
+    <div class="col">
       {% if skill.skillsets.exists %}
-      <h6 class="mt-5">Vorhandene Skill Sets</h6>
+      <h6>Vorhandene Skill Sets</h6>
       <table class="table" id="skillsets">
         <thead>
           <tr>
@@ -78,9 +76,23 @@
       {% endif %}
     </div>
   </div>
+  {% endif %}
+
+  {% if perms.ausleihe.change_skill %}
+  {% if skill.raeume.exists %}
+  <h6 class="mt-4 text-primary">Verfügbar in folgenden Räumen</h6>
+  <ul>
+    {% for raum in skill.raeume.all %}
+    <li>{{ raum }}</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="text-warning">Dem Skill sind aktuell keine Räume zugeordnet.</p>
+  {% endif %}
+  {% endif %}
 
   {% if perms.ausleihe.delete_skillset %}
-  <div class="row mt-5">
+  <div class="row mt-3">
     <div class="col">
       <div class="alert alert-danger">
         Wenn du den Skill löschen willst, dann erledige das
