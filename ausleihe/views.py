@@ -622,6 +622,7 @@ class SkillsetItemDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView
 class SkillList(LoginRequiredMixin, ListView):
     queryset = Skill.objects.prefetch_related(
         "raeume",
+        "skillsets",
     )
 
     def get_context_data(self, **kwargs):

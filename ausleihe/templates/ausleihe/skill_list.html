@@ -33,6 +33,7 @@
             <th class="col-3">Name</th>
             <th>Anzahl Personen</th>
             <th>Anzahl benötigter Plätze</th>
+            <th>Anzahl verfügbarer Sets</th>
             <th>Dauer (min)</th>
           </tr>
         </thead>
@@ -49,6 +50,7 @@
               {% endif %}
             </td>
             <td>{{ skill.anzahl_plaetze }}</td>
+            <td>{{ skill.skillsets.count }}</td>
             <td>{{ skill.dauer }}</td>
           </tr>
           {% endfor %}
