@@ -506,7 +506,7 @@ class SkillsetEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         "item_relations__item",
     )
     permission_required = "ausleihe.change_skillset"
-    fields = ["medium", "name"]
+    fields = ["medium", "name", "skill"]
     pk_url_kwarg = "skillset_id"
     template_name_suffix = "_edit"
 

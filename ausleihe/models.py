@@ -362,7 +362,7 @@ class Skillset(models.Model):
         skillset = {
             "medium_id": post_data.get("medium_id", "").strip(),
             "name": post_data.get("name", "").strip(),
-            "skill_id": int(post_data.get("skill", "").strip()),
+            "skill_id": int(post_data.get("skill_id", "").strip()),
             "beschreibung": post_data.get("beschreibung", "").strip(),
             "items": [
                 (int(q), int(i))
