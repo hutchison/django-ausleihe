@@ -452,7 +452,7 @@ class SkillsetDetail(LoginRequiredMixin, DetailView):
 
 
 class SkillsetCreate(LoginRequiredMixin, PermissionRequiredMixin, View):
-    permission_required = "ausleihe.create_skillset"
+    permission_required = "ausleihe.add_skillset"
     template_name = "ausleihe/skillset_create.html"
 
     def get_common_context(self):
@@ -578,8 +578,8 @@ class SkillsetItemList(LoginRequiredMixin, ListView):
 
 
 class SkillsetItemCreate(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = "ausleihe.add_skillsetitem"
     template_name = "ausleihe/skillsetitem_create.html"
-    permission_required = "ausleihe.create_skillsetitem"
 
     def get(self, request):
         return render(request, self.template_name)
