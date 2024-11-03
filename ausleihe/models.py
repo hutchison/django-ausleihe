@@ -601,6 +601,15 @@ class Reservierung(models.Model):
                 "Das Medium ist in diesem Zeiraum schon reserviert."
             )
 
+        if self._ueberschneidende_reservierungen_von_nutzer():
+            r = self._ueberschneidende_reservierungen_von_nutzer().get()
+            raise ValidationError(
+                "Du hast in diesem Zeitraum schon einen anderen Skill reserviert: "
+                f"{r.skill} von {r.lokale_zeit:%H:%M}"
+                " – "
+                f"{r.lokales_ende:%H:%M} Uhr"
+            )
+
 
     def save(self, *args, **kwargs):
         self.full_clean()  # ruft u.a. self.clean() auf
