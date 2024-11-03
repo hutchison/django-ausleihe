@@ -1,4 +1,5 @@
 import re
+from datetime import datetime, timedelta
 
 from django import forms
 from django.utils import timezone
@@ -21,6 +22,7 @@ from crispy_forms.bootstrap import (
 from .models import (
     Gebaeude,
     Raum,
+    Reservierung,
     Skill,
     Verfuegbarkeit,
 )
@@ -247,3 +249,57 @@ class VerfuegbarkeitForm(forms.ModelForm):
         )
 
         return helper
+
+
+class ReservierungszeitForm(forms.Form):
+    zeit = forms.TimeField(
+        label="Uhrzeit",
+        widget=forms.TextInput(attrs={"type": "time"}),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args)
+        self.helper = FormHelper()
+        self.helper.form_id = "reservierungszeit"
+        self.helper.form_method = "post"
+        self.helper.form_error_title = "Konnte nicht reservieren"
+        self.helper.add_input(Submit("submit", "Reservieren"))
+        self.helper.layout = Layout(
+            Row(
+                Column(
+                    HTML("""
+                    <p>Wähle eine Zeit zwischen
+                    {{ verfuegbarkeit.beginn }} – {{ v_ende }} Uhr
+                    im 15-Minuten-Takt:</p>
+                    """
+                ),
+                    ),
+            ),
+            Row(
+                Column(
+                    Field("zeit"),
+                    css_class="col-2",
+                )
+            )
+        )
+
+        v = kwargs.get("verfuegbarkeit", None)
+        if v:
+            self.verfuegbarkeit = v
+            self.fields["zeit"].initial = v.beginn
+            self.fields["zeit"].widget.attrs["min"] = v.beginn
+
+        v_ende = kwargs.get("v_ende", None)
+        if v_ende:
+            self.v_ende = v_ende
+            self.fields["zeit"].widget.attrs["max"] = v_ende
+
+        self.fields["zeit"].widget.attrs["step"] = 15*60
+
+    def clean_zeit(self):
+        zeit = self.cleaned_data["zeit"]
+
+        if not (self.verfuegbarkeit.beginn <= zeit <= self.v_ende):
+            raise ValidationError("Zeit befindet sich nicht im gültigen Rahmen.")
+
+        return zeit
