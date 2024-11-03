@@ -461,7 +461,7 @@ class Reservierung(models.Model):
     class Meta:
         verbose_name = "Reservierung"
         verbose_name_plural = "Reservierungen"
-        ordering = ("-zeit", "nutzer", "skill", "medium", "raum")
+        ordering = ("zeit", "nutzer", "skill", "medium", "raum")
 
     def __str__(self):
         return (
