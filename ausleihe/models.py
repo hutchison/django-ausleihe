@@ -327,6 +327,20 @@ class Skill(models.Model):
     def cap_name(self):
         return "".join(c for c in self.name if c.isupper())
 
+    def available_skillsets(self, dt):
+        possible_skillsets = self.skillsets.prefetch_related("medium__reservierungen")
+        skillsets = []
+        von, bis = dt, dt + timedelta(minutes=self.dauer)
+
+        for skillset in possible_skillsets:
+            rs = skillset.medium.reservierungen.filter(
+                Reservierung._Q_ueberschneidungen(von, bis)
+            )
+            if not rs.exists():
+                skillsets.append(skillset)
+
+        return skillsets
+
 
 class SkillsetItem(models.Model):
     name = models.CharField(max_length=200, unique=True)
