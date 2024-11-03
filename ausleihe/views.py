@@ -1,8 +1,10 @@
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, time
+from random import choice
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.exceptions import ValidationError
 from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -23,6 +25,7 @@ from .models import (
     Leihe,
     Medium,
     Raum,
+    Reservierung,
     Skill,
     Skillset,
     SkillsetItem,
@@ -34,6 +37,7 @@ from .forms import (
     GebaeudeForm,
     RaumForm,
     RaumImportForm,
+    ReservierungszeitForm,
     SkillForm,
     VerfuegbarkeitForm,
 )
@@ -51,13 +55,24 @@ class Home(LoginRequiredMixin, View):
         else:
             aktuell_verliehen = Leihe.objects.prefetch_related(
                 "medium__buecher",
+                "medium__skillsets",
+                "verleiht_von__fachschaftuser",
             ).filter(
                 zurueckgebracht=False,
                 nutzer=fuser,
             )
 
+            aktuell_reserviert = Reservierung.objects.prefetch_related(
+                "skill",
+                "raum",
+            ).filter(
+                nutzer=fuser,
+            )
+
             historisch_verliehen = Leihe.objects.prefetch_related(
                 "medium__buecher",
+                "medium__skillsets",
+                "verleiht_von__fachschaftuser",
             ).filter(
                 zurueckgebracht=True,
                 nutzer=fuser,
@@ -65,6 +80,7 @@ class Home(LoginRequiredMixin, View):
 
             context = {
                 "aktuell_verliehen": aktuell_verliehen,
+                "aktuell_reserviert": aktuell_reserviert,
                 "historisch_verliehen": historisch_verliehen,
             }
 
@@ -658,6 +674,141 @@ class SkillEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     form_class = SkillForm
     pk_url_kwarg = "skill_id"
     template_name_suffix = "_create"
+
+
+class SkillReserve(LoginRequiredMixin, View):
+    template_name = "ausleihe/skill_reserve.html"
+
+    def get_context_data(self, **kwargs):
+        queryset = Skill.objects.prefetch_related("raeume")
+        skill = get_object_or_404(queryset, pk=kwargs.get("skill_id"))
+
+        v_tab = {}
+        today = datetime.now(timezone.get_current_timezone()).date()
+        vs = Verfuegbarkeit.objects.filter(
+            datum__gte=today,
+            raum__in=skill.raeume.all(),
+        )
+        raeume = sorted({v.raum for v in vs})
+
+        for v in vs:
+            if v.datum not in v_tab:
+                v_tab[v.datum] = {raum: [] for raum in raeume}
+
+            v_tab[v.datum][v.raum].append(v)
+
+        context = {
+            "skill": skill,
+            "v_tab": v_tab,
+            "raeume": raeume,
+        }
+
+        return context
+
+    def get(self, request, skill_id):
+        context = self.get_context_data(skill_id=skill_id)
+        return render(request, self.template_name, context)
+
+
+class SkillVerfuegbarkeitReserve(LoginRequiredMixin, View):
+    template_name = "ausleihe/skill_verfuegbarkeit_reserve.html"
+    form_class = ReservierungszeitForm
+
+    def get_context_data(self, **kwargs):
+        skill = get_object_or_404(Skill, pk=kwargs.get("skill_id"))
+
+        v = get_object_or_404(Verfuegbarkeit, id=kwargs.get("v_id"))
+        # Die letzte Zeit zum Reservieren ergibt sich aus
+        # der Endzeit der Verfügbarkeit und der Dauer des Skills.
+        dt_ende = datetime.combine(v.datum, v.ende)
+        v_ende = dt_ende - timedelta(minutes=skill.dauer)
+        form = ReservierungszeitForm(verfuegbarkeit=v, v_ende=v_ende.time())
+
+        fuser = FachschaftUser.objects.get(user=self.request.user)
+
+        context = {
+            "form": form,
+            "fuser": fuser,
+            "skill": skill,
+            "v_ende": v_ende.time(),
+            "verfuegbarkeit": v,
+        }
+
+        return context
+
+    def get(self, request, skill_id, v_id):
+        context = self.get_context_data(skill_id=skill_id, v_id=v_id)
+        return render(request, self.template_name, context)
+
+    def post(self, request, skill_id, v_id):
+        context = self.get_context_data(skill_id=skill_id, v_id=v_id)
+
+        form = ReservierungszeitForm(
+            request.POST,
+            verfuegbarkeit=context["verfuegbarkeit"],
+            v_ende=context["v_ende"],
+        )
+
+        if form.is_valid():
+            zeit = timezone.make_aware(
+                datetime.combine(
+                    context["verfuegbarkeit"].datum,
+                    form.cleaned_data["zeit"]
+                )
+            )
+        else:
+            context["form"] = form
+            return render(request, self.template_name, context)
+
+        try:
+            skill = context["skill"]
+            skillset = choice(skill.available_skillsets(zeit))
+        except IndexError as e:
+            # kein Skillset verfügbar
+            msg = (
+                "Kein freies Skill Set zu dieser Zeit verfügbar. "
+                "Wähle bitte eine andere Zeit."
+            )
+            form.add_error(None, msg)
+            context["form"] = form
+            return render(request, self.template_name, context)
+
+        try:
+            r = Reservierung(
+                nutzer = context["fuser"],
+                skill  = context["skill"],
+                medium = skillset.medium,
+                raum   = context["verfuegbarkeit"].raum,
+                zeit   = zeit,
+            )
+            r.save()
+        except ValidationError as e:
+            form.add_error(None, e)
+            context["form"] = form
+            return render(request, self.template_name, context)
+
+        return redirect("ausleihe:reservierung-detail", reservierung_id=r.id)
+
+
+class ReservierungDetail(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    model = Reservierung
+    pk_url_kwarg = "reservierung_id"
+
+    def has_permission(self):
+        user = self.request.user
+        r = self.get_object()
+        return user.fachschaftuser == r.nutzer
+
+
+class ReservierungDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+    model = Reservierung
+    pk_url_kwarg = "reservierung_id"
+    success_url = reverse_lazy("ausleihe:home")
+
+    def has_permission(self):
+        user = self.request.user
+        r = self.get_object()
+        return user.fachschaftuser == r.nutzer
 
 
 class GebaeudeList(LoginRequiredMixin, ListView):

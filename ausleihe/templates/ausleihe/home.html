@@ -22,6 +22,30 @@
 <div class="container">
   <div class="row">
     <div class="col">
+      <h4>aktuell für dich reserviert</h4>
+      {% if aktuell_reserviert %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Skill</th>
+            <th>Datum</th>
+            <th>Raum</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in aktuell_reserviert %}
+          <tr>
+            <td><a href="{% url 'ausleihe:skill-detail' r.skill.id %}">{{ r.skill }}</a></td>
+            <td><a href="{% url 'ausleihe:reservierung-detail' r.id %}">{{ r.zeit }} – {{ r.ende|date:"H:i" }} Uhr</a></td>
+            <td>{{ r.raum }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>Aktuell hast du nichts reserviert.</p>
+      {% endif %}
+
       <h4>aktuell entliehen</h4>
       {% if aktuell_verliehen %}
       <table class="table">

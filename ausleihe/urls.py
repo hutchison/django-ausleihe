@@ -26,6 +26,10 @@ urlpatterns = [
     path('skill/neu', views.SkillCreate.as_view(), name='skill-create'),
     path('skill/<int:skill_id>', views.SkillDetail.as_view(), name='skill-detail'),
     path('skill/<int:skill_id>/bearbeiten', views.SkillEdit.as_view(), name='skill-edit'),
+    path('skill/<int:skill_id>/reservieren', views.SkillReserve.as_view(), name='skill-reserve'),
+    path('skill/<int:skill_id>/reservieren/<int:v_id>',
+         views.SkillVerfuegbarkeitReserve.as_view(),
+         name='skill-verfuegbarkeit-reserve'),
     path('skillsets', views.SkillsetList.as_view(), name='skillset-list'),
     path('skillset/<int:skillset_id>', views.SkillsetDetail.as_view(), name='skillset-detail'),
     path('skillset/<int:skillset_id>/bearbeiten', views.SkillsetEdit.as_view(), name='skillset-edit'),
@@ -50,4 +54,6 @@ urlpatterns = [
     path('zeit/<int:v_id>/bearbeiten', views.VerfuegbarkeitUpdate.as_view(), name='verfuegbarkeit-edit'),
     path('zeit/<int:v_id>/loeschen', views.VerfuegbarkeitDelete.as_view(), name='verfuegbarkeit-delete'),
     path('zuruecknehmen/<int:leihe_id>', views.Zuruecknehmen.as_view(), name='zuruecknehmen'),
+    path('reservierung/<int:reservierung_id>', views.ReservierungDetail.as_view(), name='reservierung-detail'),
+    path('reservierung/<int:reservierung_id>/stornieren', views.ReservierungDelete.as_view(), name='reservierung-delete'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

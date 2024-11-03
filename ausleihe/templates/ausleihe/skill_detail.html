@@ -78,6 +78,12 @@
   </div>
   {% endif %}
 
+  <div class="row">
+    <div class="col">
+      <a class="btn btn-primary" href="{% url 'ausleihe:skill-reserve' skill.id %}" role="button">Reservieren</a>
+    </div>
+  </div>
+
   {% if perms.ausleihe.change_skill %}
   {% if skill.raeume.exists %}
   <h6 class="mt-4 text-primary">Verfügbar in folgenden Räumen</h6>

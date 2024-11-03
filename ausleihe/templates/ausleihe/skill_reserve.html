@@ -1,0 +1,46 @@
+{% extends "ausleihe/base.html" %}
+
+{% block content %}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:medium-list' %}">Medien</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skill-list' %}">Skills</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skill-detail' skill.id %}">{{ skill.name }}</a></li>
+      <li class="breadcrumb-item" aria-current="page">reservieren</li>
+    </ol>
+  </nav>
+  <div class="row">
+    <div class="col">
+      <p>
+        Folgende Zeiten stehen für die Reservierung zur Verfügung.
+        Wähle einen Zeitraum, um deine Reservierung zu präzisieren.
+      </p>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Datum</th>
+            {% for raum in raeume %}
+            <th>{{ raum.kurzname }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for datum, raum_vs in v_tab.items %}
+          <tr>
+            <td>{{ datum }}</td>
+            {% for raum, vs in raum_vs.items %}
+            <td>
+              {% for v in vs %}
+              <a href="{% url 'ausleihe:skill-verfuegbarkeit-reserve' skill.id v.id %}">{{ v.beginn }} – {{ v.ende }}</a>
+              {% endfor %}
+            </td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock content %}

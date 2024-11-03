@@ -1,0 +1,34 @@
+{% extends "ausleihe/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:medium-list' %}">Medien</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skill-list' %}">Skills</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skill-detail' reservierung.skill.id %}">{{ reservierung.skill.name }}</a></li>
+      <li class="breadcrumb-item text-success" aria-current="page">reserviert</li>
+    </ol>
+  </nav>
+
+  <div class="row">
+    <div class="col">
+      <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">Reserviert!</h4>
+        <p class="mb-0">{{ reservierung.skill }} wurde für dich ({{ reservierung.nutzer }})
+          am {{ reservierung.zeit|date }}
+          von {{ reservierung.zeit|date:"H:i" }} – {{ reservierung.ende|date:"H:i" }}
+          im Raum {{ reservierung.raum }}
+          reserviert.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col text-right">
+      <a class="btn btn-danger" href="{% url 'ausleihe:reservierung-delete' reservierung.id %}" role="button">Stornieren</a>
+    </div>
+  </div>
+{% endblock content %}

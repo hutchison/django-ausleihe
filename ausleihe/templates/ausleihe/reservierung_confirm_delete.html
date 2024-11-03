@@ -1,0 +1,25 @@
+{% extends "ausleihe/base.html" %}
+
+{% block content %}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:medium-list' %}">Medien</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skill-list' %}">Skills</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skill-detail' reservierung.skill.id %}">{{ reservierung.skill.name }}</a></li>
+      <li class="breadcrumb-item text-danger" aria-current="page">stornieren</li>
+    </ol>
+  </nav>
+
+  <div class="row">
+    <div class="col">
+      <form method="post" accept-charset="utf-8">
+        {% csrf_token %}
+        <p>Soll deine Reservierung <strong>{{ object }}</strong> wirklich storniert werden?</p>
+        <button type="submit" class="btn btn-danger">Stornieren</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock content %}
