@@ -134,5 +134,5 @@ class ReservierungAdmin(admin.ModelAdmin):
         "skill",
         "raum",
         "medium",
-        "ende",
+        "erzeugt",
     )
