@@ -38,16 +38,7 @@
           <tr>
             <td><a href="{% url 'ausleihe:medium-detail' medium.id %}">{{ medium }}</a></td>
             <td>
-              {% for buch in medium.buecher.all %}
-              <a href="{% url 'ausleihe:buch-detail' buch.id %}">📚 {{ buch }}</a>{% if not forloop.last %}, {% endif %}
-              {% endfor %}
-              {% if medium.buecher.exists and medium.skillsets.exists %}
-              <br>
-              {% endif %}
-              {% for skillset in medium.skillsets.all %}
-              <a href="{% url 'ausleihe:skillset-detail' skillset.id %}">🧰 {{ skillset }}</a>{% if not forloop.last %}, {% endif %}
-              </a>
-              {% endfor %}
+              {% include "ausleihe/medium_enthaelt.html" with medium=medium %}
             </td>
           </tr>
           {% endfor %}

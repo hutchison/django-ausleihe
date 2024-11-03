@@ -1,0 +1,9 @@
+{% for buch in medium.buecher.all %}
+<a href="{% url 'ausleihe:buch-detail' buch.id %}">📚 {{ buch }}</a>{% if not forloop.last %}, {% endif %}
+{% endfor %}
+{% if medium.buecher.exists and medium.skillsets.exists %}
+<br>
+{% endif %}
+{% for skillset in medium.skillsets.all %}
+<a href="{% url 'ausleihe:skillset-detail' skillset.id %}">🧰 {{ skillset }}</a>{% if not forloop.last %}, {% endif %}
+{% endfor %}

@@ -20,15 +20,7 @@
         <a href="{% url 'ausleihe:medium-detail' leihe.medium.id %}">{{ leihe.medium }}</a>
       </td>
       <td>
-        {% if leihe.medium.buecher.exists %}
-        {% for buch in leihe.medium.buecher.all %}
-        {% if forloop.last %}
-        <a href="{% url 'ausleihe:buch-detail' buch.id %}">📚 {{ buch }}</a>
-        {% else %}
-        <a href="{% url 'ausleihe:buch-detail' buch.id %}">📚 {{ buch }}</a>, 
-        {% endif %}
-        {% endfor %}
-        {% endif %}
+        {% include "ausleihe/medium_enthaelt.html" with medium=leihe.medium %}
       </td>
       <td class="text-right">{{ leihe.anfang|date:"d.m.Y" }}</td>
       <td class="text-right">{{ leihe.ende|date:"l" }}, {{ leihe.ende|date:"d.m.Y" }}</td>
