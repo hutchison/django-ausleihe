@@ -490,29 +490,40 @@ class Reservierung(models.Model):
             ende__gte=(lz + timedelta(minutes=self.skill.dauer))
         ).exists()
 
-    def _ueberschneidende_reservierungen_vom_raum(self):
+    @staticmethod
+    def _Q_ueberschneidungen(von, bis):
         """
-        Hier müssen wir herausfinden, welche Reservierungen sich mit von und bis
-        überschneiden bzw. welche Sonderfälle wir ausschließen müssen.
+        Hier müssen wir herausfinden, welche Reservierungen sich der eigenen Zeit (von,
+        bis) überschneiden bzw. welche Sonderfälle wir ausschließen müssen.
 
         zeit ist die Anfangszeit der Reservierung, ende = zeit + skill.dauer
 
         Folgende Fälle können auftreten:
 
             zeit       von     bis      ende
-                        |-------|
-        1           |-------|
-        2                   |-------|
-        3                 |---|                 (wird von 1 und 2 schon abgedeckt)
-        4           |---------------|
-        5           |---|
-        6                       |---|
+                        [-------)
+        1           [-------)
+        2                   [-------)
+        3                 [---)                 (wird von 1 und 2 schon abgedeckt)
+        4           [---------------)
+        5           [---)                       (keine Überschneidung)
+        6                       [---)           (keine Überschneidung)
         """
-        von, bis = self.zeit, self.zeit + timedelta(minutes=self.skill.dauer)
-        return self.raum.reservierungen.filter(
+        return (
             Q(zeit__lte = von, ende__gt  = von) |    # Fall 1
             Q(zeit__lt  = bis, ende__gte = bis) |    # Fall 2
             Q(zeit__lte = von, ende__gte = bis)      # Fall 4
+        )
+
+    def Q_ueberschneidungen(self):
+        von, bis = self.zeit, self.zeit + timedelta(minutes=self.skill.dauer)
+        return self._Q_ueberschneidungen(von, bis)
+
+    def _ueberschneidende_reservierungen_vom_raum(self):
+        return self.raum.reservierungen.filter(
+            self.Q_ueberschneidungen()
+        ).exclude(
+            id=self.id,
         )
 
     def _raum_hat_kapazitaet(self):
@@ -524,7 +535,7 @@ class Reservierung(models.Model):
                 anzahl_plaetze=Sum("skill__anzahl_plaetze")
             ).first()
 
-            l = r_platze.anzahl_plaetze if r_plaetze else 0
+            l = r_plaetze.anzahl_plaetze if r_plaetze else 0
             kapazitaet = self.raum.anzahl_plaetze - l
 
             return kapazitaet >= self.skill.anzahl_plaetze
@@ -532,12 +543,10 @@ class Reservierung(models.Model):
             return self.raum.anzahl_plaetze     # True <=> (> 0)
 
     def _ueberschneidende_reservierungen_vom_medium(self):
-        von, bis = self.zeit, self.zeit + timedelta(minutes=self.skill.dauer)
         return self.medium.reservierungen.filter(
-            # siehe self._raum_hat_kapazitaet()
-            Q(zeit__lte = von, ende__gt  = von) |    # Fall 1
-            Q(zeit__lt  = bis, ende__gte = bis) |    # Fall 2
-            Q(zeit__lte = von, ende__gte = bis)      # Fall 4
+            self.Q_ueberschneidungen()
+        ).exclude(
+            medium=self.medium
         )
 
     def _medium_zeitlich_verfuegbar(self):
@@ -545,12 +554,10 @@ class Reservierung(models.Model):
         return not self._ueberschneidende_reservierungen_vom_medium().exists()
 
     def _ueberschneidende_reservierungen_von_nutzer(self):
-        von, bis = self.zeit, self.zeit + timedelta(minutes=self.skill.dauer)
         return self.nutzer.reservierungen.filter(
-            # siehe self._raum_hat_kapazitaet()
-            Q(zeit__lte = von, ende__gt  = von) |    # Fall 1
-            Q(zeit__lt  = bis, ende__gte = bis) |    # Fall 2
-            Q(zeit__lte = von, ende__gte = bis)      # Fall 4
+            self.Q_ueberschneidungen()
+        ).exclude(
+            id=self.id,
         )
 
     def clean(self):
@@ -574,6 +581,6 @@ class Reservierung(models.Model):
 
 
     def save(self, *args, **kwargs):
-        self.clean()
+        self.full_clean()  # ruft u.a. self.clean() auf
         self.ende = self.zeit + timedelta(minutes=self.skill.dauer)
         super().save(*args, **kwargs)
