@@ -202,8 +202,14 @@ class Raum(models.Model):
     def __str__(self):
         return self.name
 
+    def __lt__(self, other):
+        return self.name < other.name
+
     def lsf_link(self):
         return f"https://lsf.uni-rostock.de/qisserver/rds?state=verpublish&status=init&vmfile=no&moduleCall=webInfo&publishConfFile=webInfoRaum&publishSubDir=raum&keep=y&raum.rgid={self.lsf_id}"
+
+    def kurzname(self):
+        return self.name.split(",")[0]
 
 
 class Verfuegbarkeit(models.Model):
