@@ -576,7 +576,9 @@ class Reservierung(models.Model):
 
     def clean(self):
         if not self._skill_im_raum():
-            raise ValidationError("Skill wird in dem Raum nicht angeboten.")
+            raise ValidationError(
+                "Skill wird in dem Raum nicht angeboten."
+            )
 
         if not self._skill_vom_medium():
             raise ValidationError(
@@ -585,13 +587,19 @@ class Reservierung(models.Model):
             )
 
         if not self._raum_zeitlich_verfuegbar():
-            raise ValidationError("Der Raum bietet für diese Zeit keine verfügbare Zeit an.")
+            raise ValidationError(
+                "Der Raum bietet für diese Zeit keine verfügbare Zeit an."
+            )
 
         if not self._raum_hat_kapazitaet():
-            raise ValidationError("Dieser Raum hat zu dieser Zeit nicht genügend freie Plätze.")
+            raise ValidationError(
+                "Dieser Raum hat zu dieser Zeit nicht genügend freie Plätze."
+            )
 
         if not self._medium_zeitlich_verfuegbar():
-            raise ValidationError("Das Medium ist in diesem Zeiraum schon reserviert.")
+            raise ValidationError(
+                "Das Medium ist in diesem Zeiraum schon reserviert."
+            )
 
 
     def save(self, *args, **kwargs):
