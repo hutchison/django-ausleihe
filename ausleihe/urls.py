@@ -54,6 +54,7 @@ urlpatterns = [
     path('zeit/<int:v_id>/bearbeiten', views.VerfuegbarkeitUpdate.as_view(), name='verfuegbarkeit-edit'),
     path('zeit/<int:v_id>/loeschen', views.VerfuegbarkeitDelete.as_view(), name='verfuegbarkeit-delete'),
     path('zuruecknehmen/<int:leihe_id>', views.Zuruecknehmen.as_view(), name='zuruecknehmen'),
+    path('reservierungen', views.ReservierungList.as_view(), name='reservierung-list'),
     path('reservierung/<int:reservierung_id>', views.ReservierungDetail.as_view(), name='reservierung-detail'),
     path('reservierung/<int:reservierung_id>/stornieren', views.ReservierungDelete.as_view(), name='reservierung-delete'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -1,0 +1,55 @@
+{% extends "ausleihe/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:medium-list' %}">Medien</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skill-list' %}">Skills</a></li>
+      {% if perms.ausleihe.change_skillset %}
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillset-list' %}">Skill Sets</a></li>
+      {% endif %}
+      {% if perms.ausleihe.change_skillsetitem %}
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skillsetitem-list' %}">Skill Set Items</a></li>
+      {% endif %}
+      {% if perms.ausleihe.change_raum %}
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:raum-list' %}">Räume</a></li>
+      {% endif %}
+      {% if perms.ausleihe.change_reservierung %}
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:reservierung-list' %}"><strong>Reservierungen</strong></a></li>
+      {% endif %}
+    </ol>
+  </nav>
+
+  <div class="row">
+    <div class="col">
+      <h5 class="text-primary">Reservierungen ab heute</h5>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nutzer</th>
+            <th>Skill</th>
+            <th>Medium</th>
+            <th>Raum</th>
+            <th>Zeit</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in reservierung_list %}
+          <tr>
+            <td>{{ r.nutzer }}</td>
+            <td>{{ r.skill }}</td>
+            <td>{{ r.medium }}</td>
+            <td>{{ r.raum }}</td>
+            <td>{{ r.zeit }} – {{ r.ende|date:"H:i" }} Uhr</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+</div>
+{% endblock content %}

@@ -790,6 +790,11 @@ class SkillVerfuegbarkeitReserve(LoginRequiredMixin, View):
         return redirect("ausleihe:reservierung-detail", reservierung_id=r.id)
 
 
+class ReservierungList(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    queryset = Reservierung.objects.filter(zeit__gte=timezone.now())
+    permission_required = "ausleihe.change_reservierung"
+
+
 class ReservierungDetail(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Reservierung
     pk_url_kwarg = "reservierung_id"
