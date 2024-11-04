@@ -22,6 +22,7 @@
             <th class="col-3">Name</th>
             <th>Anzahl Personen</th>
             <th>Anzahl benötigter Plätze</th>
+            <th>Anzahl verfügbarer Sets</th>
             <th>Dauer (min)</th>
           </tr>
         </thead>
@@ -37,6 +38,7 @@
               {% endif %}
             </td>
             <td>{{ skill.anzahl_plaetze }}</td>
+            <td>{{ skill.skillsets.count }}</td>
             <td>{{ skill.dauer }}</td>
           </tr>
         </tbody>
@@ -44,19 +46,40 @@
     </div>
   </div>
 
-  {% if skill.beschreibung or skill.skillsets.exists %}
+  {% if skill.beschreibung %}
   <div class="row">
     <div class="col">
-      {% if skill.beschreibung %}
       <h6>Beschreibung</h6>
       <p style="white-space: pre-line;">
         {{ skill.beschreibung }}
       </p>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="row">
+    <div class="col">
+      <a class="btn btn-primary" href="{% url 'ausleihe:skill-reserve' skill.id %}" role="button">Reservieren</a>
+    </div>
+  </div>
+
+  {% if perms.ausleihe.change_skill %}
+  <div class="row mt-5">
+    <div class="col">
+      <h6 class="text-primary">Verfügbar in folgenden Räumen</h6>
+      {% if skill.raeume.exists %}
+      <ul>
+        {% for raum in skill.raeume.all %}
+        <li>{{ raum }}</li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="text-warning">Dem Skill sind aktuell keine Räume zugeordnet.</p>
       {% endif %}
     </div>
     <div class="col">
+      <h6 class="text-primary">Vorhandene Skill Sets</h6>
       {% if skill.skillsets.exists %}
-      <h6>Vorhandene Skill Sets</h6>
       <table class="table" id="skillsets">
         <thead>
           <tr>
@@ -73,28 +96,11 @@
           {% endfor %}
         </tbody>
       </table>
+      {% else %}
+      <p class="text-warning">Zu dem Skill existieren aktuell keine Skill Sets.</p>
       {% endif %}
     </div>
   </div>
-  {% endif %}
-
-  <div class="row">
-    <div class="col">
-      <a class="btn btn-primary" href="{% url 'ausleihe:skill-reserve' skill.id %}" role="button">Reservieren</a>
-    </div>
-  </div>
-
-  {% if perms.ausleihe.change_skill %}
-  {% if skill.raeume.exists %}
-  <h6 class="mt-4 text-primary">Verfügbar in folgenden Räumen</h6>
-  <ul>
-    {% for raum in skill.raeume.all %}
-    <li>{{ raum }}</li>
-    {% endfor %}
-  </ul>
-  {% else %}
-  <p class="text-warning">Dem Skill sind aktuell keine Räume zugeordnet.</p>
-  {% endif %}
   {% endif %}
 
   {% if perms.ausleihe.delete_skillset %}
