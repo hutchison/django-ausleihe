@@ -4,6 +4,7 @@ build:
 	@( \
 		. venv/bin/activate; \
 		python3 -m build; \
+		rm -Rf build; \
 	)
 
 upload:
