@@ -34,5 +34,8 @@ classifiers = [
 Homepage = "https://github.com/hutchison/django-ausleihe"
 Issues = "https://github.com/hutchison/django-ausleihe/issues"
 
+[tool.setuptools]
+py-modules = []
+
 [tool.setuptools.dynamic]
 version = {attr = "ausleihe.__version__"}
