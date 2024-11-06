@@ -1,8 +1,10 @@
 .PHONY: build upload
 
 build:
-	@rm -Rf dist build
-	python3 setup.py sdist bdist_wheel
+	@( \
+		. venv/bin/activate; \
+		python3 -m build; \
+	)
 
 upload:
 	twine upload dist/*
