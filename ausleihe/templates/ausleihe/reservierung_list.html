@@ -39,7 +39,7 @@
         <tbody>
           {% for r in reservierung_list %}
           <tr>
-            <td>{{ r.nutzer }}</td>
+            <td>{{ r.nutzer }} ({{ r.nutzer.user }})</td>
             <td>{{ r.skill }}</td>
             <td>{{ r.medium }}</td>
             <td>{{ r.raum }}</td>
