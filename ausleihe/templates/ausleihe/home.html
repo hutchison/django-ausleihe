@@ -67,8 +67,8 @@
             <td>
               {% include "ausleihe/medium_enthaelt.html" with medium=leihe.medium %}
             </td>
-            <td>{{ leihe.anfang }}</td>
-            <td>{{ leihe.ende|date:"l" }}, {{ leihe.ende }}</td>
+            <td>{{ leihe.anfang }} Uhr</td>
+            <td>{{ leihe.ende|date:"l" }}, {{ leihe.ende }} Uhr</td>
             <td>
               {% if leihe.ist_ueberfaellig %}
               {% with leihe.differenz_heute as d %}

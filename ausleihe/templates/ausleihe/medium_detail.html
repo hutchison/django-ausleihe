@@ -108,9 +108,9 @@
       <table class="table">
         <thead>
           <tr>
-            <th class="col-2 text-right">Anfang</th>
-            <th class="col-2 text-right">Ende</th>
-            <th class="col-2 text-right">Δ</th>
+            <th class="text-right">Anfang</th>
+            <th class="text-right">Ende</th>
+            <th class="text-right">Δ</th>
             <th class="col-3">Nutzer</th>
             <th class="col-3">Verleiher:in</th>
           </tr>
@@ -118,8 +118,8 @@
         <tbody>
           {% for leihe in medium.leihe_set.all %}
           <tr>
-            <td class="text-right">{{ leihe.anfang|date:"d.m.Y" }}</td>
-            <td class="text-right">{{ leihe.ende|date:"l" }}, {{ leihe.ende|date:"d.m.Y" }}</td>
+            <td class="text-right">{{ leihe.anfang|date:"d.m.Y H:i" }} Uhr</td>
+            <td class="text-right">{{ leihe.ende|date:"d.m.Y H:i" }} Uhr</td>
             <td class="text-right">
               {% if leihe.zurueckgebracht %}
               {{ leihe.dauer }}&thinsp;d

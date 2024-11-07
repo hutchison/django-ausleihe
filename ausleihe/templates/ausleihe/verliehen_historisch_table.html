@@ -4,9 +4,9 @@
   <thead>
     <tr>
       <th class="col-1">Mediatheknr.</th>
-      <th class="col-4">enthält</th>
-      <th class="text-right col-1">Anfang</th>
-      <th class="text-right col-2">Ende</th>
+      <th class="">enthält</th>
+      <th class="text-right">Anfang</th>
+      <th class="text-right">Ende</th>
       <th class="col-1">Δ</th>
       {% if perms.ausleihe.view_leihe %}
       <th>verliehen von</th>
@@ -22,8 +22,8 @@
       <td>
         {% include "ausleihe/medium_enthaelt.html" with medium=leihe.medium %}
       </td>
-      <td class="text-right">{{ leihe.anfang|date:"d.m.Y" }}</td>
-      <td class="text-right">{{ leihe.ende|date:"l" }}, {{ leihe.ende|date:"d.m.Y" }}</td>
+      <td class="text-right">{{ leihe.anfang|date:"d.m.Y H:i" }} Uhr</td>
+      <td class="text-right">{{ leihe.ende|date:"d.m.Y H:i" }} Uhr</td>
       <td>{{ leihe.dauer }}&thinsp;d</td>
       <td>{{ leihe.verleiht_von.get_full_name }} ({{ leihe.verleiht_von }})</td>
     </tr>

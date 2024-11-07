@@ -311,8 +311,11 @@ class Verleihen(LoginRequiredMixin, PermissionRequiredMixin, View):
         context = {
             "medien": Medium.objects.all(),
             "nutzer": fs_user,
-            "anfang": date.today(),
-            "ende": date.today() + timedelta(days=30),
+            "anfang": timezone.now(),
+            "ende": (
+                datetime.combine(timezone.now().date(), time.max)
+                + timedelta(days=30)
+            ),
         }
         return context
 
@@ -343,8 +346,12 @@ class Verleihen(LoginRequiredMixin, PermissionRequiredMixin, View):
 
         medium = Medium.objects.get(id=medium_id)
         nutzer = FachschaftUser.objects.get(id=nutzer_id)
-        anfang = date.fromisoformat(request.POST.get("anfang"))
-        ende = date.fromisoformat(request.POST.get("ende"))
+        anfang = timezone.make_aware(
+            datetime.fromisoformat(request.POST.get("anfang"))
+        )
+        ende = timezone.make_aware(
+            datetime.fromisoformat(request.POST.get("ende"))
+        )
 
         # überprüfe logische Fehler:
 
@@ -380,7 +387,7 @@ class Zuruecknehmen(LoginRequiredMixin, PermissionRequiredMixin, View):
     def get(self, request, leihe_id):
         l = Leihe.objects.filter(id=leihe_id).update(
             zurueckgebracht=True,
-            ende=date.today(),
+            ende=timezone.now(),
         )
 
         username = request.GET.get("username", None)

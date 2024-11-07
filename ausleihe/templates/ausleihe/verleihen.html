@@ -144,13 +144,13 @@
       <div class="col">
         <div class="form-group">
           <label for="anfang"><strong>Anfang</strong></label>
-          <input class="form-control" type="date" name="anfang" value="{{ anfang|date:"Y-m-d" }}" id="anfang" readonly required>
+          <input class="form-control" type="datetime-local" name="anfang" value="{{ anfang|date:'Y-m-d\TH:i' }}" id="anfang" readonly required>
         </div>
       </div>
       <div class="col">
         <div class="form-group">
           <label for="ende"><strong>Ende</strong></label>
-          <input class="form-control {% if errors.ende %}is-invalid{% endif %}" type="date" name="ende" value="{{ ende|date:"Y-m-d" }}" id="ende" required>
+          <input class="form-control {% if errors.ende %}is-invalid{% endif %}" type="datetime-local" name="ende" value="{{ ende|date:'Y-m-d\TH:i' }}" id="ende" required>
           {% if errors.ende %}
           <div class="invalid-feedback">{{ errors.ende }}</div>
           {% endif %}

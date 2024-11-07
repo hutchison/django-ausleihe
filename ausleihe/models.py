@@ -28,8 +28,8 @@ class Medium(models.Model):
 
     def aktuell_ausgeliehen(self):
         return self.leihe_set.filter(
-            anfang__lte=date.today(),   # anfang <= today <= ende
-            ende__gte=date.today(),
+            anfang__lte=timezone.now(),   # anfang <= today <= ende
+            ende__gte=timezone.now(),
             zurueckgebracht=False,
         ).exists()
 
@@ -41,8 +41,8 @@ class Leihe(models.Model):
         on_delete=models.PROTECT,
         related_name='entliehen',
     )
-    anfang = models.DateField(auto_now=True)
-    ende = models.DateField()
+    anfang = models.DateTimeField(null=True)
+    ende = models.DateTimeField(null=True)
     zurueckgebracht = models.BooleanField(default=False, verbose_name="zurückgebracht")
     erzeugt = models.DateTimeField(auto_now=True)
     verleiht_von = models.ForeignKey(
@@ -65,10 +65,10 @@ class Leihe(models.Model):
         )
 
     def ist_ueberfaellig(self):
-        return date.today() > self.ende
+        return timezone.now() > self.ende
 
     def differenz_heute(self):
-        return abs((date.today() - self.ende).days)
+        return abs((timezone.now() - self.ende).days)
 
     def dauer(self):
         return (self.ende - self.anfang).days
