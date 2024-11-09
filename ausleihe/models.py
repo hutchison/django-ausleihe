@@ -41,8 +41,8 @@ class Leihe(models.Model):
         on_delete=models.PROTECT,
         related_name='entliehen',
     )
-    anfang = models.DateTimeField(null=True)
-    ende = models.DateTimeField(null=True)
+    anfang = models.DateTimeField(auto_now=True)
+    ende = models.DateTimeField()
     zurueckgebracht = models.BooleanField(default=False, verbose_name="zurückgebracht")
     erzeugt = models.DateTimeField(auto_now=True)
     verleiht_von = models.ForeignKey(
