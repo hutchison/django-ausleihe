@@ -43,7 +43,7 @@
             <td>{{ r.skill }}</td>
             <td>{{ r.medium }}</td>
             <td>{{ r.raum }}</td>
-            <td>{{ r.zeit }} – {{ r.ende|date:"H:i" }} Uhr</td>
+            <td>{{ r.zeit|date:"d.m.Y H:i" }} – {{ r.ende|date:"H:i" }} Uhr</td>
           </tr>
           {% endfor %}
         </tbody>
