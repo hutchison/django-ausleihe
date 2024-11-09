@@ -25,9 +25,7 @@
               <a href="{% url 'ausleihe:medium-detail' leihe.medium.id %}">{{ leihe.medium }}</a>
             </td>
             <td>
-              {% if leihe.medium.buecher.exists %}
-              📚 {{ leihe.medium.buecher.all|join:", " }}
-              {% endif %}
+              {% include "ausleihe/medium_enthaelt.html" with medium=leihe.medium %}
             </td>
             <td>
               {% if perms.ausleihe.view_leihe %}
