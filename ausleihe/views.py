@@ -405,8 +405,9 @@ class LeiheList(LoginRequiredMixin, ListView):
     queryset = Leihe.objects.prefetch_related(
         "medium",
         "medium__buecher",
+        "medium__skillsets",
         "nutzer__user",
-        "verleiht_von",
+        "verleiht_von__fachschaftuser",
     ).filter(
         zurueckgebracht=False,
     ).order_by(
