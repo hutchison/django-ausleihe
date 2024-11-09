@@ -136,3 +136,11 @@ class ReservierungAdmin(admin.ModelAdmin):
         "medium",
         "erzeugt",
     )
+    search_fields = [
+        "nutzer__user__username",
+        "nutzer__user__first_name",
+        "nutzer__user__last_name",
+        "skill__name",
+        "raum__name",
+        "medium__pk",
+    ]
