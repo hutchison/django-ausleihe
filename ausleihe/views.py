@@ -53,19 +53,20 @@ class Home(LoginRequiredMixin, View):
         except FachschaftUser.DoesNotExist:
             return render(request, "ausleihe/profil_unvollstaendig.html")
         else:
+            aktuell_reserviert = Reservierung.objects.prefetch_related(
+                "skill",
+                "raum",
+            ).filter(
+                nutzer=fuser,
+                zeit__gte=timezone.now(),
+            )
+
             aktuell_verliehen = Leihe.objects.prefetch_related(
                 "medium__buecher",
                 "medium__skillsets",
                 "verleiht_von__fachschaftuser",
             ).filter(
                 zurueckgebracht=False,
-                nutzer=fuser,
-            )
-
-            aktuell_reserviert = Reservierung.objects.prefetch_related(
-                "skill",
-                "raum",
-            ).filter(
                 nutzer=fuser,
             )
 
@@ -79,8 +80,8 @@ class Home(LoginRequiredMixin, View):
             )
 
             context = {
-                "aktuell_verliehen": aktuell_verliehen,
                 "aktuell_reserviert": aktuell_reserviert,
+                "aktuell_verliehen": aktuell_verliehen,
                 "historisch_verliehen": historisch_verliehen,
             }
 
@@ -798,7 +799,7 @@ class SkillVerfuegbarkeitReserve(LoginRequiredMixin, View):
 
 
 class ReservierungList(LoginRequiredMixin, PermissionRequiredMixin, ListView):
-    queryset = Reservierung.objects.filter(zeit__gte=timezone.now())
+    queryset = Reservierung.objects.filter(zeit__gte=timezone.localdate())
     permission_required = "ausleihe.change_reservierung"
 
 
