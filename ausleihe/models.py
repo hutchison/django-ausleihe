@@ -444,6 +444,17 @@ class Reservierung(models.Model):
         on_delete=models.PROTECT,
         related_name="reservierungen",
     )
+    leihe = models.OneToOneField(
+        Leihe,
+        on_delete=models.PROTECT,
+        related_name="reservierung",
+        blank=True,
+        null=True,
+        help_text=(
+            "Wenn eine Reservierung wirklich ausgeliehen wurde, "
+            "wird hier die Leihe verlinkt."
+        ),
+    )
     zeit = models.DateTimeField(
         verbose_name="Datum und Uhrzeit",
         help_text="Für wann gilt die Reservierung?",

@@ -23,6 +23,18 @@
     </ol>
   </nav>
 
+  {% if messages %}
+  {% for message in messages %}
+  <div class="row">
+    <div class="col">
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  {% endif %}
+
   <div class="row">
     <div class="col">
       <h5 class="text-primary">Reservierungen ab heute</h5>
@@ -34,16 +46,26 @@
             <th>Medium</th>
             <th>Raum</th>
             <th>Zeit</th>
+            <th>Verleihen</th>
           </tr>
         </thead>
         <tbody>
           {% for r in reservierung_list %}
-          <tr>
+          <tr {% if r.leihe.zurueckgebracht %}class="text-muted"{% endif %}>
             <td>{{ r.nutzer }} ({{ r.nutzer.user }})</td>
             <td>{{ r.skill }}</td>
             <td>{{ r.medium }}</td>
             <td>{{ r.raum }}</td>
             <td>{{ r.zeit|date:"d.m.Y H:i" }} – {{ r.ende|date:"H:i" }} Uhr</td>
+            <td>
+              {% if not r.leihe %}
+              <a role="button" class="btn btn-primary" href="{% url 'ausleihe:reservierung-verleihen' r.id %}">ausgeben</a>
+              {% elif r.leihe and not r.leihe.zurueckgebracht %}
+              <a role="button" class="btn btn-warning" href="{% url 'ausleihe:zuruecknehmen' r.leihe.id %}?next=reservierungen">zurücknehmen</a>
+              {% else %}
+              erledigt
+              {% endif %}
+            </td>
           </tr>
           {% endfor %}
         </tbody>

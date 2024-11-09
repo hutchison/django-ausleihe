@@ -391,14 +391,18 @@ class Zuruecknehmen(LoginRequiredMixin, PermissionRequiredMixin, View):
             ende=timezone.now(),
         )
 
+        redirect_next = request.GET.get("next", None)
+        if redirect_next == "reservierungen":
+            return redirect("ausleihe:reservierung-list")
+
         username = request.GET.get("username", None)
         if username:
             # umleiten zu verliehen-an:
             url = reverse("ausleihe:verliehen-an")
             parameter = urlencode({"username": username})
             return redirect(f"{url}?{parameter}")
-        else:
-            return redirect("ausleihe:verliehen")
+
+        return redirect("ausleihe:verliehen")
 
 
 class LeiheList(LoginRequiredMixin, ListView):
@@ -823,6 +827,35 @@ class ReservierungDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView
         user = self.request.user
         r = self.get_object()
         return user.fachschaftuser == r.nutzer
+
+
+class ReservierungVerleihen(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = "ausleihe.create_leihe"
+
+    def get(self, request, reservierung_id):
+        r = get_object_or_404(Reservierung, id=reservierung_id)
+
+        if r.leihe:
+            messages.warning(
+                request,
+                f"Reservierung wurde schon verliehen: {r.leihe}"
+            )
+        else:
+            leihe = Leihe(
+                medium=r.medium,
+                nutzer=r.nutzer,
+                anfang=timezone.now(),
+                ende=r.ende,
+                verleiht_von=request.user,
+            )
+            leihe.save()
+
+            r.leihe = leihe
+            r.save()
+
+            messages.success(request, f"Verliehen: {leihe}")
+
+        return redirect("ausleihe:reservierung-list")
 
 
 class GebaeudeList(LoginRequiredMixin, ListView):
