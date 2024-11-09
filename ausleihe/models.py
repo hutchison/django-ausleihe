@@ -58,10 +58,13 @@ class Leihe(models.Model):
 
     def __str__(self):
         r = "✓" if self.zurueckgebracht else "✗"
+        anfang = self.anfang.astimezone(timezone.get_current_timezone())
+        ende = self.ende.astimezone(timezone.get_current_timezone())
+        erzeugt = self.erzeugt.astimezone(timezone.get_current_timezone())
         return (
             f"{self.medium} an {self.nutzer} "
-            f"({self.anfang} – {self.ende}) "
-            f"durch {self.verleiht_von} am {self.erzeugt} {r}"
+            f"({anfang:%d.%m.%Y %H:%M} – {ende:%d.%m.%Y %H:%M}) "
+            f"durch {self.verleiht_von} am {erzeugt:%d.%m.%Y %H:%M} {r}"
         )
 
     def ist_ueberfaellig(self):
