@@ -268,12 +268,13 @@ class ReservierungszeitForm(forms.Form):
             Row(
                 Column(
                     HTML("""
+                    <p>Für den Skill sind {{ skill.dauer }} min eingeplant.</p>
                     <p>Wähle eine Zeit zwischen
                     {{ verfuegbarkeit.beginn }} – {{ v_ende }} Uhr
                     im 15-Minuten-Takt:</p>
                     """
-                ),
                     ),
+                ),
             ),
             Row(
                 Column(
