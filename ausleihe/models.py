@@ -386,31 +386,6 @@ class Skillset(models.Model):
     def get_absolute_url(self):
         return reverse("ausleihe:skillset-detail", kwargs={"skillset_id": self.id})
 
-    @staticmethod
-    def dict_from_post_data(post_data):
-        skillset = {}
-        keys = [
-            ("medium_id", str),
-            ("name", str),
-            ("skill_id", int),
-            ("beschreibung", str)
-        ]
-
-        for key, typ in keys:
-            v = post_data.get(key)
-            skillset[key] = typ(post_data.get(key).strip())
-
-        skillset["items"] = [
-            (int(q), int(i))
-            for q, i in zip(
-                post_data.getlist("item_quantities"),
-                post_data.getlist("item_ids")
-                )
-            if q and i
-        ]
-
-        return skillset
-
 
 class SkillsetItemRelation(models.Model):
     skillset = models.ForeignKey(
