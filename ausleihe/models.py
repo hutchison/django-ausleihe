@@ -375,27 +375,39 @@ class Skillset(models.Model):
     def __str__(self):
         return f"{self.name}"
 
+    def __repr__(self):
+        return f"<Skillset: name={self.name}, medium={self.medium}, skill={self.skill}>"
+
     class Meta:
         verbose_name = "Skillset"
         verbose_name_plural = "Skillsets"
         ordering = ("name",)
 
+    def get_absolute_url(self):
+        return reverse("ausleihe:skillset-detail", kwargs={"skillset_id": self.id})
+
     @staticmethod
     def dict_from_post_data(post_data):
-        skillset = {
-            "medium_id": post_data.get("medium_id", "").strip(),
-            "name": post_data.get("name", "").strip(),
-            "skill_id": int(post_data.get("skill_id", "").strip()),
-            "beschreibung": post_data.get("beschreibung", "").strip(),
-            "items": [
-                (int(q), int(i))
-                for q, i in zip(
-                    post_data.getlist("item_quantities"),
-                    post_data.getlist("item_ids")
+        skillset = {}
+        keys = [
+            ("medium_id", str),
+            ("name", str),
+            ("skill_id", int),
+            ("beschreibung", str)
+        ]
+
+        for key, typ in keys:
+            v = post_data.get(key)
+            skillset[key] = typ(post_data.get(key).strip())
+
+        skillset["items"] = [
+            (int(q), int(i))
+            for q, i in zip(
+                post_data.getlist("item_quantities"),
+                post_data.getlist("item_ids")
                 )
-                if q and i
-            ],
-        }
+            if q and i
+        ]
 
         return skillset
 

@@ -15,7 +15,7 @@ function add_skillsetitem() {
 
 function check_skillsetitems() {
 	chosen_skillsetitems.clear();
-	let submit_button = document.getElementById("submit");
+	let submit_button = document.getElementById("submit-id-submit");
 	submit_button.disabled = false;
 
 	for (elem of document.getElementsByTagName("select")) {

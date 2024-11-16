@@ -24,6 +24,7 @@ from .models import (
     Raum,
     Reservierung,
     Skill,
+    Skillset,
     Verfuegbarkeit,
 )
 
@@ -85,6 +86,26 @@ class SkillForm(forms.ModelForm):
                     InlineCheckboxes("raeume"),
                 ),
             ),
+        )
+
+
+class SkillsetForm(forms.ModelForm):
+    class Meta:
+        model = Skillset
+        fields = ["medium", "name", "skill"]
+        widgets = {
+            "medium": forms.TextInput(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Field("medium"),
+            Field("name"),
+            Field("skill"),
+            Submit("submit", "Speichern"),
         )
 
 

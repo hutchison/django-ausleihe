@@ -39,6 +39,7 @@ from .forms import (
     RaumImportForm,
     ReservierungszeitForm,
     SkillForm,
+    SkillsetForm,
     VerfuegbarkeitForm,
 )
 from .parsers import LSFRoomParser
@@ -535,9 +536,9 @@ class SkillsetEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         "item_relations__item",
     )
     permission_required = "ausleihe.change_skillset"
-    fields = ["medium", "name", "skill"]
     pk_url_kwarg = "skillset_id"
     template_name_suffix = "_edit"
+    form_class = SkillsetForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -545,37 +546,58 @@ class SkillsetEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         context['skills'] = Skill.objects.all()
         return context
 
+    def save_new_item_relations(self):
+        SkillsetItemRelation.objects.filter(skillset=self.object).delete()
+        items = [
+            (int(a), int(i))
+            for a, i in zip(
+                self.request.POST.getlist("item_quantities"),
+                self.request.POST.getlist("item_ids")
+            )
+            if a and i
+        ]
+        for a, i in items:
+            self.object.item_relations.create(anzahl=a, item_id=i)
+
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
+        context = self.get_context_data()
+        form = self.get_form()
 
-        skillset_neu = Skillset.dict_from_post_data(request.POST)
-
+        # Komischerweise verändert der Zugriff auf form.errors das medium von
+        # self.object, deswegen müssen wir das hier schon zwischenspeichern.
         medium_alt = self.object.medium
-        medium, created = Medium.objects.get_or_create(pk=skillset_neu["medium_id"])
-        if created:
-            messages.warning(
-                request,
-                f"Es wurde das neue Medium {medium} erzeugt."
+
+        if "medium" in form.errors:
+            del form.errors["medium"]
+
+        if form.is_valid():
+            medium_neu, created = Medium.objects.get_or_create(
+                pk=form.data.get("medium")
             )
+            if created:
+                messages.warning(
+                    request,
+                    f"Es wurde das neue Medium {medium_neu} erzeugt."
+                )
 
-        self.object.medium = medium
-        self.object.name = skillset_neu["name"]
-        self.object.skill = Skill.objects.get(id=skillset_neu["skill_id"])
+            self.object.medium = medium_neu
+            self.object.name = form.cleaned_data["name"]
+            self.object.skill = form.cleaned_data["skill"]
+            self.object.save()
 
-        self.object.save()
+            self.save_new_item_relations()
 
-        SkillsetItemRelation.objects.filter(skillset=self.object).delete()
-        for q, i in skillset_neu["items"]:
-            self.object.item_relations.create(anzahl=q, item_id=i)
+            if not medium_alt.skillsets.exists():
+                messages.warning(
+                    request,
+                    (f"Das alte Medium {medium_alt} hat keine Skill Sets mehr. "
+                    "Bitte überprüfe das.")
+                )
 
-        if not medium_alt.skillsets.exists():
-            messages.warning(
-                request,
-                (f"Das alte Medium {medium_alt} hat keine Skillsets mehr. "
-                 "Bitte überprüfe das.")
-            )
-
-        return redirect('ausleihe:skillset-detail', skillset_id=self.object.id)
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
 
 class SkillsetDuplicate(LoginRequiredMixin, PermissionRequiredMixin, View):

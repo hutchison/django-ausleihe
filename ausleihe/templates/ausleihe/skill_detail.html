@@ -57,7 +57,11 @@
 
   <div class="row">
     <div class="col">
+      {% if skill.raeume.exists and skill.skillsets.exists %}
       <a class="btn btn-primary" href="{% url 'ausleihe:skill-reserve' skill.id %}" role="button">Reservieren</a>
+      {% else %}
+      <p>Aktuell ist der Skill noch nicht reservierbar.</p>
+      {% endif %}
     </div>
   </div>
 
@@ -73,6 +77,10 @@
       </ul>
       {% else %}
       <p class="text-warning">Dem Skill sind aktuell keine Räume zugeordnet.</p>
+      <p class="text-muted">
+        <a href="{% url 'ausleihe:skill-edit' skill.pk %}">Bearbeite den Skill</a> und
+        wähle einen oder mehrere Räume an, in denen der Skill durchgeführt werden kann.
+      </p>
       {% endif %}
     </div>
     <div class="col">
@@ -96,6 +104,10 @@
       </table>
       {% else %}
       <p class="text-warning">Zu dem Skill existieren aktuell keine Skill Sets.</p>
+      <p class="text-muted">
+        <a href="{% url 'ausleihe:skillset-create' %}">Füge ein Skill Set hinzu</a> und
+        gib dort als Skill <em>{{ skill.name }}</em> an.
+      </p>
       {% endif %}
     </div>
   </div>

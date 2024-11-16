@@ -1,5 +1,16 @@
 {% extends "ausleihe/base.html" %}
-{% load static %}
+{% load static crispy_forms_tags %}
+
+{% block css %}
+<style type="text/css" media="screen">
+  .asteriskField {
+    display: none;
+  }
+  .requiredField {
+    font-weight: bold;
+  }
+</style>
+{% endblock css %}
 
 {% block js %}
 <script src="{% static 'ausleihe/js/skillset_edit.js' %}"></script>
@@ -19,19 +30,32 @@
     </ol>
   </nav>
 
-  {% if messages %}
-  {% for message in messages %}
-  <div class="row">
-    <div class="col">
-      <div class="alert alert-{{ message.tags}}">
-        {{ message }}
+  <form method="post">
+    <div class="row">
+      <div class="col">
+        {% crispy form %}
+      </div>
+
+      <div class="col">
+        <label>dazugehörige Skill Set Items</label>
+        {% if skillset.item_relations.exists %}
+        {# vorhandenes Skillset wird bearbeitet #}
+        {% for r in skillset.item_relations.all %}
+        {% include "ausleihe/skillsetitem_input_element.html" with r=r %}
+        {% endfor %}
+        {% else %}
+        {# neues Skillset wird erzeugt #}
+        {% for _ in "123"|make_list %}
+        {% include "ausleihe/skillsetitem_input_element.html" %}
+        {% endfor %}
+        {% endif %}
+        <button type="button" id="add_item" class="btn btn-success">weiteres Item hinzufügen</button>
+        <small id="medium_help" class="form-text text-muted">
+          Zum Entfernen eines Skillset Items setze einfach den Namen auf <code>---</code>.
+        </small>
       </div>
     </div>
-  </div>
-  {% endfor %}
-  {% endif %}
-
-  {% include "ausleihe/skillset_form.html" %}
+  </form>
 
   {% if saved_skillset %}
   <div class="alert alert-success mt-3" role="alert">
