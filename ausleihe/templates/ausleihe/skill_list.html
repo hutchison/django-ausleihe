@@ -17,6 +17,12 @@
       {% if perms.ausleihe.change_raum %}
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:raum-list' %}">Räume</a></li>
       {% endif %}
+      {% if perms.ausleihe.change_gebaeude %}
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:gebaeude-list' %}">Gebäude</a></li>
+      {% endif %}
+      {% if perms.ausleihe.change_verfuegbarkeit %}
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verfuegbarkeit-create' %}">Zeiten</a></li>
+      {% endif %}
       {% if perms.ausleihe.change_reservierung %}
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:reservierung-list' %}">Reservierungen</a></li>
       {% endif %}
