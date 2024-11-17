@@ -60,7 +60,10 @@
       {% if skill.raeume.exists and skill.skillsets.exists %}
       <a class="btn btn-primary" href="{% url 'ausleihe:skill-reserve' skill.id %}" role="button">Reservieren</a>
       {% else %}
-      <p>Aktuell ist der Skill noch nicht reservierbar.</p>
+      <p class="text-muted">Aktuell ist der Skill noch nicht reservierbar.</p>
+      {% if perms.ausleihe.change_skill %}
+      <p class="text-warning">Dem Skill muss mind. ein Raum zugeordnet werden und es muss ein Skill Set zu diesem Skill existieren, damit er reservierbar ist.</p>
+      {% endif %}
       {% endif %}
     </div>
   </div>
