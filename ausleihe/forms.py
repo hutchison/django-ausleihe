@@ -311,7 +311,7 @@ class ReservierungszeitForm(forms.Form):
             Row(
                 Column(
                     Field("zeit"),
-                    css_class="col-2",
+                    css_class="col-3",
                 )
             )
         )

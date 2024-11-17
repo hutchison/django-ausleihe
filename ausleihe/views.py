@@ -1,5 +1,6 @@
 from datetime import date, datetime, timedelta, time
 from random import choice
+from math import ceil
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -712,6 +713,10 @@ class SkillEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
 
 
 class SkillReserve(LoginRequiredMixin, View):
+    """
+    Der Nutzer hat einen Skill gewählt und muss jetzt eine Verfügbarkeit (Raum mit
+    Anfangs- und Endzeit) wählen.
+    """
     template_name = "ausleihe/skill_reserve.html"
 
     def get_context_data(self, **kwargs):
@@ -746,20 +751,46 @@ class SkillReserve(LoginRequiredMixin, View):
 
 
 class SkillVerfuegbarkeitReserve(LoginRequiredMixin, View):
+    """
+    Der Nutzer hat einen Skill und eine Verfügbarkeit gewählt und muss jetzt eine
+    konkrete Startzeit für die Reservierung wählen.
+    """
     template_name = "ausleihe/skill_verfuegbarkeit_reserve.html"
     form_class = ReservierungszeitForm
 
     def get_context_data(self, **kwargs):
         skill = get_object_or_404(Skill, pk=kwargs.get("skill_id"))
-
         v = get_object_or_404(Verfuegbarkeit, id=kwargs.get("v_id"))
+        fuser = FachschaftUser.objects.get(user=self.request.user)
+
         # Die letzte Zeit zum Reservieren ergibt sich aus
         # der Endzeit der Verfügbarkeit und der Dauer des Skills.
+        dt_beginn = datetime.combine(v.datum, v.beginn)
         dt_ende = datetime.combine(v.datum, v.ende)
         v_ende = dt_ende - timedelta(minutes=skill.dauer)
         form = ReservierungszeitForm(verfuegbarkeit=v, v_ende=v_ende.time())
 
-        fuser = FachschaftUser.objects.get(user=self.request.user)
+        td_15m = timedelta(minutes=15)
+        # N ist die Anzahl der 15 min Zeitscheiben der verfügbaren Zeit:
+        N = ceil((dt_ende - dt_beginn)/td_15m)
+
+        auslastung = {
+            timezone.make_aware(dt_beginn + n*td_15m): 0
+            for n in range(N)
+        }
+
+        rs = Reservierung.objects.filter(
+            skill=skill,
+            raum=v.raum,
+            zeit__gte=dt_beginn,
+            ende__lte=dt_ende,
+        )
+        # K ist die Anzahl der 15 min Zeitscheiben, die der Skill benötigt:
+        K = ceil(timedelta(minutes=skill.dauer) / td_15m)
+
+        for r in rs:
+            for i in range(K):
+                auslastung[r.zeit + i*td_15m] += 1
 
         context = {
             "form": form,
@@ -767,6 +798,9 @@ class SkillVerfuegbarkeitReserve(LoginRequiredMixin, View):
             "skill": skill,
             "v_ende": v_ende.time(),
             "verfuegbarkeit": v,
+            "auslastung": auslastung,
+            "n_skillsets": skill.skillsets.count(),
+            "n_skillsets_1": skill.skillsets.count() - 1,
         }
 
         return context

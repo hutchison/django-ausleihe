@@ -25,5 +25,31 @@
     </ol>
   </nav>
 
-  {% crispy form %}
+  <div class="row">
+    <div class="col">
+      {% crispy form %}
+    </div>
+    <div class="col">
+      <h6>Auslastung <small>{{ n_skillsets }} Sets vorhanden, davon sind schon reserviert:</small></h6>
+      <table class="table table-sm table-bordered">
+        <thead>
+          <tr>
+            {% for dt, n in auslastung.items %}
+            {% if dt.minute == verfuegbarkeit.beginn.minute %}
+            <td colspan="4">{{ dt|date:"H:i" }}</td>
+            {% endif %}
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {% for dt, n in auslastung.items %}
+            <td class="text-center table-{% if n == n_skillsets %}danger{% elif n == n_skillsets_1 %}warning{% else %}success{% endif %}">{{ n }}</td>
+            {% endfor %}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 {% endblock content %}
