@@ -88,6 +88,17 @@ class SkillForm(forms.ModelForm):
             ),
         )
 
+    def clean(self):
+        cleaned_data = super().clean()
+        min_personen = cleaned_data.get("min_personen")
+        max_personen = cleaned_data.get("max_personen")
+
+        if min_personen > max_personen:
+            raise ValidationError(
+                "Die Mindestanzahl an Personen darf nicht größer sein als die "
+                "maximale Anzahl von benötigten Personen."
+            )
+
 
 class SkillsetForm(forms.ModelForm):
     class Meta:
