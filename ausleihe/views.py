@@ -886,7 +886,7 @@ class ReservierungDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView
 
 
 class ReservierungVerleihen(LoginRequiredMixin, PermissionRequiredMixin, View):
-    permission_required = "ausleihe.create_leihe"
+    permission_required = "ausleihe.add_leihe"
 
     def get(self, request, reservierung_id):
         r = get_object_or_404(Reservierung, id=reservierung_id)
