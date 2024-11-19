@@ -1,7 +1,9 @@
+from datetime import timedelta
+
 from django.db import models
 from django.shortcuts import reverse
 
-from . import Raum
+from . import Raum, Reservierung
 
 
 class Skill(models.Model):
