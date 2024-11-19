@@ -1,15 +1,13 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from . import Raum
-
 
 class Verfuegbarkeit(models.Model):
     datum = models.DateField()
     beginn = models.TimeField()
     ende = models.TimeField()
     raum = models.ForeignKey(
-        Raum,
+        "ausleihe.Raum",
         on_delete=models.CASCADE,
         related_name="verfuegbarkeiten",
     )
@@ -76,4 +74,3 @@ class Verfuegbarkeit(models.Model):
     def save(self, *args, **kwargs):
         self.clean()
         super().save(*args, **kwargs)
-

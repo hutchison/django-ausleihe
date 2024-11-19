@@ -4,11 +4,12 @@ from django.utils import timezone
 
 from fsmedhro_core.models import FachschaftUser
 
-from . import Medium
-
 
 class Leihe(models.Model):
-    medium = models.ForeignKey(Medium, on_delete=models.PROTECT)
+    medium = models.ForeignKey(
+        "ausleihe.Medium",
+        on_delete=models.PROTECT
+    )
     nutzer = models.ForeignKey(
         FachschaftUser,
         on_delete=models.PROTECT,

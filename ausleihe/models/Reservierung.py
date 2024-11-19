@@ -7,8 +7,6 @@ from django.utils import timezone
 
 from fsmedhro_core.models import FachschaftUser
 
-from . import Skill, Medium, Raum, Leihe
-
 
 class Reservierung(models.Model):
     nutzer = models.ForeignKey(
@@ -17,22 +15,22 @@ class Reservierung(models.Model):
         related_name="reservierungen",
     )
     skill = models.ForeignKey(
-        Skill,
+        "ausleihe.Skill",
         on_delete=models.PROTECT,
         related_name="reservierungen",
     )
     medium = models.ForeignKey(
-        Medium,
+        "ausleihe.Medium",
         on_delete=models.PROTECT,
         related_name="reservierungen",
     )
     raum = models.ForeignKey(
-        Raum,
+        "ausleihe.Raum",
         on_delete=models.PROTECT,
         related_name="reservierungen",
     )
     leihe = models.OneToOneField(
-        Leihe,
+        "ausleihe.Leihe",
         on_delete=models.PROTECT,
         related_name="reservierung",
         blank=True,

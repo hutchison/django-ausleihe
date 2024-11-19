@@ -1,7 +1,5 @@
 from django.db import models
 
-from . import Gebaeude
-
 
 class Raum(models.Model):
     name = models.CharField(max_length=200, unique=True)
@@ -13,7 +11,7 @@ class Raum(models.Model):
         verbose_name="Anzahl verfügbarer Plätze",
     )
     gebaeude = models.ForeignKey(
-        Gebaeude,
+        "ausleihe.Gebaeude",
         on_delete=models.PROTECT,
         blank=True,
         null=True,

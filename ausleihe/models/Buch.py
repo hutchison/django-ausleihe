@@ -1,7 +1,5 @@
 from django.db import models
 
-from . import Autor, Verlag, Medium
-
 
 class Buch(models.Model):
     titel = models.CharField(max_length=300)
@@ -10,19 +8,19 @@ class Buch(models.Model):
     beschreibung = models.TextField(blank=True)
 
     medium = models.ForeignKey(
-        Medium,
+        "ausleihe.Medium",
         on_delete=models.PROTECT,
         related_name="buecher",
     )
     verlag = models.ForeignKey(
-        Verlag,
+        "ausleihe.Verlag",
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
         related_name="buecher",
     )
     autoren = models.ManyToManyField(
-        Autor,
+        "ausleihe.Autor",
         related_name="buecher",
     )
 

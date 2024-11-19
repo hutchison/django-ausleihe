@@ -1,19 +1,17 @@
 from django.db import models
 from django.shortcuts import reverse
 
-from . import Medium, Skill
-
 
 class Skillset(models.Model):
     name = models.CharField(max_length=200)
 
     medium = models.ForeignKey(
-        Medium,
+        "ausleihe.Medium",
         on_delete=models.PROTECT,
         related_name="skillsets",
     )
     skill = models.ForeignKey(
-        Skill,
+        "ausleihe.Skill",
         on_delete=models.PROTECT,
         related_name="skillsets",
     )

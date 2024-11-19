@@ -1,16 +1,14 @@
 from django.db import models
 
-from . import Skillset, SkillsetItem
-
 
 class SkillsetItemRelation(models.Model):
     skillset = models.ForeignKey(
-        Skillset,
+        "ausleihe.Skillset",
         on_delete=models.CASCADE,
         related_name="item_relations"
     )
     item = models.ForeignKey(
-        SkillsetItem,
+        "ausleihe.SkillsetItem",
         on_delete=models.CASCADE,
         related_name="skillset_relations"
     )

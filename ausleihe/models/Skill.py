@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.db import models
 from django.shortcuts import reverse
 
-from . import Raum, Reservierung
+from .Reservierung import Reservierung
 
 
 class Skill(models.Model):
@@ -26,7 +26,7 @@ class Skill(models.Model):
     )
     beschreibung = models.TextField(blank=True)
     raeume = models.ManyToManyField(
-        Raum,
+        "ausleihe.Raum",
         related_name="skills",
         verbose_name="Räume",
         help_text="In welchen Räumen kann dieser Skill durchgeführt werden?",
