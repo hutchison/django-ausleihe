@@ -12,8 +12,8 @@ from .models import (
     Skillset,
     SkillsetItem,
     SkillsetItemRelation,
-    Verlag,
     Verfuegbarkeit,
+    Verlag,
 )
 
 
