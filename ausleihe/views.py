@@ -31,8 +31,8 @@ from .models import (
     Skillset,
     SkillsetItem,
     SkillsetItemRelation,
-    Verlag,
     Verfuegbarkeit,
+    Verlag,
 )
 from .forms import (
     GebaeudeForm,
