@@ -107,7 +107,7 @@ class Reservierung(models.Model):
         return self.raum.verfuegbarkeiten.filter(
             datum=lz.date(),
             beginn__lte=lz.time(),
-            ende__gte=(lz + timedelta(minutes=self.skill.dauer))
+            ende__gte=(lz + self.skill.td_dauer)
         ).exists()
 
     @staticmethod
@@ -136,7 +136,7 @@ class Reservierung(models.Model):
         )
 
     def Q_ueberschneidungen(self):
-        von, bis = self.zeit, self.zeit + timedelta(minutes=self.skill.dauer)
+        von, bis = self.zeit, self.zeit + self.skill.td_dauer
         return self._Q_ueberschneidungen(von, bis)
 
     def _ueberschneidende_reservierungen_vom_raum(self):
@@ -216,8 +216,7 @@ class Reservierung(models.Model):
                 f"{r.lokales_ende:%H:%M} Uhr"
             )
 
-
     def save(self, *args, **kwargs):
         self.full_clean()  # ruft u.a. self.clean() auf
-        self.ende = self.zeit + timedelta(minutes=self.skill.dauer)
+        self.ende = self.zeit + self.skill.td_dauer
         super().save(*args, **kwargs)

@@ -41,6 +41,10 @@ class Skill(models.Model):
     def __str__(self):
         return f"Skill Nr. {self.nummer}: {self.name}"
 
+    @property
+    def td_dauer(self):
+        return timedelta(minutes=self.dauer)
+
     def get_absolute_url(self):
         return reverse("ausleihe:skill-detail", kwargs={"skill_id": self.id})
 
@@ -50,7 +54,7 @@ class Skill(models.Model):
     def available_skillsets(self, dt):
         possible_skillsets = self.skillsets.prefetch_related("medium__reservierungen")
         skillsets = []
-        von, bis = dt, dt + timedelta(minutes=self.dauer)
+        von, bis = dt, dt + self.td_dauer
 
         for skillset in possible_skillsets:
             rs = skillset.medium.reservierungen.filter(
