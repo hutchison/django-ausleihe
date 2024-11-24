@@ -1,3 +1,5 @@
+# vim: set tw=140:
+
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
@@ -27,9 +29,7 @@ urlpatterns = [
     path('skill/<int:skill_id>', views.SkillDetail.as_view(), name='skill-detail'),
     path('skill/<int:skill_id>/bearbeiten', views.SkillEdit.as_view(), name='skill-edit'),
     path('skill/<int:skill_id>/reservieren', views.SkillReserve.as_view(), name='skill-reserve'),
-    path('skill/<int:skill_id>/reservieren/<int:v_id>',
-         views.SkillVerfuegbarkeitReserve.as_view(),
-         name='skill-verfuegbarkeit-reserve'),
+    path('skill/<int:skill_id>/reservieren/<int:v_id>', views.SkillVerfuegbarkeitReserve.as_view(), name='skill-verfuegbarkeit-reserve'),
     path('skillsets', views.SkillsetList.as_view(), name='skillset-list'),
     path('skillset/<int:skillset_id>', views.SkillsetDetail.as_view(), name='skillset-detail'),
     path('skillset/<int:skillset_id>/bearbeiten', views.SkillsetEdit.as_view(), name='skillset-edit'),
