@@ -30,9 +30,29 @@
       {% crispy form %}
     </div>
     <div class="col">
-      <h6>Auslastung <small>{{ n_skillsets }} Sets vorhanden, davon sind schon reserviert:</small></h6>
+      <h6>Auslastung</h6>
       <table class="table table-sm table-bordered">
-        <thead>
+        <tbody>
+          <tr>
+            <td colspan="{{ auslastung.items|length }}">
+              <small class="text-muted">{{ n_skillsets }} Sets vorhanden, davon sind schon reserviert:</small>
+            </td>
+          </tr>
+          <tr>
+            {% for dt, a in auslastung.items %}
+            <td class="text-center
+              {% if a.belegte_skillsets == n_skillsets %}
+              table-danger
+              {% elif a.belegte_skillsets == n_skillsets_1 %}
+              table-warning
+              {% else %}
+              table-success
+              {% endif %}
+            ">
+              {{ a.belegte_skillsets }}
+            </td>
+            {% endfor %}
+          </tr>
           <tr>
             {% for dt, n in auslastung.items %}
             {% if dt.minute == verfuegbarkeit.beginn.minute %}
@@ -40,11 +60,32 @@
             {% endif %}
             {% endfor %}
           </tr>
-        </thead>
-        <tbody>
+          <tr>
+            <td colspan="{{ auslastung.items|length }}">
+              <small class="text-muted">{{ skill.anzahl_plaetze }} Plätze werden benötigt;
+                der Raum hat {{ verfuegbarkeit.raum.anzahl_plaetze }} Plätze, davon sind schon reserviert:</small>
+            </td>
+          </tr>
+          <tr>
+            {% for dt, a in auslastung.items %}
+            <td class="text-center
+              {% if a.freie_plaetze < skill.anzahl_plaetze %}
+              table-danger
+              {% elif a.freie_plaetze == skill.anzahl_plaetze %}
+              table-warning
+              {% else %}
+              table-success
+              {% endif %}
+            ">
+              {{ a.belegte_plaetze }}
+            </td>
+            {% endfor %}
+          </tr>
           <tr>
             {% for dt, n in auslastung.items %}
-            <td class="text-center table-{% if n == n_skillsets %}danger{% elif n == n_skillsets_1 %}warning{% else %}success{% endif %}">{{ n }}</td>
+            {% if dt.minute == verfuegbarkeit.beginn.minute %}
+            <td colspan="4">{{ dt|date:"H:i" }}</td>
+            {% endif %}
             {% endfor %}
           </tr>
         </tbody>

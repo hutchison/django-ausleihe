@@ -791,32 +791,39 @@ class SkillVerfuegbarkeitReserve(NutzungsordnungAkzeptiertMixin, View):
 
         # Die letzte Zeit zum Reservieren ergibt sich aus
         # der Endzeit der Verfügbarkeit und der Dauer des Skills.
-        dt_beginn = datetime.combine(v.datum, v.beginn)
-        dt_ende = datetime.combine(v.datum, v.ende)
-        v_ende = dt_ende - timedelta(minutes=skill.dauer)
+        v_ende = v.dt_ende - skill.td_dauer
         form = ReservierungszeitForm(verfuegbarkeit=v, v_ende=v_ende.time())
 
         td_15m = timedelta(minutes=15)
         # N ist die Anzahl der 15 min Zeitscheiben der verfügbaren Zeit:
-        N = ceil((dt_ende - dt_beginn)/td_15m)
-
-        auslastung = {
-            timezone.make_aware(dt_beginn + n*td_15m): 0
-            for n in range(N)
-        }
+        N = ceil(v.td_total / td_15m)
+        # K ist die Anzahl der 15 min Zeitscheiben, die der Skill benötigt:
+        K = ceil(skill.td_dauer / td_15m)
 
         rs = Reservierung.objects.filter(
-            skill=skill,
             raum=v.raum,
-            zeit__gte=dt_beginn,
-            ende__lte=dt_ende,
+            zeit__gte=v.dt_beginn,
+            ende__lte=v.dt_ende,
         )
-        # K ist die Anzahl der 15 min Zeitscheiben, die der Skill benötigt:
-        K = ceil(timedelta(minutes=skill.dauer) / td_15m)
-
+        # Speichert ab, wie viele Plätze in dem Raum belegt bzw. frei sind:
+        auslastung = {
+            timezone.make_aware(v.dt_beginn + n * td_15m): {
+                "belegte_plaetze": 0,
+                "freie_plaetze": v.raum.anzahl_plaetze,
+                "belegte_skillsets": 0,
+            }
+            for n in range(N)
+        }
         for r in rs:
-            for i in range(K):
-                auslastung[r.zeit + i*td_15m] += 1
+            k = ceil(r.skill.td_dauer / td_15m)
+            for i in range(k):
+                a = auslastung[r.zeit + i * td_15m]
+                a["belegte_plaetze"] += r.skill.anzahl_plaetze
+                a["freie_plaetze"] -= r.skill.anzahl_plaetze
+            if r.skill == skill:
+                for i in range(k):
+                    a = auslastung[r.zeit + i * td_15m]
+                    a["belegte_skillsets"] += 1
 
         context = {
             "form": form,
