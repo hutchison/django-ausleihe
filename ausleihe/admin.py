@@ -6,6 +6,7 @@ from .models import (
     Gebaeude,
     Leihe,
     Medium,
+    Nutzungsordnung,
     Raum,
     Reservierung,
     Skill,
@@ -144,3 +145,13 @@ class ReservierungAdmin(admin.ModelAdmin):
         "raum__name",
         "medium__pk",
     ]
+
+
+@admin.register(Nutzungsordnung)
+class NutzungsordnungAdmin(admin.ModelAdmin):
+    model = Nutzungsordnung
+    list_display = (
+        "erzeugt",
+        "datei",
+    )
+    filter_horizontal = ["akzeptiert_von"]

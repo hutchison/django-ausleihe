@@ -14,3 +14,5 @@ from .SkillsetItem import SkillsetItem
 from .Skillset import Skillset
 from .SkillsetItemRelation import SkillsetItemRelation
 from .Reservierung import Reservierung
+
+from .Nutzungsordnung import Nutzungsordnung

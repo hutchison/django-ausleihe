@@ -21,6 +21,7 @@ from crispy_forms.bootstrap import (
 
 from .models import (
     Gebaeude,
+    Nutzungsordnung,
     Raum,
     Reservierung,
     Skill,
@@ -336,3 +337,16 @@ class ReservierungszeitForm(forms.Form):
             raise ValidationError("Zeit befindet sich nicht im gültigen Rahmen.")
 
         return zeit
+
+
+class NutzungsordnungForm(forms.ModelForm):
+    class Meta:
+        model = Nutzungsordnung
+        fields = ["datei"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = "nutzungsordnung"
+        self.helper.form_method = "post"
+        self.helper.add_input(Submit("submit", "Speichern"))

@@ -58,4 +58,7 @@ urlpatterns = [
     path('reservierung/<int:reservierung_id>', views.ReservierungDetail.as_view(), name='reservierung-detail'),
     path('reservierung/<int:reservierung_id>/stornieren', views.ReservierungDelete.as_view(), name='reservierung-delete'),
     path('reservierung/<int:reservierung_id>/verleihen', views.ReservierungVerleihen.as_view(), name='reservierung-verleihen'),
+    path('nutzungsordnungen', views.NutzungsordnungList.as_view(), name='nutzungsordnung-list'),
+    path('nutzungsordnung/akzeptieren', views.AkzeptiereNutzungsordnung.as_view(), name='nutzungsordnung-akzeptieren'),
+    path('nutzungsordnung/neu', views.NutzungsordnungCreate.as_view(), name='nutzungsordnung-create'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

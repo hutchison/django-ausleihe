@@ -1,0 +1,58 @@
+{% extends "ausleihe/base.html" %}
+
+{% block content %}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:medium-list' %}">Medien</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:buch-list' %}">Bücher</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skill-list' %}">Skills</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:nutzungsordnung-list' %}"><strong>Nutzungsordnungen</strong></a></li>
+      {% if perms.ausleihe.add_nutzungsordnung %}
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:nutzungsordnung-create' %}">hinzufügen</a></li>
+      {% endif %}
+    </ol>
+  </nav>
+  <div class="row">
+    <div class="col">
+      {% if nutzungsordnung_list %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Datum</th>
+            <th>Datei</th>
+            <th>akzeptiert</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for n in nutzungsordnung_list %}
+          <tr>
+            <td>{{ n.erzeugt }} Uhr</td>
+            <td><a href="{{ n.datei.url }}" target="_blank">{{ n.datei_name }}</a></td>
+            <td>
+              {% if forloop.first %}
+                {% if n in user.akzeptierte_nutzungsordnungen.all %}
+                <span class="text-success">✓</span>
+                {% else %}
+                <a class="btn btn-primary" role="button" href="{% url 'ausleihe:nutzungsordnung-akzeptieren' %}">akzeptieren</a>
+                {% endif %}
+              {% else %}
+                {% if n in user.akzeptierte_nutzungsordnungen.all %}
+                <span class="text-success">✓</span>
+                {% else %}
+                <span class="text-danger">✗</span>
+                {% endif %}
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>Bisher sind keine Nutzungsordnungen vorhanden.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock content %}

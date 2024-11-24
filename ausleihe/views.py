@@ -25,6 +25,7 @@ from .models import (
     Gebaeude,
     Leihe,
     Medium,
+    Nutzungsordnung,
     Raum,
     Reservierung,
     Skill,
@@ -36,6 +37,7 @@ from .models import (
 )
 from .forms import (
     GebaeudeForm,
+    NutzungsordnungForm,
     RaumForm,
     RaumImportForm,
     ReservierungszeitForm,
@@ -55,6 +57,12 @@ class Home(LoginRequiredMixin, View):
         except FachschaftUser.DoesNotExist:
             return render(request, "ausleihe/profil_unvollstaendig.html")
         else:
+            context = {}
+
+            if Nutzungsordnung.objects.exists():
+                n = Nutzungsordnung.objects.first()
+                context["aktuelle_nutzungsordnung"] = n
+
             aktuell_reserviert = Reservierung.objects.prefetch_related(
                 "skill",
                 "raum",
@@ -81,13 +89,31 @@ class Home(LoginRequiredMixin, View):
                 nutzer=fuser,
             )
 
-            context = {
-                "aktuell_reserviert": aktuell_reserviert,
-                "aktuell_verliehen": aktuell_verliehen,
-                "historisch_verliehen": historisch_verliehen,
-            }
+            context["aktuell_reserviert"] = aktuell_reserviert
+            context["aktuell_verliehen"] =  aktuell_verliehen
+            context["historisch_verliehen"] = historisch_verliehen
 
             return render(request, self.template_name, context)
+
+
+class NutzungsordnungAkzeptiertMixin(LoginRequiredMixin):
+    """
+    Ein Mixin bei dem zur Akzeptierung der aktuellen Nutzungsordnung geleitet wird.
+    Anstatt das gesondert beim View zu überprüfen, ersetzen wir einfach den
+    LoginRequiredMixin durch NutzungsordnungAkzeptiertMixin und man wird sofort
+    umgeleitet.
+    """
+    def dispatch(self, request, *args, **kwargs):
+        if Nutzungsordnung.objects.exists():
+            # Durch ordering beim Model wird hier automatisch die richtige
+            # Nutzungsordnung gefunden:
+            n = Nutzungsordnung.objects.first()
+            if n not in request.user.akzeptierte_nutzungsordnungen.all():
+                return redirect("ausleihe:nutzungsordnung-akzeptieren")
+            else:
+                return super().dispatch(request, *args, **kwargs)
+        else:
+            return super().dispatch(request, *args, **kwargs)
 
 
 class MediumList(LoginRequiredMixin, ListView):
@@ -712,7 +738,7 @@ class SkillEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     template_name_suffix = "_create"
 
 
-class SkillReserve(LoginRequiredMixin, View):
+class SkillReserve(NutzungsordnungAkzeptiertMixin, View):
     """
     Der Nutzer hat einen Skill gewählt und muss jetzt eine Verfügbarkeit (Raum mit
     Anfangs- und Endzeit) wählen.
@@ -750,7 +776,7 @@ class SkillReserve(LoginRequiredMixin, View):
         return render(request, self.template_name, context)
 
 
-class SkillVerfuegbarkeitReserve(LoginRequiredMixin, View):
+class SkillVerfuegbarkeitReserve(NutzungsordnungAkzeptiertMixin, View):
     """
     Der Nutzer hat einen Skill und eine Verfügbarkeit gewählt und muss jetzt eine
     konkrete Startzeit für die Reservierung wählen.
@@ -1033,3 +1059,45 @@ class VerfuegbarkeitDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteVi
     permission_required = "ausleihe.delete_verfuegbarkeit"
     pk_url_kwarg = "v_id"
     success_url = reverse_lazy("ausleihe:verfuegbarkeit-create")
+
+
+class NutzungsordnungList(LoginRequiredMixin, ListView):
+    model = Nutzungsordnung
+
+
+class NutzungsordnungCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    model = Nutzungsordnung
+    permission_required = "ausleihe.add_nutzungsordnung"
+    form_class = NutzungsordnungForm
+    success_url = reverse_lazy("ausleihe:nutzungsordnung-list")
+
+
+class AkzeptiereNutzungsordnung(LoginRequiredMixin, View):
+    template_name = "ausleihe/akzeptiere_nutzungsordnung.html"
+
+    def get_context_data(self):
+        context = {
+            "aktuelle_nutzungsordnung": Nutzungsordnung.objects.first(),
+        }
+        return context
+
+    def get(self, request):
+        c = self.get_context_data()
+        if c["aktuelle_nutzungsordnung"]:
+            return render(request, self.template_name, c)
+        else:
+            return redirect("ausleihe:home")
+
+    def post(self, request):
+        n_id = request.POST.get("nutzungsordnung_id")
+        if n_id:
+            n = Nutzungsordnung.objects.get(id=n_id)
+            request.user.akzeptierte_nutzungsordnungen.add(n)
+            return render(request, self.template_name, self.get_context_data())
+        else:
+            msg = (
+                "Die Nutzungsordnung konnte nicht akzeptiert werden, "
+                "da die ID nicht übermittelt wurde."
+            )
+            messages.error(request, msg)
+            return redirect("ausleihe:home")

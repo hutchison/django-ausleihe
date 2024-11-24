@@ -8,6 +8,7 @@
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:medium-list' %}">Medien</a></li>
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:buch-list' %}">Bücher</a></li>
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skill-list' %}">Skills</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:nutzungsordnung-list' %}">Nutzungsordnung</a></li>
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verliehen' %}">aktuell verliehen</a></li>
       {% if perms.ausleihe.add_leihe %}
       <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:verleihen' %}">verleihen</a></li>
@@ -22,6 +23,13 @@
 <div class="container">
   <div class="row">
     <div class="col">
+      {% if aktuelle_nutzungsordnung and aktuelle_nutzungsordnung not in request.user.akzeptierte_nutzungsordnungen.all %}
+      <div class="alert alert-warning" role="alert">
+        Die Nutzungsbedingungen wurden aktualisiert,
+        du <a class="alert-link" href="{% url 'ausleihe:nutzungsordnung-akzeptieren' %}">kannst sie hier akzeptieren</a>.
+      </div>
+      {% endif %}
+
       <h4>aktuell für dich reserviert</h4>
       {% if aktuell_reserviert %}
       <table class="table">

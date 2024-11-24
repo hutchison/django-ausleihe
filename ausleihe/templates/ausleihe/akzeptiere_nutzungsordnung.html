@@ -1,0 +1,46 @@
+{% extends "ausleihe/base.html" %}
+
+{% block content %}
+<div class="container">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active" aria-current="page"><a href="{% url 'ausleihe:home' %}">Start</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:medium-list' %}">Medien</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:buch-list' %}">Bücher</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:skill-list' %}">Skills</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a href="{% url 'ausleihe:nutzungsordnung-list' %}">Nutzungsordnungen</a></li>
+      <li class="breadcrumb-item" aria-current="page">aktuelle Nutzungsordnung akzeptieren</li>
+    </ol>
+  </nav>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+      {% if aktuelle_nutzungsordnung not in request.user.akzeptierte_nutzungsordnungen.all %}
+      <h3>Aktualisierte Nutzungsordnung</h3>
+      <p>
+        Die Nutzungsordnung wurde aktualisiert. Die aktuelle Version ist vom
+        {{ aktuelle_nutzungsordnung.erzeugt|date }} und
+        <a href="{{ aktuelle_nutzungsordnung.datei.url }}" target="_blank">kann hier nachgelesen werden</a>.
+      </p>
+      <p>
+        Nur wenn du die Nutzungsordnung akzeptiert hast, darfst du Medien in der Mediathek reservieren und ausleihen.
+      </p>
+      <form action="" method="post" accept-charset="utf-8">
+        {% csrf_token %}
+        <input type="hidden" name="nutzungsordnung_id" value="{{ aktuelle_nutzungsordnung.id }}" id="nutzungsordnung_id">
+        <div class="text-center">
+          <button type="submit" class="btn btn-success">Ich habe die Nutzungsordnung gelesen und akzeptiere die Nutzungsbedingungen.</button>
+        </div>
+      </form>
+      {% else %}
+      <div class="alert alert-success" role="alert">
+        Du hast die <a class="alert-link" href="{{ aktuelle_nutzungsordnung.datei.url }}" target="_blank">aktuelle Nutzungsordnung</a>
+        vom {{ aktuelle_nutzungsordnung.erzeugt|date }} akzeptiert.
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock content %}
