@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.core.exceptions import ValidationError
 from django.db import models
 
@@ -29,6 +31,18 @@ class Verfuegbarkeit(models.Model):
             f"{self.ende:%H:%M}"
             " Uhr"
         )
+
+    @property
+    def dt_beginn(self):
+        return datetime.combine(self.datum, self.beginn)
+
+    @property
+    def dt_ende(self):
+        return datetime.combine(self.datum, self.ende)
+
+    @property
+    def td_total(self):
+        return self.dt_ende - self.dt_beginn
 
     def clean(self):
         if self.beginn > self.ende:
