@@ -1,11 +1,15 @@
-.PHONY: build upload
+.PHONY: build upload clean
 
-build:
+build: clean
 	@( \
 		. venv/bin/activate; \
 		python3 -m build; \
-		rm -Rf build; \
 	)
+
+clean:
+	rm -Rf django_ausleihe.egg-info/
+	rm -Rf build
+	rm -Rf dist
 
 upload:
 	twine upload dist/*
