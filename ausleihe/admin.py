@@ -82,6 +82,7 @@ class SkillAdmin(admin.ModelAdmin):
         "max_personen",
         "anzahl_plaetze",
         "dauer",
+        "anleitung",
     )
 
     list_display_links = ["name"]

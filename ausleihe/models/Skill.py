@@ -6,6 +6,11 @@ from django.shortcuts import reverse
 from .Reservierung import Reservierung
 
 
+def dateiname_anleitung_skill(instance, filename):
+    fn = f"{instance.nummer}_Anleitung.pdf"
+    return f"ausleihe/skills/{instance.nummer}/{fn}"
+
+
 class Skill(models.Model):
     nummer = models.PositiveSmallIntegerField(unique=True)
     name = models.CharField(max_length=200, unique=True)
@@ -30,6 +35,11 @@ class Skill(models.Model):
         related_name="skills",
         verbose_name="Räume",
         help_text="In welchen Räumen kann dieser Skill durchgeführt werden?",
+        blank=True,
+    )
+    anleitung = models.FileField(
+        upload_to=dateiname_anleitung_skill,
+        help_text="PDF-Datei mit der Anleitung für die Studierenden.",
         blank=True,
     )
 
@@ -64,4 +74,3 @@ class Skill(models.Model):
                 skillsets.append(skillset)
 
         return skillsets
-

@@ -1,6 +1,6 @@
 from datetime import date, datetime, timedelta, time
-from random import choice
 from math import ceil
+from random import choice
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -622,6 +622,7 @@ class SkillsetEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
                     "Bitte überprüfe das.")
                 )
 
+
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
@@ -736,6 +737,18 @@ class SkillEdit(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     form_class = SkillForm
     pk_url_kwarg = "skill_id"
     template_name_suffix = "_create"
+
+    def form_valid(self, form):
+        """
+        Löscht die existierende Anleitungsdatei, sofern sie existiert.
+        """
+        self.object = self.get_object()
+        anleitung = form.cleaned_data["anleitung"]
+
+        if anleitung == False and self.object.anleitung:
+            self.object.anleitung.delete()
+
+        return super().form_valid(form)
 
 
 class SkillReserve(NutzungsordnungAkzeptiertMixin, View):

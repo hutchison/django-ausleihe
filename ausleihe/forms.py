@@ -41,6 +41,7 @@ class SkillForm(forms.ModelForm):
             "max_personen",
             "dauer",
             "beschreibung",
+            "anleitung",
             "raeume",
         ]
         widgets = {
@@ -80,6 +81,9 @@ class SkillForm(forms.ModelForm):
             Row(
                 Column(
                     Field("beschreibung"),
+                ),
+                Column(
+                    Field("anleitung"),
                 ),
             ),
             Row(
