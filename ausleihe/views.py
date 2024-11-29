@@ -210,7 +210,7 @@ class BuchCreate(LoginRequiredMixin, PermissionRequiredMixin, View):
             context["buch"]["autoren"] = {"all": autoren}
             return render(request, self.template_name, context)
         else:
-            m = Medium.objects.create(id=buch["medium_id"])
+            m, created = Medium.objects.get_or_create(id=buch["medium_id"])
 
             b = Buch(**buch)
             b.medium = m

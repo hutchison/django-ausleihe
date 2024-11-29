@@ -1,5 +1,7 @@
 from django.db import models
 
+from .Verlag import Verlag
+
 
 class Buch(models.Model):
     titel = models.CharField(max_length=300)
