@@ -16,6 +16,9 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 
 import requests
+import qrcode
+import base64
+import io
 
 from fsmedhro_core.models import FachschaftUser, Kontaktdaten
 
@@ -718,6 +721,27 @@ class SkillDetail(LoginRequiredMixin, DetailView):
         "skillsets",
     )
     pk_url_kwarg = "skill_id"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        skill = self.get_object()
+        if skill.anleitung:
+            qr = qrcode.QRCode(
+                box_size=6,
+                border=1,
+            )
+            qr.add_data(self.request.build_absolute_uri(skill.anleitung.url))
+            qr.make(fit=True)
+            img = qr.make_image()
+            with io.BytesIO() as f:
+                img.save(f)
+                f.seek(0)
+                b = f.read()
+            enc = base64.b64encode(b)
+            context["qrcode_anleitung_png"] = enc.decode()
+
+        return context
 
 
 class SkillCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):

@@ -46,19 +46,22 @@
     </div>
   </div>
 
-  {% if skill.beschreibung %}
+  {% if skill.beschreibung or skill.anleitung %}
   <div class="row">
-    <div class="col">
+    <div class="col-8">
+      {% if skill.beschreibung %}
       <h6>Beschreibung</h6>
       <p style="white-space: pre-line;">{{ skill.beschreibung }}</p>
+      {% endif %}
     </div>
-  </div>
-  {% endif %}
-
-  {% if skill.anleitung %}
-  <div class="row">
-    <div class="col">
-      <p>Hier findest du die <a href="{{ skill.anleitung.url }}" target="_blank">Anleitung zum Herunterladen</a>.</p>
+    <div class="col-4">
+      {% if skill.anleitung %}
+      <h6>Anleitung</h6>
+      <p>Hier kannst du die <a href="{{ skill.anleitung.url }}" target="_blank">Anleitung herunterladen</a>.</p>
+      <p class="text-center">
+        <img src="data:image/png;base64,{{ qrcode_anleitung_png }}">
+      </p>
+      {% endif %}
     </div>
   </div>
   {% endif %}
