@@ -146,19 +146,12 @@ class Reservierung(models.Model):
 
     def _raum_hat_kapazitaet(self):
         r = self._ueberschneidende_reservierungen_vom_raum()
-        if r.exists():
-            # gehe alle überschneidenden Reservierungen zu diesem Raum durch und
-            # summiere die benötigten Plätze der Skills
-            r_plaetze = r.annotate(
-                anzahl_plaetze=Sum("skill__anzahl_plaetze")
-            ).first()
+        # gehe alle überschneidenden Reservierungen zu diesem Raum durch und
+        # summiere die benötigten Plätze der Skills
+        s = r.aggregate(Sum("skill__anzahl_plaetze", default=0))
+        kapazitaet = self.raum.anzahl_plaetze - s["skill__anzahl_plaetze__sum"]
 
-            l = r_plaetze.anzahl_plaetze if r_plaetze else 0
-            kapazitaet = self.raum.anzahl_plaetze - l
-
-            return kapazitaet >= self.skill.anzahl_plaetze
-        else:
-            return self.raum.anzahl_plaetze     # True <=> (> 0)
+        return kapazitaet >= self.skill.anzahl_plaetze
 
     def _ueberschneidende_reservierungen_vom_medium(self):
         return self.medium.reservierungen.filter(
