@@ -38,6 +38,7 @@
             <th>Skill</th>
             <th>Datum</th>
             <th>Raum</th>
+            <th>Stornieren</th>
           </tr>
         </thead>
         <tbody>
@@ -46,6 +47,9 @@
             <td><a href="{% url 'ausleihe:skill-detail' r.skill.id %}">{{ r.skill }}</a></td>
             <td><a href="{% url 'ausleihe:reservierung-detail' r.id %}">{{ r.zeit }} – {{ r.ende|date:"H:i" }} Uhr</a></td>
             <td>{{ r.raum }}</td>
+            <td>
+              <a class="btn btn-sm btn-danger" href="{% url 'ausleihe:reservierung-delete' r.id %}" role="button">Stornieren</a>
+            </td>
           </tr>
           {% endfor %}
         </tbody>
