@@ -148,8 +148,10 @@ class Reservierung(models.Model):
         r = self._ueberschneidende_reservierungen_vom_raum()
         # gehe alle überschneidenden Reservierungen zu diesem Raum durch und
         # summiere die benötigten Plätze der Skills
-        s = r.aggregate(Sum("skill__anzahl_plaetze", default=0))
-        kapazitaet = self.raum.anzahl_plaetze - s["skill__anzahl_plaetze__sum"]
+        s = r.aggregate(reservierte_plaetze=Sum("skill__anzahl_plaetze"))
+        if s["reservierte_plaetze"] is None:
+            s["reservierte_plaetze"] = 0
+        kapazitaet = self.raum.anzahl_plaetze - s["reservierte_plaetze"]
 
         return kapazitaet >= self.skill.anzahl_plaetze
 
