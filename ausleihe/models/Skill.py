@@ -42,6 +42,11 @@ class Skill(models.Model):
         help_text="PDF-Datei mit der Anleitung für die Studierenden.",
         blank=True,
     )
+    ist_sichtbar = models.BooleanField(
+        verbose_name="ist sichtbar",
+        default=True,
+        help_text="Wenn aktiviert, dann ist der Skill zur Ausleihe freigegeben.",
+    )
 
     class Meta:
         verbose_name = "Skill"

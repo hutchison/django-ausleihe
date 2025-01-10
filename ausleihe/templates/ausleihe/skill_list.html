@@ -48,6 +48,28 @@
         </thead>
         <tbody>
           {% for skill in skill_list %}
+          {% if perms.ausleihe_change_skill %}
+          <tr {% if not skill.ist_sichtbar %}class="table-warning"{% endif %}>
+            <td>{{ skill.nummer }}</td>
+            <td>
+              {% if not skill.ist_sichtbar %}
+              <abbr title="Skill ist aktuell unsichtbar">🛠️</abbr>
+              {% endif %}
+              <a href="{% url 'ausleihe:skill-detail' skill.id %}">{{ skill.name }}</a>
+            </td>
+            <td>
+              {% if skill.min_personen == skill.max_personen %}
+              {{ skill.min_personen }}
+              {% else %}
+              {{ skill.min_personen }} - {{ skill.max_personen }}
+              {% endif %}
+            </td>
+            <td>{{ skill.anzahl_plaetze }}</td>
+            <td>{{ skill.skillsets.count }}</td>
+            <td>{{ skill.dauer }}</td>
+          </tr>
+          {% else %}
+          {% if skill.ist_sichtbar %}
           <tr>
             <td>{{ skill.nummer }}</td>
             <td><a href="{% url 'ausleihe:skill-detail' skill.id %}">{{ skill.name }}</a></td>
@@ -62,6 +84,8 @@
             <td>{{ skill.skillsets.count }}</td>
             <td>{{ skill.dauer }}</td>
           </tr>
+          {% endif %}
+          {% endif %}
           {% endfor %}
         </tbody>
       </table>

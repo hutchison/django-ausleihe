@@ -36,6 +36,7 @@ class SkillForm(forms.ModelForm):
         fields = [
             "nummer",
             "name",
+            "ist_sichtbar",
             "anzahl_plaetze",
             "min_personen",
             "max_personen",
@@ -84,6 +85,7 @@ class SkillForm(forms.ModelForm):
                 ),
                 Column(
                     Field("anleitung"),
+                    Field("ist_sichtbar"),
                 ),
             ),
             Row(

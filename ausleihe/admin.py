@@ -78,6 +78,7 @@ class SkillAdmin(admin.ModelAdmin):
     list_display = (
         "nummer",
         "name",
+        "ist_sichtbar",
         "min_personen",
         "max_personen",
         "anzahl_plaetze",
