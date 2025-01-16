@@ -48,7 +48,7 @@
         </thead>
         <tbody>
           {% for skill in skill_list %}
-          {% if perms.ausleihe_change_skill %}
+          {% if perms.ausleihe.change_skill %}
           <tr {% if not skill.ist_sichtbar %}class="table-warning"{% endif %}>
             <td>{{ skill.nummer }}</td>
             <td>
