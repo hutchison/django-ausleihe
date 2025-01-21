@@ -35,7 +35,7 @@
           </tr>
           <tr>
             <th>Skill</th>
-            <td>{{ skillset.skill.name }}</td>
+            <td><a href="{% url 'ausleihe:skill-detail' skillset.skill.id %}">{{ skillset.skill.name }}</a></td>
           </tr>
         </tbody>
       </table>
