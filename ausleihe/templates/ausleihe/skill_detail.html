@@ -67,9 +67,18 @@
   {% endif %}
 
   <div class="row">
-    <div class="col">
+    <div class="col-6">
       {% if skill.raeume.exists and skill.skillsets.exists %}
-      <a class="btn btn-primary" href="{% url 'ausleihe:skill-reserve' skill.id %}" role="button">Reservieren</a>
+      <p>
+        <a class="btn btn-primary" href="{% url 'ausleihe:skill-reserve' skill.id %}" role="button">Reservieren</a>
+      </p>
+      {% if skill.min_personen > 1 %}
+      <p>
+        Diesen Skill kannst du nicht alleine durchführen.
+        Wenn du ihn reservierst, dann reservierst du für deine Simulationspartner gleich mit.
+        Es braucht daher nur eine Person reservieren.
+      </p>
+      {% endif %}
       {% else %}
       <p class="text-muted">Aktuell ist der Skill noch nicht reservierbar.</p>
       {% if perms.ausleihe.change_skill %}
