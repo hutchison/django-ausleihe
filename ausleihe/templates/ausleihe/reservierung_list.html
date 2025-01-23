@@ -54,7 +54,7 @@
           <tr {% if r.leihe.zurueckgebracht %}class="text-muted"{% endif %}>
             <td>{{ r.nutzer }} ({{ r.nutzer.user }})</td>
             <td>{{ r.skill }}</td>
-            <td>{{ r.medium }}</td>
+            <td>{{ r.medium }} – {% for skillset in r.medium.skillsets.all %}{{ skillset }} {% endfor %}</td>
             <td>{{ r.raum }}</td>
             <td>{{ r.zeit|date:"d.m.Y H:i" }} – {{ r.ende|date:"H:i" }} Uhr</td>
             <td>
