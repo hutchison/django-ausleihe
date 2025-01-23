@@ -12,6 +12,7 @@ dependencies = [
     'django-fsmedhro-core>=0.3.1',
     'djangorestframework',
     'qrcode',
+    'markdown',
 ]
 dynamic = ['version']
 description = "Django-App für die Ausleihe von Medien."

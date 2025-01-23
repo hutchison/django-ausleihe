@@ -29,7 +29,14 @@ class Skill(models.Model):
     dauer = models.PositiveSmallIntegerField(
         help_text="Zeitraum (min)"
     )
-    beschreibung = models.TextField(blank=True)
+    beschreibung = models.TextField(
+        blank=True,
+        help_text=(
+            'Für die Beschreibung kannst du '
+            '<a target="_blank" href="https://de.wikipedia.org/wiki/Markdown">Markdown</a> nutzen. '
+            'Links kannst du mittels <code>[Text des Links](url)</code> einbinden.'
+        )
+    )
     raeume = models.ManyToManyField(
         "ausleihe.Raum",
         related_name="skills",

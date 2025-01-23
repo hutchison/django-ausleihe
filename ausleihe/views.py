@@ -19,6 +19,7 @@ import requests
 import qrcode
 import base64
 import io
+import markdown
 
 from fsmedhro_core.models import FachschaftUser, Kontaktdaten
 
@@ -724,6 +725,7 @@ class SkillDetail(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["beschreibung"] = markdown.markdown(context["skill"].beschreibung)
 
         skill = self.get_object()
         if skill.anleitung:

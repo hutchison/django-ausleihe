@@ -46,12 +46,12 @@
     </div>
   </div>
 
-  {% if skill.beschreibung or skill.anleitung %}
+  {% if beschreibung or skill.anleitung %}
   <div class="row">
     <div class="col-8">
-      {% if skill.beschreibung %}
+      {% if beschreibung %}
       <h6>Beschreibung</h6>
-      <p style="white-space: pre-line;">{{ skill.beschreibung }}</p>
+      <p style="white-space: pre-line;">{{ beschreibung|safe }}</p>
       {% endif %}
     </div>
     <div class="col-4">
