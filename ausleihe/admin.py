@@ -122,6 +122,7 @@ class RaumAdmin(admin.ModelAdmin):
 class VerfuegbarkeitAdmin(admin.ModelAdmin):
     model = Verfuegbarkeit
     list_display = (
+        "datum",
         "beginn",
         "ende",
         "raum",
