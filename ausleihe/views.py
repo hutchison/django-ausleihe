@@ -1077,8 +1077,10 @@ class VerfuegbarkeitCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateVi
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        today = timezone.localdate()
-        zeiten = Verfuegbarkeit.objects.filter(datum__gte=today)
+        start = timezone.localdate() - timedelta(days=10)
+        zeiten = Verfuegbarkeit.objects.filter(datum__gte=start)
+
+        context["start"] = start
         context["zeiten"] = zeiten
 
         return context
